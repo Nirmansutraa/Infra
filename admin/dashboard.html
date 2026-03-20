@@ -16,7 +16,7 @@
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left;}
         .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
-        #adminMap { height: 400px; border-radius: 16px; border: 1px solid #334155; }
+        #adminMap { height: 400px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
         input, select { background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; width: 100%; }
@@ -37,7 +37,7 @@
         <button onclick="switchTab('fleet')" id="btn-fleet" class="nav-link"><span>🚛</span> Fleet Intelligence</button>
     </div>
 
-    <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10"><span>🔒</span> Logout</button>
+    <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto"><span>🔒</span> Logout</button>
 </nav>
 
 <main class="main-content w-full">
@@ -73,16 +73,16 @@
                 <h2 class="text-2xl font-bold">Material Registry</h2>
                 <p class="text-slate-400 text-sm">Add materials here to update all field terminals instantly.</p>
             </div>
-            <button onclick="addMaterialNode()" class="bg-orange-500 px-6 py-2 rounded-lg font-bold text-sm">ADD MATERIAL</button>
+            <button onclick="addMaterialNode()" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg font-bold text-sm transition">ADD MATERIAL</button>
         </div>
-        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             </div>
     </section>
 
     <section id="tab-fleet" class="tab-panel">
         <h2 class="text-2xl font-bold mb-4">Fleet Intelligence</h2>
-        <div class="glass-card p-8 text-center text-slate-400">
-            Fleet tracking systems initializing...
+        <div class="glass-card p-8 text-center text-slate-400 italic">
+            Fleet tracking systems initializing... Live tracking coming soon.
         </div>
     </section>
 
@@ -94,14 +94,14 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // --- INTEGRATED V1 CONFIGURATION ---
+    // --- YOUR ACTUAL CONFIGURATION ---
     const firebaseConfig = {
-        apiKey: "AIzaSyAs-P6w7Lz8M9N0O1P2Q3R4S5T6U7V8W9X",
+        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
-        storageBucket: "infradepo.appspot.com",
-        messagingSenderId: "105678123456",
-        appId: "1:105678123456:web:a1b2c3d4e5f6g7h8i9j0",
+        storageBucket: "infradepo.firebasestorage.app",
+        messagingSenderId: "733942710671",
+        appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
         databaseURL: "https://infradepo-default-rtdb.firebaseio.com"
     };
 
@@ -111,11 +111,16 @@
 
     // 1. Tab Switching Logic
     function switchTab(id) {
+        // Hide all panels
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        // Deactivate all buttons
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        
+        // Show the clicked panel
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'map') setTimeout(initMap, 200);
+        
+        if(id === 'map') setTimeout(initMap, 300);
     }
 
     // 2. Map Initialization
@@ -134,6 +139,7 @@
             rtdb.ref('users/' + user.uid).once('value').then((snapshot) => {
                 const userData = snapshot.val();
                 if (!userData || userData.role !== 'admin') {
+                    alert("Unauthorized access. Admin role required.");
                     window.location.href = "../index.html";
                 } else {
                     startRealtimeSync();
@@ -154,42 +160,42 @@
         rtdb.ref('registry/materials').on('value', snap => {
             const list = document.getElementById('registryList');
             list.innerHTML = "";
-            let matCount = 0;
             
             snap.forEach(catSnap => {
                 catSnap.forEach(varSnap => {
-                    matCount++;
                     const data = varSnap.val();
                     list.innerHTML += `
-                        <div class="glass-card p-4">
-                            <p class="text-orange-500 font-bold text-xs uppercase">${catSnap.key}</p>
-                            <h4 class="text-lg font-bold">${varSnap.key}</h4>
-                            <p class="text-slate-400 text-xs mt-1">Brands: ${data.brands.join(', ')}</p>
+                        <div class="glass-card p-5 border-t-2 border-orange-500">
+                            <p class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">${catSnap.key}</p>
+                            <h4 class="text-xl font-bold mt-1 text-white">${varSnap.key}</h4>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                ${data.brands.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
+                            </div>
                         </div>
                     `;
                 });
             });
-            document.getElementById('stat-material-count-hidden-placeholder'); // (Not used in UI yet)
         });
 
         // Sync Agent Count
         rtdb.ref('users').orderByChild('role').equalTo('agent').on('value', snap => {
             document.getElementById('stat-agents').innerText = snap.numChildren() || 0;
         });
-    </div>
+    }
 
     // 4. Material Registry Management
     function addMaterialNode() {
         const cat = prompt("Enter Material Category (e.g., Cement, TMT):");
-        if (cat) {
-            const variety = prompt("Enter Variety (e.g., OPC 53):");
-            const brandsRaw = prompt("Enter Brands (comma separated):");
-            if (variety && brandsRaw) {
-                const brands = brandsRaw.split(',').map(b => b.trim());
-                rtdb.ref(`registry/materials/${cat}/${variety}`).set({
-                    brands: brands
-                }).then(() => alert("Registry Updated!"));
-            }
+        if (!cat) return;
+        const variety = prompt("Enter Variety (e.g., OPC 53):");
+        if (!variety) return;
+        const brandsRaw = prompt("Enter Brands (comma separated, e.g., UltraTech, ACC):");
+        
+        if (variety && brandsRaw) {
+            const brands = brandsRaw.split(',').map(b => b.trim());
+            rtdb.ref(`registry/materials/${cat}/${variety}`).set({
+                brands: brands
+            }).then(() => alert("Registry Updated! All field terminals are synced."));
         }
     }
 
