@@ -34,7 +34,6 @@
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Material Registry</button>
-        <button onclick="switchTab('fleet')" id="btn-fleet" class="nav-link"><span>🚛</span> Fleet Intelligence</button>
     </div>
 
     <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto"><span>🔒</span> Logout</button>
@@ -70,20 +69,14 @@
     <section id="tab-intel" class="tab-panel">
         <div class="flex justify-between items-end mb-6">
             <div>
-                <h2 class="text-2xl font-bold">Material Registry</h2>
-                <p class="text-slate-400 text-sm">Max 10 Varieties/Category | Max 10 Brands/Variety</p>
+                <h2 class="text-2xl font-bold">Material Intelligence</h2>
+                <p class="text-slate-400 text-sm">Add a Category, then define its Varieties and Brands.</p>
             </div>
-            <button onclick="addMaterialNode()" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg font-bold text-sm transition">ADD MATERIAL</button>
+            <button onclick="materialWizard()" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg font-bold text-sm transition">START WIZARD</button>
         </div>
-        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        </div>
-    </section>
 
-    <section id="tab-fleet" class="tab-panel">
-        <h2 class="text-2xl font-bold mb-4">Fleet Intelligence</h2>
-        <div class="glass-card p-8 text-center text-slate-400 italic">
-            Fleet tracking systems initializing...
-        </div>
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
     </section>
 
 </main>
@@ -126,24 +119,18 @@
 
     auth.onAuthStateChanged(user => {
         if (user) {
-            rtdb.ref('users/' + user.uid).once('value').then((snapshot) => {
-                const userData = snapshot.val();
-                if (!userData || userData.role !== 'admin') {
-                    window.location.href = "../index.html";
-                } else {
-                    startRealtimeSync();
-                }
-            });
+            startRealtimeSync();
         } else {
             window.location.href = "../index.html";
         }
     });
 
     function startRealtimeSync() {
-        rtdb.ref('surveys').on('value', snap => {
-            document.getElementById('stat-surveys').innerText = snap.numChildren() || 0;
-        });
+        // Stats
+        rtdb.ref('surveys').on('value', snap => document.getElementById('stat-surveys').innerText = snap.numChildren() || 0);
+        rtdb.ref('users').orderByChild('role').equalTo('agent').on('value', snap => document.getElementById('stat-agents').innerText = snap.numChildren() || 0);
 
+        // Registry Display
         rtdb.ref('registry/materials').on('value', snap => {
             const list = document.getElementById('registryList');
             list.innerHTML = "";
@@ -151,60 +138,53 @@
             snap.forEach(catSnap => {
                 catSnap.forEach(varSnap => {
                     const data = varSnap.val();
-                    // Clean handling of brand array
-                    const brandsArray = Array.isArray(data.brands) ? data.brands : [];
+                    const brands = data.brands || [];
                     
                     list.innerHTML += `
                         <div class="glass-card p-5 border-t-2 border-orange-500">
                             <p class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">${catSnap.key}</p>
                             <h4 class="text-xl font-bold mt-1 text-white">${varSnap.key}</h4>
                             <div class="mt-3 flex flex-wrap gap-2">
-                                ${brandsArray.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
+                                ${brands.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
                             </div>
                         </div>
                     `;
                 });
             });
         });
-
-        rtdb.ref('users').orderByChild('role').equalTo('agent').on('value', snap => {
-            document.getElementById('stat-agents').innerText = snap.numChildren() || 0;
-        });
     }
 
-    async function addMaterialNode() {
-        const cat = prompt("Enter Category (e.g., Cement):");
+    // NEW STEP-BY-STEP WIZARD
+    async function materialWizard() {
+        // Step 1: Material Category
+        const cat = prompt("STEP 1: Enter Material Category\n(e.g., Cement, Steel, Sand)");
         if (!cat) return;
 
-        // Variety Limit Check (Max 10 per Category)
-        const catRef = rtdb.ref(`registry/materials/${cat}`);
-        const snapshot = await catRef.once('value');
-        if (snapshot.numChildren() >= 10) {
-            alert(`Limit Reached! You cannot add more than 10 varieties to the ${cat} category.`);
+        // Step 2: Variety
+        const varSnapshot = await rtdb.ref(`registry/materials/${cat}`).once('value');
+        if (varSnapshot.numChildren() >= 10) {
+            alert(`Limit reached for ${cat}. (Max 10)`);
             return;
         }
 
-        const variety = prompt("Enter Variety (e.g., OPC 53):");
+        const variety = prompt(`STEP 2: Enter Variety for ${cat}\n(e.g., OPC 53, TMT 500D)`);
         if (!variety) return;
 
-        const brandsRaw = prompt("Enter Brands (Max 10, comma separated):");
+        // Step 3: Brands
+        const brandsRaw = prompt(`STEP 3: Enter Brands for ${variety}\n(Max 10, separate with commas: Brand A, Brand B)`);
         if (!brandsRaw) return;
 
-        // Process brands and enforce 10 Brand limit
-        let brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "");
-        if (brands.length > 10) {
-            alert("Limit Reached! Only the first 10 brands will be saved.");
-            brands = brands.slice(0, 10);
-        }
-        
+        let brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "").slice(0, 10);
+
+        // Final Save
         rtdb.ref(`registry/materials/${cat}/${variety}`).set({
             brands: brands
-        }).then(() => alert("Saved to Registry!"));
+        }).then(() => {
+            alert("SUCCESS: Material Registry Updated!");
+        }).catch(e => alert("Error: " + e.message));
     }
 
-    function logout() {
-        auth.signOut().then(() => window.location.href = "../index.html");
-    }
+    function logout() { auth.signOut().then(() => window.location.href = "../index.html"); }
 </script>
 </body>
 </html>
