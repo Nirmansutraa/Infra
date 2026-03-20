@@ -71,18 +71,18 @@
         <div class="flex justify-between items-end mb-6">
             <div>
                 <h2 class="text-2xl font-bold">Material Registry</h2>
-                <p class="text-slate-400 text-sm">Add materials here to update all field terminals instantly.</p>
+                <p class="text-slate-400 text-sm">Max 10 Varieties/Category | Max 10 Brands/Variety</p>
             </div>
             <button onclick="addMaterialNode()" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg font-bold text-sm transition">ADD MATERIAL</button>
         </div>
         <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            </div>
+        </div>
     </section>
 
     <section id="tab-fleet" class="tab-panel">
         <h2 class="text-2xl font-bold mb-4">Fleet Intelligence</h2>
         <div class="glass-card p-8 text-center text-slate-400 italic">
-            Fleet tracking systems initializing... Live tracking coming soon.
+            Fleet tracking systems initializing...
         </div>
     </section>
 
@@ -94,7 +94,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // --- YOUR ACTUAL CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -109,21 +108,14 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
-    // 1. Tab Switching Logic
     function switchTab(id) {
-        // Hide all panels
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        // Deactivate all buttons
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        
-        // Show the clicked panel
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        
         if(id === 'map') setTimeout(initMap, 300);
     }
 
-    // 2. Map Initialization
     let map;
     function initMap() {
         if (!map) {
@@ -132,14 +124,11 @@
         }
     }
 
-    // 3. Security & Real-time Stats
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Check if user has 'admin' role in RTDB
             rtdb.ref('users/' + user.uid).once('value').then((snapshot) => {
                 const userData = snapshot.val();
                 if (!userData || userData.role !== 'admin') {
-                    alert("Unauthorized access. Admin role required.");
                     window.location.href = "../index.html";
                 } else {
                     startRealtimeSync();
@@ -151,12 +140,10 @@
     });
 
     function startRealtimeSync() {
-        // Sync Survey Count
         rtdb.ref('surveys').on('value', snap => {
             document.getElementById('stat-surveys').innerText = snap.numChildren() || 0;
         });
 
-        // Sync Material Registry
         rtdb.ref('registry/materials').on('value', snap => {
             const list = document.getElementById('registryList');
             list.innerHTML = "";
@@ -164,12 +151,15 @@
             snap.forEach(catSnap => {
                 catSnap.forEach(varSnap => {
                     const data = varSnap.val();
+                    // Clean handling of brand array
+                    const brandsArray = Array.isArray(data.brands) ? data.brands : [];
+                    
                     list.innerHTML += `
                         <div class="glass-card p-5 border-t-2 border-orange-500">
                             <p class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">${catSnap.key}</p>
                             <h4 class="text-xl font-bold mt-1 text-white">${varSnap.key}</h4>
                             <div class="mt-3 flex flex-wrap gap-2">
-                                ${data.brands.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
+                                ${brandsArray.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
                             </div>
                         </div>
                     `;
@@ -177,26 +167,39 @@
             });
         });
 
-        // Sync Agent Count
         rtdb.ref('users').orderByChild('role').equalTo('agent').on('value', snap => {
             document.getElementById('stat-agents').innerText = snap.numChildren() || 0;
         });
     }
 
-    // 4. Material Registry Management
-    function addMaterialNode() {
-        const cat = prompt("Enter Material Category (e.g., Cement, TMT):");
+    async function addMaterialNode() {
+        const cat = prompt("Enter Category (e.g., Cement):");
         if (!cat) return;
+
+        // Variety Limit Check (Max 10 per Category)
+        const catRef = rtdb.ref(`registry/materials/${cat}`);
+        const snapshot = await catRef.once('value');
+        if (snapshot.numChildren() >= 10) {
+            alert(`Limit Reached! You cannot add more than 10 varieties to the ${cat} category.`);
+            return;
+        }
+
         const variety = prompt("Enter Variety (e.g., OPC 53):");
         if (!variety) return;
-        const brandsRaw = prompt("Enter Brands (comma separated, e.g., UltraTech, ACC):");
-        
-        if (variety && brandsRaw) {
-            const brands = brandsRaw.split(',').map(b => b.trim());
-            rtdb.ref(`registry/materials/${cat}/${variety}`).set({
-                brands: brands
-            }).then(() => alert("Registry Updated! All field terminals are synced."));
+
+        const brandsRaw = prompt("Enter Brands (Max 10, comma separated):");
+        if (!brandsRaw) return;
+
+        // Process brands and enforce 10 Brand limit
+        let brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "");
+        if (brands.length > 10) {
+            alert("Limit Reached! Only the first 10 brands will be saved.");
+            brands = brands.slice(0, 10);
         }
+        
+        rtdb.ref(`registry/materials/${cat}/${variety}`).set({
+            brands: brands
+        }).then(() => alert("Saved to Registry!"));
     }
 
     function logout() {
