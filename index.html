@@ -27,22 +27,22 @@
             width: 100%;
             max-width: 400px;
             border: 1px solid #334155;
+            text-align: center;
         }
-        .input-field {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            transition: all 0.3s;
+        .btn-google {
+            background: white;
+            color: #1e293b;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
-        .input-field:focus {
-            border-color: #ff7a00;
-            box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
+        .btn-google:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #ff7a00 0%, #ff5c00 100%);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-primary:active {
+        .btn-google:active {
             transform: scale(0.98);
         }
     </style>
@@ -50,33 +50,31 @@
 <body>
 
 <div class="login-card mx-4">
-    <div class="text-center mb-10">
+    <div class="mb-10">
         <h1 class="text-3xl font-black tracking-tighter uppercase">
             NIRMAN<span class="text-orange-500">SUTRA</span>
         </h1>
         <p class="text-slate-400 text-[10px] font-bold tracking-[3px] uppercase mt-1">Field Intel Gateway</p>
     </div>
 
-    <div class="space-y-6">
-        <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Work Email</label>
-            <input type="email" id="email" class="input-field w-full p-4 rounded-xl outline-none" placeholder="name@nirmansutra.com">
-        </div>
-
-        <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Security Key</label>
-            <input type="password" id="password" class="input-field w-full p-4 rounded-xl outline-none" placeholder="••••••••">
-        </div>
-
-        <button onclick="handleLogin()" id="loginBtn" class="btn-primary w-full p-4 rounded-xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-orange-500/20">
-            Authorize Access
-        </button>
-
-        <p id="errorMessage" class="text-red-400 text-xs text-center font-medium hidden">Login Failed: Check your credentials.</p>
+    <div class="mb-10">
+        <p class="text-slate-400 text-sm">Authorized Personnel Only.</p>
+        <p class="text-slate-500 text-xs mt-2">Please sign in with your corporate Google account to access the command center.</p>
     </div>
 
-    <div class="mt-8 text-center">
-        <p class="text-slate-600 text-[9px] font-medium uppercase tracking-widest">Secure Encrypted Session</p>
+    <div class="space-y-4">
+        <button onclick="loginWithGoogle()" id="loginBtn" class="btn-google w-full p-4 rounded-xl font-bold text-sm uppercase tracking-widest shadow-lg">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+            Sign In with Google
+        </button>
+
+        <p id="statusMsg" class="text-orange-500 text-[10px] font-bold uppercase tracking-widest hidden animate-pulse">
+            Verifying Identity...
+        </p>
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-slate-800">
+        <p class="text-slate-600 text-[9px] font-medium uppercase tracking-widest">Secure Cloud Session • V2.1</p>
     </div>
 </div>
 
@@ -100,59 +98,50 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // LOGIN LOGIC
-    async function handleLogin() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    // LOGIN LOGIC (GOOGLE SIGN-IN)
+    async function loginWithGoogle() {
         const btn = document.getElementById('loginBtn');
-        const errorMsg = document.getElementById('errorMessage');
+        const status = document.getElementById('statusMsg');
+        
+        // UI Feedback
+        btn.classList.add('hidden');
+        status.classList.remove('hidden');
 
-        if (!email || !password) {
-            alert("Please enter both email and security key.");
-            return;
-        }
-
-        btn.innerText = "Verifying...";
-        btn.disabled = true;
-        errorMsg.classList.add('hidden');
+        const provider = new firebase.auth.GoogleAuthProvider();
 
         try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCredential.user;
+            const result = await auth.signInWithPopup(provider);
+            const user = result.user;
 
-            // Using the UID to check the 'role' field in Firestore
+            // Check Role in Firestore (Legacy V1 Sync)
             const userDoc = await db.collection('users').doc(user.uid).get();
 
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 
-                // --- ROLE SYNC (Lowercase to match V1) ---
+                // --- ROLE REDIRECTION ---
                 if (userData.role === 'admin') {
                     window.location.href = 'admin/dashboard.html';
                 } else if (userData.role === 'agent') {
                     window.location.href = 'field/survey.html';
                 } else {
-                    btn.innerText = "Authorize Access";
-                    btn.disabled = false;
                     alert("Access Denied: Role not recognized. Contact Vijay.");
+                    await auth.signOut();
+                    location.reload();
                 }
             } else {
-                btn.innerText = "Authorize Access";
-                btn.disabled = false;
-                alert("Profile not found. Please register via the Admin Panel.");
+                alert("Profile not found. Please contact the administrator to register your UID.");
+                await auth.signOut();
+                location.reload();
             }
 
         } catch (error) {
-            console.error("Login Error:", error);
-            btn.innerText = "Authorize Access";
-            btn.disabled = false;
-            errorMsg.classList.remove('hidden');
+            console.error("Auth Error:", error);
+            alert("Login Failed: " + error.message);
+            btn.classList.remove('hidden');
+            status.classList.add('hidden');
         }
     }
-
-    document.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') { handleLogin(); }
-    });
 </script>
 
 </body>
