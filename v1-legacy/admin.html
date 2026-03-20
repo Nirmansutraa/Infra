@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nirmansutra HQ | Master Command & Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        #map { height: 100%; width: 100%; border-radius: 24px; z-index: 1; }
+        .sidebar-item { transition: 0.2s; cursor: pointer; border-left: 4px solid transparent; color: #94a3b8; }
+        .sidebar-item.active { background: #1e293b; border-left-color: #FF5A00; color: white; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+        #rbac-shield { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .hidden { display: none !important; }
+        /* Popup Styling */
+        .popup-img { width: 100%; border-radius: 12px; margin-top: 8px; border: 1px solid #ddd; cursor: zoom-in; max-height: 180px; object-fit: cover; display: block; }
+        .mat-tag { background: #0f1b2d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; margin-right: 4px; display: inline-block; margin-top: 4px; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-900">
+
+    <div id="rbac-shield">
+        <div class="w-12 h-12 border-4 border-gray-100 border-t-[#FF5A00] rounded-full animate-spin mb-4"></div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Master Clearance Check...</p>
+    </div>
+
+    <aside class="w-64 bg-[#0B1B33] flex flex-col shadow-2xl z-50">
+        <div class="p-8 flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#FF5A00] rounded-xl flex items-center justify-center font-black text-white text-xl shadow-lg">N</div>
+            <span class="text-white font-black tracking-tighter uppercase text-sm">Nirmansutra</span>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <div onclick="switchTab('map-view')" class="sidebar-item active p-4 rounded-lg flex items-center gap-3">
+                <span class="text-sm">📍</span> <span class="text-[10px] font-bold uppercase tracking-widest">Command Map</span>
+            </div>
+            <div onclick="switchTab('user-view')" class="sidebar-item p-4 rounded-lg flex items-center gap-3">
+                <span class="text-sm">🔐</span> <span class="text-[10px] font-bold uppercase tracking-widest">Access Control</span>
+            </div>
+        </nav>
+
+        <div class="p-6 border-t border-slate-800">
+            <button onclick="logout()" class="w-full py-3 rounded-lg border border-slate-700 text-[9px] font-bold uppercase text-slate-400 hover:bg-red-500 hover:text-white transition-all">Terminate Session</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-20 bg-white border-b px-8 flex justify-between items-center">
+            <h2 id="tab-title" class="text-lg font-900 uppercase italic text-slate-800">Intelligence Map</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="admin-display" class="text-[11px] font-black text-slate-900 leading-none">---</p>
+                    <p class="text-[9px] font-bold text-orange-500 uppercase tracking-widest">Master Admin</p>
+                </div>
+                <div class="w-10 h-10 bg-slate-100 rounded-full border-2 border-orange-500"></div>
+            </div>
+        </header>
+
+        <section class="flex-1 p-8 overflow-y-auto">
+            
+            <div id="map-view" class="h-full flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-6 rounded-3xl border-t-4 border-orange-500">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Surveys</p>
+                        <h3 id="stat-suppliers" class="text-3xl font-black text-slate-800">0</h3>
+                    </div>
+                </div>
+                
+                <div class="flex-1 flex gap-6 min-h-0">
+                    <div class="flex-[3] glass-card rounded-[2rem] overflow-hidden relative shadow-2xl">
+                        <div id="map"></div>
+                    </div>
+                    <div class="flex-1 glass-card rounded-[2rem] p-6 overflow-y-auto hidden lg:block">
+                        <h4 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Live Activity Feed</h4>
+                        <div id="live-feed" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="user-view" class="hidden space-y-6">
+                <div class="glass-card rounded-[2rem] overflow-hidden">
+                    <div class="bg-slate-50 p-6 border-b">
+                        <h3 class="text-[10px] font-black uppercase text-slate-400 tracking-widest">User Management</h3>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[9px] font-bold text-slate-400 uppercase tracking-widest border-b">
+                                <th class="p-6">User Email</th>
+                                <th class="p-6">Status</th>
+                                <th class="p-6">Role</th>
+                                <th class="p-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-list-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+            authDomain: "infradepo.firebaseapp.com",
+            projectId: "infradepo",
+            storageBucket: "infradepo.firebasestorage.app",
+            messagingSenderId: "733942710671",
+            appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // 🛡️ AUTH CHECK
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                try {
+                    const doc = await db.collection("users").doc(user.uid).get();
+                    // MASTER BYPASS FOR OWNER EMAIL
+                    if (user.email === 'nirmansutraa@gmail.com' || (doc.exists && (doc.data().role === 'admin' || doc.data().role === 'super_admin'))) {
+                        document.getElementById('rbac-shield').style.display = 'none';
+                        document.getElementById('admin-display').innerText = user.email;
+                        initDashboard();
+                    } else {
+                        alert("ACCESS DENIED");
+                        auth.signOut().then(() => window.location.href = "index.html");
+                    }
+                } catch(e) {
+                    console.error("Auth Error", e);
+                    if(user.email === 'nirmansutraa@gmail.com') document.getElementById('rbac-shield').style.display = 'none';
+                }
+            }
+        });
+
+        let map;
+        const markers = {};
+
+        function initDashboard() {
+            if(!map) {
+                map = L.map('map').setView([24.5854, 73.7125], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            }
+            syncFieldData();
+            syncUsers();
+        }
+
+        function syncFieldData() {
+            db.collection("field_data").orderBy("timestamp", "desc").onSnapshot(snap => {
+                document.getElementById('stat-suppliers').innerText = snap.size;
+                const feed = document.getElementById('live-feed');
+                feed.innerHTML = "";
+                
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+
+                    if (data.location && data.location.coords) {
+                        const coords = data.location.coords.split(',');
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+
+                        // Material Badges
+                        let matHtml = data.materials?.map(m => 
+                            `<span class="mat-tag">${m.brand || 'Local'}</span>`
+                        ).join('') || "None";
+
+                        // ImgBB Photo Logic
+                        let photoHtml = data.photos?.map(url => 
+                            `<img src="${url}" class="popup-img" onclick="window.open('${url}')" onerror="this.src='https://placehold.co/300x200?text=No+Photo'">`
+                        ).join('') || "";
+
+                        const popupHtml = `
+                            <div style="min-width:200px">
+                                <b class="text-orange-500 uppercase text-xs">${data.firmName || 'Firm'}</b><br>
+                                <span class="text-[9px] text-gray-400 font-bold">Ref: ${data.trackingId}</span>
+                                <div class="mt-2 border-t pt-2">${matHtml}</div>
+                                <div class="mt-2 max-h-[220px] overflow-y-auto">${photoHtml}</div>
+                                <p class="text-[10px] text-gray-500 mt-2 italic">${data.location.address || ''}</p>
+                            </div>
+                        `;
+
+                        if (!markers[id]) {
+                            markers[id] = L.marker([lat, lng]).addTo(map).bindPopup(popupHtml);
+                        } else {
+                            markers[id].setPopupContent(popupHtml);
+                        }
+
+                        feed.innerHTML += `
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer hover:bg-white" onclick="map.setView([${lat}, ${lng}], 16); markers['${id}'].openPopup();">
+                                <p class="text-[11px] font-bold text-slate-800">${data.firmName || 'Entry'}</p>
+                                <p class="text-[9px] text-gray-400 uppercase font-black">ID: ${data.trackingId}</p>
+                            </div>`;
+                    }
+                });
+            });
+        }
+
+        function syncUsers() {
+            db.collection("users").onSnapshot(snap => {
+                const tbody = document.getElementById('user-list-body');
+                tbody.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    const statusColor = u.status === 'active' ? 'text-emerald-500' : 'text-rose-500';
+                    tbody.innerHTML += `
+                        <tr class="border-b">
+                            <td class="p-6 font-bold text-slate-700 text-sm">${u.email}</td>
+                            <td class="p-6 text-[10px] font-black uppercase ${statusColor}">${u.status || 'pending'}</td>
+                            <td class="p-6"><span class="bg-slate-100 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">${u.role}</span></td>
+                            <td class="p-6 text-right">
+                                <button onclick="updateUser('${doc.id}', 'active', 'admin')" class="text-[9px] font-black text-orange-500 border border-orange-100 px-3 py-1 rounded-lg">Make Admin</button>
+                                <button onclick="updateUser('${doc.id}', 'active', 'field_staff')" class="text-[9px] font-black text-slate-400 border border-slate-100 px-3 py-1 rounded-lg">Make Staff</button>
+                            </td>
+                        </tr>`;
+                });
+            });
+        }
+
+        async function updateUser(uid, status, role) {
+            await db.collection("users").doc(uid).set({ status, role }, { merge: true });
+            alert("Updated!");
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('main section > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-title').innerText = event.currentTarget.innerText;
+        }
+
+        function logout() { auth.signOut().then(() => window.location.href = "index.html"); }
+    </script>
+</body>
+</html>

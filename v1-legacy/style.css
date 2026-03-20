@@ -1,0 +1,106 @@
+:root {
+    --primary: #111827; /* Dark Navy */
+    --accent: #10b981;  /* Logistics Green */
+    --bg: #f3f4f6;
+    --card: #ffffff;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    font-family: -apple-system, system-ui, sans-serif;
+    color: var(--primary);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.card {
+    background: var(--card);
+    margin: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #f59e0b;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px; /* Prevents iOS zoom */
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    z-index: 100; /* Ensures it is on top */
+    pointer-events: auto !important;
+}
+
+.btn-main {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-sync { background: var(--accent); }
+
+/* Materials Hierarchy Styles */
+.mat-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.mat-header {
+    padding: 15px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.variety-box {
+    display: none;
+    padding: 10px;
+    background: #f9fafb;
+    border-top: 1px solid #eee;
+}
+.brand-box {
+    display: none;
+    padding: 10px;
+    margin-left: 20px;
+    border-left: 2px solid var(--accent);
+}
+
+/* Fleet Steppers */
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.step-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    border: none;
+    font-size: 20px;
+}
