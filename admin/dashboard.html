@@ -11,22 +11,28 @@
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow: hidden; }
-        .sidebar { width: 280px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; }
+        .sidebar { width: 280px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; z-index: 50; }
         .main-content { margin-left: 280px; height: 100vh; overflow-y: auto; padding: 40px; }
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left;}
         .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
-        #adminMap { height: 400px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        input, select { background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; width: 100%; }
+        #adminMap { height: 400px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
+        
+        /* Custom Table Styles for RBAC */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { text-align: left; padding: 12px; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 16px; background: rgba(30, 41, 59, 0.4); }
+        tr td:first-child { border-radius: 12px 0 0 12px; }
+        tr td:last-child { border-radius: 0 12px 12px 0; }
     </style>
 </head>
 <body class="flex">
 
 <nav class="sidebar p-6 flex flex-col">
     <div class="mb-10 px-2">
-        <h1 class="text-2xl font-black tracking-tighter">INFRA<span class="text-orange-500">V2</span></h1>
+        <h1 class="text-2xl font-black tracking-tighter text-white">INFRA<span class="text-orange-500">V2</span></h1>
         <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[3px]">Admin Command</p>
     </div>
 
@@ -34,49 +40,63 @@
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Material Registry</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> User Access (RBAC)</button>
     </div>
 
-    <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto"><span>🔒</span> Logout</button>
+    <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto font-bold uppercase text-[10px]">🔒 Logout</button>
 </nav>
 
 <main class="main-content w-full">
     
     <section id="tab-dash" class="tab-panel active">
-        <h2 class="text-3xl font-extrabold mb-8">Intelligence Overview</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <h2 class="text-3xl font-extrabold mb-8 text-white">Intelligence Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass-card p-6 border-l-4 border-orange-500">
                 <p class="text-[10px] font-bold text-slate-400 uppercase">Total Field Surveys</p>
-                <h3 id="stat-surveys" class="text-4xl font-black mt-2">0</h3>
+                <h3 id="stat-surveys" class="text-4xl font-black mt-2 text-white">0</h3>
             </div>
             <div class="glass-card p-6 border-l-4 border-blue-500">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Fleet Strength</p>
-                <h3 id="stat-fleet" class="text-4xl font-black mt-2">0</h3>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Registered Users</p>
+                <h3 id="stat-users" class="text-4xl font-black mt-2 text-white">0</h3>
             </div>
             <div class="glass-card p-6 border-l-4 border-emerald-500">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Active Agents</p>
-                <h3 id="stat-agents" class="text-4xl font-black mt-2">0</h3>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Material Varieties</p>
+                <h3 id="stat-varieties" class="text-4xl font-black mt-2 text-white">0</h3>
             </div>
         </div>
     </section>
 
     <section id="tab-map" class="tab-panel">
-        <h2 class="text-2xl font-bold mb-4">Geospatial Distribution</h2>
-        <div class="glass-card p-2">
-            <div id="adminMap"></div>
-        </div>
+        <h2 class="text-3xl font-extrabold mb-8 text-white">Geospatial Distribution</h2>
+        <div class="glass-card p-2"><div id="adminMap"></div></div>
     </section>
 
     <section id="tab-intel" class="tab-panel">
-        <div class="flex justify-between items-end mb-6">
+        <div class="flex justify-between items-center mb-8">
             <div>
-                <h2 class="text-2xl font-bold">Material Intelligence</h2>
-                <p class="text-slate-400 text-sm">Add a Category, then define its Varieties and Brands.</p>
+                <h2 class="text-3xl font-extrabold text-white">Material Intelligence</h2>
+                <p class="text-slate-400 text-sm">Max 10 Varieties/Category | Max 10 Brands/Variety</p>
             </div>
-            <button onclick="materialWizard()" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg font-bold text-sm transition">START WIZARD</button>
+            <button onclick="startMaterialWizard()" class="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-xl font-bold text-xs text-white uppercase tracking-widest transition">Start Wizard</button>
         </div>
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
 
-        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section id="tab-rbac" class="tab-panel">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-extrabold text-white">User Access & Control</h2>
+                <p class="text-slate-400 text-sm">Manage roles and permissions for agents and admins.</p>
             </div>
+        </div>
+        <div class="glass-card p-6 overflow-x-auto">
+            <table>
+                <thead>
+                    <tr><th>User Name</th><th>Email</th><th>Role</th><th>Action</th></tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
     </section>
 
 </main>
@@ -101,12 +121,97 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
+    // 1. Tab Navigation
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'map') setTimeout(initMap, 300);
+        if(id === 'map') setTimeout(initMap, 400);
+    }
+
+    // 2. Material Wizard (Fixed 3-Step Process)
+    async function startMaterialWizard() {
+        const cat = prompt("STEP 1: Enter Category (e.g., Cement, Steel)");
+        if (!cat) return;
+
+        const variety = prompt(`STEP 2: Enter Variety for ${cat} (e.g., OPC 53, TMT 500D)`);
+        if (!variety) return;
+
+        const brandsRaw = prompt("STEP 3: Enter Brands (Max 10, separate with commas)");
+        if (!brandsRaw) return;
+
+        const brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "").slice(0, 10);
+
+        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands })
+            .then(() => alert("Registry Updated!"))
+            .catch(e => alert("Error: " + e.message));
+    }
+
+    // 3. Sync Data
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            rtdb.ref('users/' + user.uid).once('value').then(snap => {
+                if (snap.val()?.role !== 'admin') window.location.href = "../index.html";
+                else startSync();
+            });
+        } else {
+            window.location.href = "../index.html";
+        }
+    });
+
+    function startSync() {
+        // Stats
+        rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
+        rtdb.ref('users').on('value', s => {
+            document.getElementById('stat-users').innerText = s.numChildren() || 0;
+            renderUsers(s);
+        });
+
+        // Registry Cards
+        rtdb.ref('registry/materials').on('value', snap => {
+            const list = document.getElementById('registryList');
+            list.innerHTML = "";
+            let varCount = 0;
+            snap.forEach(cat => {
+                cat.forEach(varNode => {
+                    varCount++;
+                    const data = varNode.val();
+                    list.innerHTML += `
+                        <div class="glass-card p-5 border-t-2 border-orange-500">
+                            <p class="text-orange-500 font-bold text-[9px] uppercase tracking-widest">${cat.key}</p>
+                            <h4 class="text-xl font-bold mt-1 text-white">${varNode.key}</h4>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                ${(data.brands || []).map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
+                            </div>
+                        </div>`;
+                });
+            });
+            document.getElementById('stat-varieties').innerText = varCount;
+        });
+    }
+
+    // 4. RBAC User Management
+    function renderUsers(snapshot) {
+        const body = document.getElementById('userTableBody');
+        body.innerHTML = "";
+        snapshot.forEach(userSnap => {
+            const user = userSnap.val();
+            body.innerHTML += `
+                <tr>
+                    <td class="font-bold text-white">${user.name || 'Unknown'}</td>
+                    <td class="text-slate-400 text-xs">${user.email}</td>
+                    <td><span class="bg-orange-500/10 text-orange-500 text-[10px] px-2 py-1 rounded font-bold uppercase">${user.role}</span></td>
+                    <td><button onclick="changeRole('${userSnap.key}', '${user.role}')" class="text-[10px] font-bold text-blue-400 hover:underline">Change Role</button></td>
+                </tr>`;
+        });
+    }
+
+    function changeRole(uid, currentRole) {
+        const newRole = currentRole === 'admin' ? 'agent' : 'admin';
+        if(confirm(`Change user to ${newRole}?`)) {
+            rtdb.ref(`users/${uid}/role`).set(newRole);
+        }
     }
 
     let map;
@@ -115,73 +220,6 @@
             map = L.map('adminMap').setView([20.5937, 78.9629], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         }
-    }
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            startRealtimeSync();
-        } else {
-            window.location.href = "../index.html";
-        }
-    });
-
-    function startRealtimeSync() {
-        // Stats
-        rtdb.ref('surveys').on('value', snap => document.getElementById('stat-surveys').innerText = snap.numChildren() || 0);
-        rtdb.ref('users').orderByChild('role').equalTo('agent').on('value', snap => document.getElementById('stat-agents').innerText = snap.numChildren() || 0);
-
-        // Registry Display
-        rtdb.ref('registry/materials').on('value', snap => {
-            const list = document.getElementById('registryList');
-            list.innerHTML = "";
-            
-            snap.forEach(catSnap => {
-                catSnap.forEach(varSnap => {
-                    const data = varSnap.val();
-                    const brands = data.brands || [];
-                    
-                    list.innerHTML += `
-                        <div class="glass-card p-5 border-t-2 border-orange-500">
-                            <p class="text-orange-500 font-bold text-[10px] uppercase tracking-widest">${catSnap.key}</p>
-                            <h4 class="text-xl font-bold mt-1 text-white">${varSnap.key}</h4>
-                            <div class="mt-3 flex flex-wrap gap-2">
-                                ${brands.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        });
-    }
-
-    // NEW STEP-BY-STEP WIZARD
-    async function materialWizard() {
-        // Step 1: Material Category
-        const cat = prompt("STEP 1: Enter Material Category\n(e.g., Cement, Steel, Sand)");
-        if (!cat) return;
-
-        // Step 2: Variety
-        const varSnapshot = await rtdb.ref(`registry/materials/${cat}`).once('value');
-        if (varSnapshot.numChildren() >= 10) {
-            alert(`Limit reached for ${cat}. (Max 10)`);
-            return;
-        }
-
-        const variety = prompt(`STEP 2: Enter Variety for ${cat}\n(e.g., OPC 53, TMT 500D)`);
-        if (!variety) return;
-
-        // Step 3: Brands
-        const brandsRaw = prompt(`STEP 3: Enter Brands for ${variety}\n(Max 10, separate with commas: Brand A, Brand B)`);
-        if (!brandsRaw) return;
-
-        let brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "").slice(0, 10);
-
-        // Final Save
-        rtdb.ref(`registry/materials/${cat}/${variety}`).set({
-            brands: brands
-        }).then(() => {
-            alert("SUCCESS: Material Registry Updated!");
-        }).catch(e => alert("Error: " + e.message));
     }
 
     function logout() { auth.signOut().then(() => window.location.href = "../index.html"); }
