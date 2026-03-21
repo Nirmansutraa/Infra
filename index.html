@@ -2,32 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Field Intel Gateway</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infra V2 | Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #f8fafc; }
-        .login-card { background: #1e293b; padding: 40px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); width: 100%; max-width: 400px; border: 1px solid #334155; text-align: center; }
-        .btn-google { background: white; color: #1e293b; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 12px; font-weight: 700; width: 100%; padding: 16px; font-size: 14px; text-transform: uppercase; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow: hidden; }
+        .sidebar { width: 260px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; z-index: 50; }
+        .main-content { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 40px; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left;}
+        .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; z-index: 10; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        td { padding: 16px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; }
     </style>
 </head>
-<body>
-<div class="login-card mx-4">
-    <div class="mb-10">
-        <h1 class="text-3xl font-black tracking-tighter uppercase text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold tracking-[3px] uppercase mt-1">Field Intel Gateway</p>
+<body class="flex">
+<nav class="sidebar p-6 flex flex-col">
+    <div class="mb-10 px-2">
+        <h1 class="text-2xl font-black text-white uppercase">INFRA<span class="text-orange-500">V2</span></h1>
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center">Command Center</p>
     </div>
-    <button onclick="loginWithGoogle()" id="loginBtn" class="btn-google">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-        Sign In with Google
-    </button>
-    <p id="statusMsg" class="text-orange-500 text-[10px] font-bold uppercase mt-6 hidden animate-pulse">Verifying Identity...</p>
-</div>
+    <div class="space-y-2 flex-1">
+        <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
+        <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
+        <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Registry</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> RBAC Control</button>
+    </div>
+    <button onclick="logout()" class="nav-link text-red-400 mt-auto font-bold text-[10px] uppercase">🔒 Logout</button>
+</nav>
+
+<main class="main-content w-full">
+    <section id="tab-dash" class="tab-panel active">
+        <h2 class="text-3xl font-extrabold mb-8">Intelligence Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-card p-6 border-l-4 border-orange-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Surveys</p><h3 id="stat-surveys" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-blue-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Users</p><h3 id="stat-users" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Materials</p><h3 id="stat-varieties" class="text-4xl font-black mt-2">0</h3></div>
+        </div>
+    </section>
+
+    <section id="tab-map" class="tab-panel">
+        <h2 class="text-3xl font-extrabold mb-8">Live Field Feed</h2>
+        <div class="glass-card p-2"><div id="adminMap"></div></div>
+    </section>
+
+    <section id="tab-intel" class="tab-panel">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-extrabold">Material Registry</h2>
+            <button onclick="startWizard()" class="bg-orange-500 px-6 py-2 rounded-xl font-bold text-sm text-white">Add Material</button>
+        </div>
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section id="tab-rbac" class="tab-panel">
+        <h2 class="text-3xl font-extrabold mb-8 text-white">User Access (RBAC)</h2>
+        <div class="glass-card p-6 overflow-x-auto">
+            <table><tbody id="userTableBody"></tbody></table>
+        </div>
+    </section>
+</main>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -37,45 +80,83 @@
         storageBucket: "infradepo.firebasestorage.app",
         messagingSenderId: "733942710671",
         appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
-        databaseURL: "https://infradepo-default-rtdb.firebaseio.com"
+        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const rtdb = firebase.database();
+    const auth = firebase.auth();
+    let adminMap, markersLayer;
 
-    async function loginWithGoogle() {
-        const btn = document.getElementById('loginBtn');
-        const status = document.getElementById('statusMsg');
-        btn.classList.add('hidden');
-        status.classList.remove('hidden');
-        const provider = new firebase.auth.GoogleAuthProvider();
-
-        try {
-            const result = await auth.signInWithPopup(provider);
-            const user = result.user;
-            const snapshot = await rtdb.ref('users/' + user.uid).once('value');
-            const userData = snapshot.val();
-
-            if (userData) {
-                if (userData.role === 'admin') window.location.href = 'admin/dashboard.html';
-                else if (userData.role === 'agent') window.location.href = 'field/survey.html';
-                else {
-                    alert("Account Found: Role is '" + userData.role + "'. Ask Vijay for Admin/Agent status.");
-                    await auth.signOut();
-                    location.reload();
-                }
-            } else {
-                await rtdb.ref('users/' + user.uid).set({ name: user.displayName, email: user.email, role: 'pending' });
-                alert("New Account Registered! Ask Vijay to approve your access.");
-                await auth.signOut();
-                location.reload();
-            }
-        } catch (error) {
-            alert("Connection Error: " + error.message);
-            btn.classList.remove('hidden');
-            status.classList.add('hidden');
-        }
+    function switchTab(id) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+        if(id === 'map') setTimeout(initMap, 400);
     }
+
+    function initMap() {
+        if (!adminMap) {
+            adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
+            markersLayer = L.layerGroup().addTo(adminMap);
+        }
+        syncMarkers();
+    }
+
+    function syncMarkers() {
+        rtdb.ref('surveys').on('value', snap => {
+            markersLayer.clearLayers();
+            snap.forEach(child => {
+                const d = child.val();
+                if (d.location) {
+                    L.marker([d.location.lat, d.location.lng]).addTo(markersLayer)
+                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat}: ${d.var}</small>`);
+                }
+            });
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            rtdb.ref('users/' + user.uid).once('value', snap => {
+                if (snap.val()?.role !== 'admin') window.location.href = "../index.html";
+                else startSync();
+            });
+        } else window.location.href = "../index.html";
+    });
+
+    function startSync() {
+        rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
+        rtdb.ref('users').on('value', s => {
+            document.getElementById('stat-users').innerText = s.numChildren() || 0;
+            const body = document.getElementById('userTableBody'); body.innerHTML = "";
+            s.forEach(u => {
+                const data = u.val();
+                body.innerHTML += `<tr><td class="text-white font-bold">${data.name}</td><td>${data.role}</td><td><button onclick="rtdb.ref('users/${u.key}/role').set('admin')" class="text-orange-500 font-bold text-xs uppercase">Approve</button></td></tr>`;
+            });
+        });
+        rtdb.ref('registry/materials').on('value', snap => {
+            const list = document.getElementById('registryList'); list.innerHTML = "";
+            let count = 0;
+            snap.forEach(cat => {
+                cat.forEach(vn => {
+                    count++; const d = vn.val();
+                    list.innerHTML += `<div class="glass-card p-5 border-t-2 border-orange-500"><p class="text-orange-500 font-bold text-[9px] uppercase">${cat.key}</p><h4 class="text-xl font-bold">${vn.key}</h4><div class="mt-2 flex flex-wrap gap-2">${(d.brands || []).map(b => `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded">${b}</span>`).join('')}</div></div>`;
+                });
+            });
+            document.getElementById('stat-varieties').innerText = count;
+        });
+    }
+
+    function startWizard() {
+        const cat = prompt("Material Category (e.g. Cement)"); if(!cat) return;
+        const variety = prompt("Variety (e.g. OPC 53)"); if(!variety) return;
+        const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
+        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands });
+    }
+
+    function logout() { auth.signOut(); }
 </script>
 </body>
 </html>
