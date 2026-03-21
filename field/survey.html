@@ -7,63 +7,274 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --bg: #f2f4f7; --card: #ffffff; --accent: #ff7a00; --primary: #0f1b2d; --text-dim: #64748b; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 160px; -webkit-font-smoothing: antialiased; }
+        :root { 
+            --bg: #f2f4f7; 
+            --card: #ffffff; 
+            --accent: #ff7a00; 
+            --primary: #0f1b2d; 
+            --text-dim: #64748b; 
+        }
         
-        /* Premium Card System */
-        .card { background: var(--card); border-radius: 24px; padding: 26px; margin-bottom: 20px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: 0.3s ease; }
-        .card:focus-within { border-color: var(--accent); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        body { 
+            background: var(--bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--primary); 
+            padding-bottom: 180px; 
+            -webkit-font-smoothing: antialiased; 
+        }
+        
+        /* High-End Card Architecture */
+        .card { 
+            background: var(--card); 
+            border-radius: 28px; 
+            padding: 30px; 
+            margin-bottom: 24px; 
+            border: 1px solid #e5e7eb; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        .card:focus-within { 
+            border-color: var(--accent); 
+            box-shadow: 0 15px 30px -10px rgba(255, 122, 0, 0.1); 
+        }
 
-        .section-label { font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; display: block; }
-        
+        .section-label { 
+            font-size: 10px; 
+            font-weight: 900; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 16px; 
+            display: block; 
+        }
+
         /* Digital Tracking Box */
-        .id-box { background: var(--primary); color: #10b981; text-align: center; padding: 30px; border-radius: 18px; font-size: 26px; font-weight: 900; font-family: monospace; letter-spacing: 2px; border: 2px solid #1e293b; }
+        .id-box { 
+            background: var(--primary); 
+            color: #10b981; 
+            text-align: center; 
+            padding: 35px; 
+            border-radius: 20px; 
+            font-size: 28px; 
+            font-weight: 900; 
+            font-family: monospace; 
+            letter-spacing: 3px; 
+            border: 2px solid #1e293b; 
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        }
 
-        /* Apple Style Inputs */
-        input, select, textarea { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 14px; font-size: 14px; margin-top: 8px; outline: none; transition: 0.2s; -webkit-appearance: none; }
-        input:focus, select:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1); }
-        label { font-size: 9px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-top: 14px; display: block; padding-left: 4px; }
+        /* Apple-Style Input Field Logic */
+        input, select, textarea { 
+            width: 100%; 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            padding: 18px; 
+            border-radius: 16px; 
+            font-size: 15px; 
+            font-weight: 600;
+            margin-top: 8px; 
+            outline: none; 
+            transition: 0.2s ease; 
+            -webkit-appearance: none; 
+        }
+        
+        input:focus, select:focus { 
+            border-color: var(--accent); 
+            background: #fff; 
+            box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.05);
+        }
+        
+        label { 
+            font-size: 9px; 
+            font-weight: 800; 
+            color: var(--text-dim); 
+            text-transform: uppercase; 
+            margin-top: 16px; 
+            display: block; 
+            padding-left: 6px; 
+        }
 
-        /* Material UI */
-        .mat-item { background: var(--primary); color: white; padding: 20px 24px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .mat-item.active { border-color: var(--accent); transform: scale(1.02); }
-        .glow-dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; transition: 0.3s; }
-        .mat-item.active .glow-dot { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        /* Interactive Selection UI */
+        .mat-item { 
+            background: var(--primary); 
+            color: white; 
+            padding: 22px 26px; 
+            border-radius: 20px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            transition: 0.3s ease; 
+        }
+        
+        .mat-item.active { 
+            border-color: var(--accent); 
+            transform: scale(1.02); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .glow-dot { 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            background: #334155; 
+            transition: 0.3s; 
+        }
+        
+        .mat-item.active .glow-dot { 
+            background: var(--accent); 
+            box-shadow: 0 0 15px var(--accent); 
+        }
 
-        /* Brand Grid */
-        .brand-chip { background: white; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 14px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; transition: 0.2s; }
-        .brand-chip.active { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(255,122,0,0.2); }
+        /* Dual-Tab UI Grid */
+        .tab-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px; 
+            margin-top: 15px; 
+        }
+        
+        .chip { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            padding: 14px 10px; 
+            border-radius: 16px; 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #475569; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            text-align: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        .chip.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent); 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 15px rgba(255,122,0,0.2); 
+        }
 
-        /* Fleet Logistics Grid */
-        .fleet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .fleet-unit { background: #f8fafc; padding: 18px; border-radius: 18px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .circle-btn { width: 34px; height: 34px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        /* Fleet Control System */
+        .fleet-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 18px; 
+        }
+        
+        .fleet-unit { 
+            background: #f8fafc; 
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .circle-btn { 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 14px; 
+            background: var(--primary); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        
+        .circle-btn:active { transform: scale(0.9); }
 
-        /* Photo Evidence System */
-        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 16px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .photo-img { width: 100%; height: 100%; object-fit: cover; }
-        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.75); color: white; font-size: 7px; padding: 6px; font-weight: bold; line-height: 1.4; border-top: 1px solid rgba(255,255,255,0.1); }
+        /* Photo Evidence Metadata Architecture */
+        .photo-slot { 
+            aspect-ratio: 1; 
+            background: #f1f5f9; 
+            border-radius: 18px; 
+            border: 2px dashed #cbd5e1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .photo-img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        .stamp-overlay { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.75); 
+            color: white; 
+            font-size: 7px; 
+            padding: 8px; 
+            font-weight: 800; 
+            line-height: 1.5; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+        }
 
-        /* Action Buttons */
-        .action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(25px); padding: 24px; display: flex; gap: 16px; border-top: 1px solid #e2e8f0; z-index: 1000; }
-        .btn { flex: 1; padding: 20px; border-radius: 18px; font-weight: 800; font-size: 13px; text-transform: uppercase; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Sticky Executive Action Bar */
+        .action-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(30px); 
+            padding: 26px; 
+            display: flex; 
+            gap: 18px; 
+            border-top: 1px solid #e2e8f0; 
+            z-index: 1000; 
+        }
+        
+        .btn { 
+            flex: 1; 
+            padding: 22px; 
+            border-radius: 20px; 
+            font-weight: 900; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: 0.3s; 
+        }
+        
         .btn-slate { background: #64748b; color: white; }
-        .btn-green { background: #10b981; color: white; box-shadow: 0 10px 25px rgba(16,185,129,0.25); }
+        .btn-green { 
+            background: #10b981; 
+            color: white; 
+            box-shadow: 0 10px 25px rgba(16,185,129,0.25); 
+        }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-6 flex justify-between items-center rounded-b-[40px] border-b mb-10 shadow-sm">
-    <div class="text-[11px] font-black text-slate-400 uppercase tracking-tighter">Terminal Instance: <span class="text-orange-500" id="staffTag">FS-LOGGING...</span></div>
-    <button onclick="auth.signOut()" class="text-red-500 text-[10px] font-black uppercase tracking-widest bg-red-50 px-4 py-2 rounded-full">Logout</button>
+<nav class="bg-white p-7 flex justify-between items-center rounded-b-[45px] border-b mb-12 shadow-sm">
+    <div>
+        <h1 class="text-xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Field Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
+    </div>
+    <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-5 py-2.5 rounded-full">Logout</button>
 </nav>
 
-<div class="max-w-md mx-auto px-6">
+<div class="max-w-md mx-auto px-7">
     <div class="card">
-        <span class="section-label">01. Session Intelligence ID</span>
+        <span class="section-label">01. Session Tracking ID</span>
         <div id="trackId" class="id-box">RJ-UDR-ID---</div>
     </div>
 
@@ -76,36 +287,36 @@
             <option value="Wholesaler">Wholesaler (W)</option>
         </select>
 
-        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-6">
+        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-8">
         
-        <div class="mt-10 pt-6 border-t border-slate-100">
-            <p class="text-[11px] font-black text-orange-500 uppercase mb-4">Primary Owner Details</p>
+        <div class="mt-12 pt-8 border-t border-slate-100">
+            <p class="text-[11px] font-black text-orange-500 uppercase mb-5">Primary Owner Hub</p>
             <input id="ownerName" placeholder="Owner Legal Name">
-            <div class="grid grid-cols-2 gap-4 mt-2">
-                <div><label>Phone (+91)</label><input id="ownerPhone" type="tel" placeholder="Mobile" oninput="Validation.phone(this, 'ownerWa')"></div>
-                <div><div class="flex items-center gap-2"><label>Auto-Sync WA</label><input type="checkbox" id="syncOwner" class="w-3 h-3 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div><input id="ownerWa" type="tel" placeholder="WhatsApp"></div>
+            <div class="grid grid-cols-2 gap-5 mt-2">
+                <div><label>Phone</label><input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')"></div>
+                <div><div class="flex items-center gap-2"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-3.5 h-3.5 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div><input id="ownerWa" type="tel" placeholder="+91"></div>
             </div>
         </div>
 
-        <div class="mt-10 pt-6 border-t border-slate-100">
-            <p class="text-[11px] font-black text-blue-500 uppercase mb-4">Operational Manager</p>
+        <div class="mt-12 pt-8 border-t border-slate-100">
+            <p class="text-[11px] font-black text-blue-500 uppercase mb-5">Operational Site Manager</p>
             <input id="mgrName" placeholder="Manager Name">
-            <div class="grid grid-cols-2 gap-4 mt-2">
-                <div><label>Phone (+91)</label><input id="mgrPhone" type="tel" placeholder="Mobile" oninput="Validation.phone(this, 'mgrWa')"></div>
-                <div><div class="flex items-center gap-2"><label>Auto-Sync WA</label><input type="checkbox" id="syncMgr" class="w-3 h-3 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div><input id="mgrWa" type="tel" placeholder="WhatsApp"></div>
+            <div class="grid grid-cols-2 gap-5 mt-2">
+                <div><label>Phone</label><input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')"></div>
+                <div><div class="flex items-center gap-2"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-3.5 h-3.5 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div><input id="mgrWa" type="tel" placeholder="+91"></div>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <span class="section-label">03. GPS & Spatial Evidence</span>
-        <div id="map" class="h-56 rounded-[32px] mb-6 border border-slate-200 shadow-inner"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-5 rounded-2xl font-black text-[12px] uppercase tracking-widest mb-6">📍 Capture Verified Location</button>
-        <textarea id="address" class="h-24 text-[11px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS capture..." readonly></textarea>
+        <span class="section-label">03. GPS & Spatial Proofs</span>
+        <div id="map" class="h-60 rounded-[35px] mb-8 border border-slate-200"></div>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-6 rounded-2xl font-black text-[13px] uppercase tracking-widest mb-6">桃 Capture Geotagged Location</button>
+        <textarea id="address" class="h-28 text-[12px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
         
-        <div class="mt-8">
-            <label>Field Proofs (Max 10 with Metadata Stamps)</label>
-            <div class="grid grid-cols-4 gap-4 mt-4" id="photoGrid">
+        <div class="mt-10">
+            <label>Field Evidence (Max 10 with Meta-Stamps)</label>
+            <div class="grid grid-cols-4 gap-4 mt-5" id="photoGrid">
                 <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-4xl">+</button>
             </div>
             <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
@@ -114,34 +325,32 @@
 
     <div class="card">
         <span class="section-label">04. Material Intelligence (Admin Synced)</span>
-        <div id="matSelector" class="space-y-3">
-            <p class="text-xs text-slate-400 animate-pulse">Syncing with Registry...</p>
-        </div>
-        
-        <div id="varietyPanel" class="mt-10 hidden bg-slate-50 p-8 rounded-[30px] border border-slate-200">
-            <label class="section-label" style="color:#64748b">Step 2: Define Variety</label>
-            <select id="varSelect" onchange="Survey.updateState('variety', this.value)">
-                <option value="">Choose Variety...</option>
-            </select>
-            
-            <label class="section-label mt-10" style="color:#64748b">Step 3: Confirm Brand Availability</label>
-            <div id="brandGrid" class="flex flex-wrap gap-3 mt-3"></div>
+        <div id="matSelector" class="space-y-4">
+            </div>
+
+        <div id="varietyPanel" class="mt-12 hidden bg-slate-50 p-10 rounded-[35px] border border-slate-200">
+            <label class="section-label" style="color:#64748b">Step 2: Select Variety Tabs</label>
+            <div id="varietyGrid" class="tab-grid"></div>
+
+            <div id="brandSection" class="hidden mt-12">
+                <label class="section-label" style="color:#64748b">Step 3: Select Brand Tabs</label>
+                <div id="brandGrid" class="tab-grid"></div>
+            </div>
         </div>
 
-        <label class="section-label mt-10" style="color:#64748b">Step 4: Live Market Quote (₹)</label>
-        <input type="number" id="price" placeholder="Enter rate per standard unit" oninput="Survey.updateState('price', this.value)">
+        <label class="section-label mt-12" style="color:#64748b">Step 4: Market Price Quote (竄ｹ)</label>
+        <input type="number" id="price" placeholder="Rate per unit" oninput="Survey.updateState('price', this.value)">
     </div>
 
     <div class="card">
         <span class="section-label">05. Transportation Fleet Capacity</span>
-        <div id="fleetGrid" class="grid grid-cols-2 gap-5">
-            </div>
+        <div id="fleetGrid" class="grid grid-cols-2 gap-6"></div>
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="Draft.save()" class="btn btn-slate">💾 Local Save</button>
-    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Cloud Submit</button>
+    <button onclick="Draft.save()" class="btn btn-slate">沈 Save Local</button>
+    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">噫 Submit Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -150,7 +359,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // --- INTEGRATED SMART ID LOGIC ---
+    /**
+     * REGIONAL SMART ID ENGINE
+     * Implements RJ-UDR Logic based on supplier and material
+     */
     function generateSmartID(supplierType, activeMaterial, currentCount) {
         const state = "RJ", dist = "UDR";
         const typeCode = supplierType === "Wholesaler" ? "W" : "R";
@@ -163,8 +375,7 @@
         else if (matSearch.includes("stone")) matCode = "O";
         else if (matSearch.includes("brick")) matCode = "B";
 
-        const serial = String(currentCount + 1).padStart(3, '0');
-        return `${state}-${dist}-${typeCode}${matCode}-${serial}`;
+        return `${state}-${dist}-${typeCode}${matCode}-${String(currentCount + 1).padStart(3, '0')}`;
     }
 
     const firebaseConfig = {
@@ -182,7 +393,12 @@
 
     window.Survey = {
         state: { location: null, mat: null, variety: null, brands: [], fleet: {}, photos: [], price: null, trackingId: "" },
-        updateState(key, val) { this.state[key] = val; this.refreshID(); },
+        
+        updateState(key, val) { 
+            this.state[key] = val; 
+            this.refreshID(); 
+        },
+
         async refreshID() {
             const sType = document.getElementById('supplierType').value;
             const snap = await rtdb.ref('surveys').once('value');
@@ -190,13 +406,24 @@
             document.getElementById('trackId').innerText = smartId;
             this.state.trackingId = smartId;
         },
+
         async sync() {
             const firm = document.getElementById('firmName').value;
-            if(!this.state.location || !firm) return alert("❌ Firm Name and GPS Geotag required.");
-            const btn = document.getElementById('sBtn'); btn.innerText = "UPLOADING...";
-            const payload = { ...this.state, firm: firm, agent: auth.currentUser.email, timestamp: Date.now() };
+            if(!this.state.location || !firm) return alert("竄渧 Site Data Error: Name and GPS required.");
+            
+            const btn = document.getElementById('sBtn');
+            btn.innerText = "UPLOADING...";
+            
+            const payload = { 
+                ...this.state, 
+                firm: firm,
+                agent: auth.currentUser.email, 
+                timestamp: Date.now() 
+            };
+
             await rtdb.ref('surveys').push(payload);
-            alert("✅ Intel Logged."); location.reload();
+            alert("竄氾 Sync Complete: Node Synchronized.");
+            location.reload();
         }
     };
 
@@ -204,14 +431,23 @@
         phone(input, waId) {
             let val = input.value.trim().replace(/\D/g, '');
             if(val.length > 10) val = val.slice(-10);
-            if(val.length === 10) input.value = "+91 " + val;
-            const syncID = input.id === 'ownerPhone' ? 'syncOwner' : 'syncMgr';
-            if(document.getElementById(syncID).checked) document.getElementById(waId).value = input.value;
+            if(val.length === 10) { 
+                input.value = "+91 " + val; 
+                const syncID = input.id === 'ownerPhone' ? 'syncOwner' : 'syncMgr';
+                if(document.getElementById(syncID).checked) {
+                    document.getElementById(waId).value = "+91 " + val;
+                }
+            }
         },
         syncWA(phoneId, waId, isChecked) {
             const phone = document.getElementById(phoneId);
             const wa = document.getElementById(waId);
-            if(isChecked) { wa.value = phone.value; wa.readOnly = true; } else { wa.readOnly = false; }
+            if(isChecked) { 
+                wa.value = phone.value; 
+                wa.readOnly = true; 
+            } else { 
+                wa.readOnly = false; 
+            }
         }
     };
 
@@ -231,73 +467,103 @@
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                 const data = await res.json();
                 document.getElementById('address').value = data.display_name;
-            }, () => alert("GPS Permission Error."), { enableHighAccuracy: true });
+            }, () => alert("GPS Permission Denied."), { enableHighAccuracy: true });
         }
     };
 
     window.Evidence = {
         handle(input) {
-            if(!Survey.state.location) return alert("📍 Capture GPS first.");
+            if(!Survey.state.location) return alert("竄渧 GPS locked required for Meta-Stamps.");
+            if(Survey.state.photos.length >= 10) return alert("Site capacity reached (10 Photos).");
+            
             const file = input.files[0];
             const reader = new FileReader();
             reader.onload = e => {
-                Survey.state.photos.push({ src: e.target.result, time: new Date().toLocaleString(), lat: Survey.state.location.lat.toFixed(5) });
+                const pObj = { 
+                    src: e.target.result, 
+                    time: new Date().toLocaleString(), 
+                    lat: Survey.state.location.lat.toFixed(5) 
+                };
+                Survey.state.photos.push(pObj);
                 this.render();
             };
             reader.readAsDataURL(file);
         },
         render() {
-            const grid = document.getElementById('photoGrid'); const b = grid.firstElementChild;
-            grid.innerHTML = ""; grid.appendChild(b);
+            const grid = document.getElementById('photoGrid');
+            const addBtn = grid.firstElementChild;
+            grid.innerHTML = ""; grid.appendChild(addBtn);
             Survey.state.photos.forEach(p => {
-                grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="photo-img"><div class="stamp-overlay">${p.time}<br>LAT: ${p.lat}</div></div>`;
+                grid.innerHTML += `
+                    <div class="photo-slot">
+                        <img src="${p.src}" class="photo-img">
+                        <div class="stamp-overlay">${p.time}<br>LAT: ${p.lat}</div>
+                    </div>`;
             });
         }
     };
+
+    /**
+     * MATERIAL DUAL-TAB SYNC ENGINE
+     * Converts nested database lists into Variety and Brand Tabs
+     */
+    function syncRegistry() {
+        rtdb.ref('registry/materials').on('value', snap => {
+            const cont = document.getElementById('matSelector');
+            cont.innerHTML = "";
+            window.registryData = snap.val() || {};
+            
+            Object.keys(window.registryData).forEach(cat => {
+                if(window.registryData[cat].status === 'archived') return;
+                cont.innerHTML += `
+                    <div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')">
+                        <span class="text-xs font-black uppercase tracking-widest">${cat}</span>
+                        <div class="glow-dot"></div>
+                    </div>`;
+            });
+            Survey.refreshID();
+        });
+    }
 
     window.selectMat = function(m) {
         document.querySelectorAll('.mat-item').forEach(r => r.classList.remove('active'));
         document.getElementById('mat-'+m).classList.add('active');
         
-        Survey.state.mat = m;
-        Survey.state.brands = [];
+        Survey.state.mat = m; 
+        Survey.state.variety = null; 
+        Survey.state.brands = []; 
         Survey.refreshID();
 
-        const panel = document.getElementById('varietyPanel');
-        panel.classList.remove('hidden');
-        
-        const vs = document.getElementById('varSelect');
-        vs.innerHTML = "<option value=''>Choose Variety...</option>";
-        
-        // FIXED: Pull varieties from specific category path
-        const catData = window.registryData[m];
-        if(catData) {
-            Object.keys(catData).forEach(varietyName => {
-                if(varietyName !== 'status') { // Skip status field
-                    vs.innerHTML += `<option value="${varietyName}">${varietyName}</option>`;
+        const vg = document.getElementById('varietyGrid'); vg.innerHTML = "";
+        document.getElementById('varietyPanel').classList.remove('hidden');
+        document.getElementById('brandSection').classList.add('hidden');
+
+        const cd = window.registryData[m];
+        if(cd) {
+            Object.keys(cd).forEach(v => {
+                if(v !== 'status') {
+                    vg.innerHTML += `<div class="chip" onclick="selectVariety('${v}', this)">${v}</div>`;
                 }
             });
         }
-
-        const bg = document.getElementById('brandGrid');
-        bg.innerHTML = "";
-        panel.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // FIXED: Brand Grid Update on Variety Change
-    document.getElementById('varSelect').addEventListener('change', function() {
-        const varietyName = this.value;
-        const matName = Survey.state.mat;
-        const bg = document.getElementById('brandGrid');
-        bg.innerHTML = "";
+    window.selectVariety = function(v, el) {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        Survey.state.variety = v;
+        Survey.state.brands = [];
         
-        if(varietyName && window.registryData[matName] && window.registryData[matName][varietyName]) {
-            const brands = window.registryData[matName][varietyName].brands || [];
-            brands.forEach(b => {
-                bg.innerHTML += `<div class="brand-chip" onclick="toggleBrand('${b}', this)">${b}</div>`;
+        const bg = document.getElementById('brandGrid'); bg.innerHTML = "";
+        document.getElementById('brandSection').classList.remove('hidden');
+
+        const mat = Survey.state.mat;
+        if(window.registryData[mat][v] && window.registryData[mat][v].brands) {
+            window.registryData[mat][v].brands.forEach(b => {
+                bg.innerHTML += `<div class="chip" onclick="toggleBrand('${b}', this)">${b}</div>`;
             });
         }
-    });
+    };
 
     window.toggleBrand = function(b, el) {
         el.classList.toggle('active');
@@ -310,21 +576,31 @@
         document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t];
     };
 
-    window.Draft = { save() { localStorage.setItem('ns_v16_draft', JSON.stringify(Survey.state)); alert("💾 Draft Saved."); } };
+    window.Draft = { 
+        save() { 
+            localStorage.setItem('ns_v21_draft', JSON.stringify(Survey.state)); 
+            alert("沈 Draft Secured Local Storage."); 
+        } 
+    };
 
     window.onload = () => {
-        Geo.init();
-        rtdb.ref('registry/materials').on('value', snap => {
-            const cont = document.getElementById('matSelector'); cont.innerHTML = "";
-            window.registryData = snap.val() || {};
-            Object.keys(window.registryData).forEach(cat => {
-                cont.innerHTML += `<div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')"><span>${cat}</span><div class="glow-dot"></div></div>`;
-            });
-            Survey.refreshID();
-        });
+        Geo.init(); syncRegistry();
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
-        document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `<div class="fleet-unit"><span>${t}</span><div class="flex items-center gap-4"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join('');
-        auth.onAuthStateChanged(u => { if(!u) location.href = "../index.html"; document.getElementById('staffTag').innerText = "FS Instance: " + u.email; });
+        const fGrid = document.getElementById('fleetGrid');
+        fGrid.innerHTML = fTypes.map(t => `
+            <div class="fleet-unit">
+                <span class="text-[9px] font-bold text-slate-500 uppercase">${t}</span>
+                <div class="flex items-center gap-4">
+                    <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
+                    <span id="fval-${t}" class="font-black text-sm">0</span>
+                    <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
+                </div>
+            </div>`).join('');
+            
+        auth.onAuthStateChanged(u => {
+            if(!u) location.href = "../index.html";
+            document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-6).toUpperCase();
+        });
     };
 </script>
 
