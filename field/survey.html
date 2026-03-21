@@ -22,16 +22,16 @@
             background: var(--bg); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: var(--primary); 
-            padding-bottom: 200px; 
+            padding-bottom: 220px; 
             -webkit-font-smoothing: antialiased; 
         }
         
-        /* High-End Card Architecture */
+        /* Executive Card Architecture */
         .card { 
             background: var(--card); 
-            border-radius: 32px; 
-            padding: 35px; 
-            margin-bottom: 28px; 
+            border-radius: 35px; 
+            padding: 40px; 
+            margin-bottom: 30px; 
             border: 1px solid #e5e7eb; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -39,7 +39,7 @@
         
         .card:focus-within { 
             border-color: var(--accent); 
-            box-shadow: 0 20px 40px -15px rgba(255, 122, 0, 0.12); 
+            box-shadow: 0 25px 50px -12px rgba(255, 122, 0, 0.15); 
         }
 
         .section-label { 
@@ -47,46 +47,46 @@
             font-weight: 900; 
             color: var(--accent); 
             text-transform: uppercase; 
-            letter-spacing: 2.5px; 
-            margin-bottom: 18px; 
+            letter-spacing: 3px; 
+            margin-bottom: 20px; 
             display: block; 
         }
 
-        /* Digital Tracking Box */
+        /* High-Contrast Tracking ID */
         .id-box { 
             background: var(--primary); 
             color: #10b981; 
             text-align: center; 
-            padding: 40px; 
-            border-radius: 24px; 
-            font-size: 32px; 
+            padding: 45px; 
+            border-radius: 28px; 
+            font-size: 34px; 
             font-weight: 900; 
             font-family: monospace; 
-            letter-spacing: 4px; 
+            letter-spacing: 5px; 
             border: 2px solid #1e293b; 
-            box-shadow: inset 0 4px 15px rgba(0,0,0,0.3);
-            text-shadow: 0 0 10px rgba(16,185,129,0.4);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.4);
+            text-shadow: 0 0 15px rgba(16,185,129,0.5);
         }
 
-        /* Apple-Style Input Field Logic */
+        /* Apple-Style Form Elements */
         input, select, textarea { 
             width: 100%; 
             background: #f8fafc; 
             border: 1px solid #e2e8f0; 
-            padding: 20px; 
-            border-radius: 18px; 
+            padding: 22px; 
+            border-radius: 20px; 
             font-size: 16px; 
             font-weight: 600;
-            margin-top: 10px; 
+            margin-top: 12px; 
             outline: none; 
-            transition: 0.25s ease; 
+            transition: 0.3s ease; 
             -webkit-appearance: none; 
         }
         
         input:focus, select:focus { 
             border-color: var(--accent); 
             background: #fff; 
-            box-shadow: 0 0 0 5px rgba(255, 122, 0, 0.08);
+            box-shadow: 0 0 0 6px rgba(255, 122, 0, 0.1);
         }
         
         label { 
@@ -94,91 +94,91 @@
             font-weight: 800; 
             color: var(--text-dim); 
             text-transform: uppercase; 
-            margin-top: 20px; 
+            margin-top: 25px; 
             display: block; 
-            padding-left: 8px; 
+            padding-left: 10px; 
         }
 
-        /* Interactive Selection UI */
+        /* Category Selection Interface */
         .mat-item { 
             background: var(--primary); 
             color: white; 
-            padding: 24px 30px; 
-            border-radius: 24px; 
-            margin-bottom: 15px; 
+            padding: 28px 35px; 
+            border-radius: 28px; 
+            margin-bottom: 18px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             cursor: pointer; 
             border: 2px solid transparent; 
-            transition: 0.3s ease; 
+            transition: 0.3s ease-in-out; 
         }
         
         .mat-item.active { 
             border-color: var(--accent); 
-            transform: scale(1.02); 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            transform: scale(1.03); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
         
         .glow-dot { 
-            width: 14px; 
-            height: 14px; 
+            width: 16px; 
+            height: 16px; 
             border-radius: 50%; 
             background: #334155; 
-            transition: 0.3s; 
+            transition: 0.4s; 
         }
         
         .mat-item.active .glow-dot { 
             background: var(--accent); 
-            box-shadow: 0 0 20px var(--accent); 
+            box-shadow: 0 0 25px var(--accent); 
         }
 
-        /* Multi-Tab Logic Grid */
+        /* True Multi-Tab Chip Grid */
         .tab-grid { 
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px; 
-            margin-top: 18px; 
+            gap: 16px; 
+            margin-top: 20px; 
         }
         
         .chip { 
             background: white; 
             border: 1px solid #e2e8f0; 
-            padding: 18px 14px; 
-            border-radius: 20px; 
+            padding: 22px 16px; 
+            border-radius: 22px; 
             font-size: 12px; 
             font-weight: 800; 
             color: #475569; 
             cursor: pointer; 
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             text-align: center; 
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 70px;
-            line-height: 1.4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            min-height: 80px;
+            line-height: 1.5;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.03);
         }
         
         .chip.active { 
             background: var(--accent); 
             color: white; 
             border-color: var(--accent); 
-            transform: translateY(-5px); 
-            box-shadow: 0 12px 20px rgba(255,122,0,0.25); 
+            transform: translateY(-6px); 
+            box-shadow: 0 15px 25px rgba(255,122,0,0.3); 
         }
 
-        /* Fleet Control System */
+        /* Logistics Dashboard UI */
         .fleet-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
+            gap: 24px; 
         }
         
         .fleet-unit { 
             background: #f8fafc; 
-            padding: 22px; 
-            border-radius: 24px; 
+            padding: 25px; 
+            border-radius: 28px; 
             border: 1px solid #e2e8f0; 
             display: flex; 
             justify-content: space-between; 
@@ -186,9 +186,9 @@
         }
         
         .circle-btn { 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 16px; 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 18px; 
             background: var(--primary); 
             color: white; 
             display: flex; 
@@ -197,16 +197,16 @@
             font-weight: bold; 
             cursor: pointer; 
             transition: 0.2s;
-            font-size: 18px;
+            font-size: 20px;
         }
         
-        .circle-btn:active { transform: scale(0.85); }
+        .circle-btn:active { transform: scale(0.8); }
 
-        /* Photo Evidence Metadata Architecture */
+        /* Evidence Capture Module */
         .photo-slot { 
             aspect-ratio: 1; 
             background: #f1f5f9; 
-            border-radius: 20px; 
+            border-radius: 22px; 
             border: 2px dashed #cbd5e1; 
             display: flex; 
             align-items: center; 
@@ -226,69 +226,69 @@
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(0,0,0,0.8); 
+            background: rgba(0,0,0,0.85); 
             color: white; 
             font-size: 8px; 
-            padding: 10px; 
+            padding: 12px; 
             font-weight: 800; 
-            line-height: 1.6; 
-            border-top: 1px solid rgba(255,255,255,0.15); 
+            line-height: 1.8; 
+            border-top: 1px solid rgba(255,255,255,0.2); 
         }
 
-        /* Sticky Executive Action Bar */
+        /* Sticky Intelligence Action Bar */
         .action-bar { 
             position: fixed; 
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(255,255,255,0.96); 
-            backdrop-filter: blur(40px); 
-            padding: 28px; 
+            background: rgba(255,255,255,0.97); 
+            backdrop-filter: blur(50px); 
+            padding: 30px; 
             display: flex; 
-            gap: 20px; 
+            gap: 24px; 
             border-top: 1px solid #e2e8f0; 
             z-index: 1000; 
         }
         
         .btn { 
             flex: 1; 
-            padding: 24px; 
-            border-radius: 22px; 
+            padding: 26px; 
+            border-radius: 24px; 
             font-weight: 900; 
-            font-size: 14px; 
+            font-size: 15px; 
             text-transform: uppercase; 
-            letter-spacing: 1.5px; 
-            transition: 0.3s ease; 
+            letter-spacing: 2px; 
+            transition: 0.4s ease; 
         }
         
         .btn-slate { 
             background: #64748b; 
             color: white; 
-            box-shadow: 0 4px 10px rgba(100,116,139,0.2);
+            box-shadow: 0 5px 15px rgba(100,116,139,0.25);
         }
         
         .btn-green { 
             background: #10b981; 
             color: white; 
-            box-shadow: 0 15px 30px rgba(16,185,129,0.3); 
+            box-shadow: 0 18px 40px rgba(16,185,129,0.35); 
         }
         
-        .btn:active { transform: scale(0.95); }
+        .btn:active { transform: scale(0.94); }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-8 flex justify-between items-center rounded-b-[50px] border-b mb-14 shadow-sm">
+<nav class="bg-white p-9 flex justify-between items-center rounded-b-[60px] border-b mb-16 shadow-sm">
     <div>
-        <h1 class="text-2xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[3px] mt-1">Field Intelligence Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
+        <h1 class="text-3xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[12px] font-bold text-slate-400 uppercase tracking-[4px] mt-1.5">Intelligence Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
     </div>
-    <button onclick="auth.signOut()" class="text-red-500 text-[12px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all">Logout</button>
+    <button onclick="auth.signOut()" class="text-red-500 text-[13px] font-black uppercase tracking-widest bg-red-50 px-8 py-4 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm">Logout</button>
 </nav>
 
-<div class="max-w-md mx-auto px-8">
+<div class="max-w-md mx-auto px-9">
     <div class="card">
-        <span class="section-label">01. Session Tracking ID</span>
+        <span class="section-label">01. Session Tracking Identity</span>
         <div id="trackId" class="id-box">RJ-UDR-ID---</div>
     </div>
 
@@ -301,38 +301,38 @@
             <option value="Wholesaler">Wholesaler (W)</option>
         </select>
 
-        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-10">
+        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-12">
         
-        <div class="mt-14 pt-10 border-t border-slate-100">
-            <p class="text-[12px] font-black text-orange-500 uppercase mb-6 tracking-wider">Primary Owner Intelligence</p>
-            <input id="ownerName" placeholder="Owner Legal Full Name">
-            <div class="grid grid-cols-2 gap-6 mt-2">
+        <div class="mt-16 pt-12 border-t border-slate-100">
+            <p class="text-[13px] font-black text-orange-500 uppercase mb-8 tracking-widest">Primary Owner Hub</p>
+            <input id="ownerName" placeholder="Owner Legal Name">
+            <div class="grid grid-cols-2 gap-8 mt-2">
                 <div>
                     <label>Direct Phone</label>
-                    <input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')">
+                    <input id="ownerPhone" type="tel" placeholder="+91 Mobile" oninput="Validation.phone(this, 'ownerWa')">
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <label>Auto WA Sync</label>
-                        <input type="checkbox" id="syncOwner" class="w-4 h-4 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
+                    <div class="flex items-center gap-3">
+                        <label>Sync WA</label>
+                        <input type="checkbox" id="syncOwner" class="w-5 h-5 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
                     </div>
                     <input id="ownerWa" type="tel" placeholder="+91 WhatsApp">
                 </div>
             </div>
         </div>
 
-        <div class="mt-14 pt-10 border-t border-slate-100">
-            <p class="text-[12px] font-black text-blue-500 uppercase mb-6 tracking-wider">Operational Site Manager</p>
-            <input id="mgrName" placeholder="Manager Full Name">
-            <div class="grid grid-cols-2 gap-6 mt-2">
+        <div class="mt-16 pt-12 border-t border-slate-100">
+            <p class="text-[13px] font-black text-blue-500 uppercase mb-8 tracking-widest">Operational Manager</p>
+            <input id="mgrName" placeholder="Manager Name">
+            <div class="grid grid-cols-2 gap-8 mt-2">
                 <div>
                     <label>Manager Phone</label>
-                    <input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')">
+                    <input id="mgrPhone" type="tel" placeholder="+91 Mobile" oninput="Validation.phone(this, 'mgrWa')">
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <label>Auto WA Sync</label>
-                        <input type="checkbox" id="syncMgr" class="w-4 h-4 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
+                    <div class="flex items-center gap-3">
+                        <label>Sync WA</label>
+                        <input type="checkbox" id="syncMgr" class="w-5 h-5 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
                     </div>
                     <input id="mgrWa" type="tel" placeholder="+91 WhatsApp">
                 </div>
@@ -342,14 +342,14 @@
 
     <div class="card">
         <span class="section-label">03. GPS & Spatial Proofs</span>
-        <div id="map" class="h-64 rounded-[40px] mb-10 border border-slate-200 shadow-inner"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-7 rounded-2xl font-black text-[14px] uppercase tracking-[2px] mb-8 active:scale-95 transition-transform">📍 Capture Geotagged Location</button>
-        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
+        <div id="map" class="h-72 rounded-[45px] mb-12 border border-slate-200 shadow-inner"></div>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[3px] mb-10 active:scale-95 transition-transform shadow-xl">📍 Capture Geotagged Location</button>
+        <textarea id="address" class="h-40 text-[14px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
         
-        <div class="mt-12">
-            <label>Field Evidence Matrix (Max 10 with Meta-Stamps)</label>
-            <div class="grid grid-cols-4 gap-5 mt-6" id="photoGrid">
-                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-200 transition-colors">+</button>
+        <div class="mt-14">
+            <label>Field Evidence Grid (Max 10 with Meta-Stamps)</label>
+            <div class="grid grid-cols-4 gap-6 mt-8" id="photoGrid">
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-200 hover:text-slate-400 transition-all">+</button>
             </div>
             <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
         </div>
@@ -357,35 +357,35 @@
 
     <div class="card">
         <span class="section-label">04. Material Intelligence (Admin Synced)</span>
-        <div id="matSelector" class="space-y-5">
+        <div id="matSelector" class="space-y-6">
             </div>
 
-        <div id="varietyPanel" class="mt-14 hidden bg-slate-50 p-12 rounded-[40px] border border-slate-200">
+        <div id="varietyPanel" class="mt-16 hidden bg-slate-50 p-14 rounded-[50px] border border-slate-200 shadow-inner">
             <label class="section-label" style="color:#64748b">Step 2: Select Variety Tabs</label>
             <div id="varietyGrid" class="tab-grid">
                 </div>
 
-            <div id="brandSection" class="hidden mt-14">
+            <div id="brandSection" class="hidden mt-16">
                 <label class="section-label" style="color:#64748b">Step 3: Select Brand Tabs</label>
                 <div id="brandGrid" class="tab-grid">
                     </div>
             </div>
         </div>
 
-        <label class="section-label mt-14" style="color:#64748b">Step 4: Market Price Quote (₹)</label>
-        <input type="number" id="price" placeholder="Enter standard rate per unit" oninput="Survey.updateState('price', this.value)">
+        <label class="section-label mt-16" style="color:#64748b">Step 4: Market Price Quote (₹)</label>
+        <input type="number" id="price" placeholder="Enter standard rate per standard unit" oninput="Survey.updateState('price', this.value)">
     </div>
 
     <div class="card">
         <span class="section-label">05. Transportation Fleet Capacity</span>
-        <div id="fleetGrid" class="grid grid-cols-2 gap-8">
+        <div id="fleetGrid" class="grid grid-cols-2 gap-10">
             </div>
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="Draft.save()" class="btn btn-slate">💾 Save Local</button>
-    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Submit Sync</button>
+    <button onclick="Draft.save()" class="btn btn-slate">💾 Save Draft</button>
+    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Cloud Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -395,8 +395,8 @@
 
 <script>
     /**
-     * REGIONAL SMART ID ENGINE
-     * Implements Rajasthan-Udaipur Logic based on supplier and material telemetry
+     * REGIONAL SMART ID GENERATOR
+     * Implements explicit Rajasthan-Udaipur Logic
      */
     function generateSmartID(supplierType, activeMaterial, currentCount) {
         const state = "RJ", dist = "UDR";
@@ -429,7 +429,7 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
-    // Global Terminal State Architecture
+    // Terminal Global State Management
     window.Survey = {
         state: { 
             location: null, 
@@ -464,11 +464,11 @@
         async sync() {
             const firm = document.getElementById('firmName').value;
             if (!this.state.location || !firm) {
-                return alert("❌ Site Protocols Incomplete: Name and GPS Geotag are mandatory.");
+                return alert("❌ Node Fault: Firm Name and GPS Geotag are mandatory for submission.");
             }
             
             const btn = document.getElementById('sBtn');
-            btn.innerText = "TRANSMITTING...";
+            btn.innerText = "UPLOADING...";
             btn.disabled = true;
 
             const payload = { 
@@ -484,8 +484,8 @@
 
             try {
                 await rtdb.ref('surveys').push(payload);
-                alert("✅ Terminal Synchronized: Intelligence Node Logged.");
-                localStorage.removeItem('ns_v23_draft');
+                alert("✅ Sync Success: Node Synchronized to Singapore Cloud.");
+                localStorage.removeItem('ns_v25_draft');
                 location.reload();
             } catch (e) {
                 alert("Transmission Fault: " + e.message);
@@ -501,10 +501,10 @@
             if (val.length > 10) val = val.slice(-10);
             if (val.length === 10) { 
                 input.value = "+91 " + val; 
-                // Auto-Sync Logic: Update WhatsApp field if toggle is active
-                const isOwner = (input.id === 'ownerPhone');
-                const syncToggle = document.getElementById(isOwner ? 'syncOwner' : 'syncMgr');
-                if (syncToggle.checked) {
+                // Auto-Sync Switch: Update WhatsApp field if toggle is checked
+                const isOwnerField = (input.id === 'ownerPhone');
+                const toggle = document.getElementById(isOwnerField ? 'syncOwner' : 'syncMgr');
+                if (toggle.checked) {
                     document.getElementById(waId).value = "+91 " + val;
                 }
             }
@@ -537,24 +537,24 @@
                 if (this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
                 
-                // Nominatim Reverse Geocoding Engine
+                // Nominatim Reverse Geocoding Module
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                     const data = await res.json();
-                    document.getElementById('address').value = data.display_name || "GPS Lock Verified";
+                    document.getElementById('address').value = data.display_name || "Spatial Lock Verified";
                 } catch (e) {
                     document.getElementById('address').value = `Verified: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
                 }
             }, (err) => {
-                alert("Spatial Error: Geolocation access denied or unavailable.");
+                alert("GPS Protocol Error: Access denied or signal unavailable.");
             }, { enableHighAccuracy: true });
         }
     };
 
     window.Evidence = {
         handle(input) {
-            if (!Survey.state.location) return alert("📍 Evidence Failure: Active GPS lock required for metadata stamping.");
-            if (Survey.state.photos.length >= 10) return alert("Buffer Exhausted: Maximum 10 photos per intelligence node.");
+            if (!Survey.state.location) return alert("📍 Evidence Fault: GPS lock mandatory for fraud protection stamps.");
+            if (Survey.state.photos.length >= 10) return alert("Storage Exhausted: Max 10 photos per node.");
             
             const file = input.files[0];
             const reader = new FileReader();
@@ -583,7 +583,7 @@
                         <img src="${p.src}" class="photo-img">
                         <div class="stamp-overlay">
                             ${p.time}<br>
-                            COORD: ${p.lat}, ${p.lng}
+                            GPS: ${p.lat}, ${p.lng}
                         </div>
                     </div>`;
             });
@@ -591,8 +591,8 @@
     };
 
     /**
-     * MATERIAL MULTI-TAB ENGINE
-     * Implements Dual-Grid architecture for independent Variety and Brand selection
+     * MATERIAL MULTI-TAB SYNC ENGINE
+     * Implements Dual-Grid chip architecture for Varieties and Brands
      */
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
@@ -601,12 +601,12 @@
             window.registryData = snap.val() || {};
             
             Object.keys(window.registryData).forEach(cat => {
-                // Status Check: Skip materials marked as archived in Admin Dashboard
+                // Archive Check: Filter out retired categories
                 if (window.registryData[cat].status === 'archived') return;
                 
                 cont.innerHTML += `
                     <div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')">
-                        <span class="text-xs font-black uppercase tracking-[2px]">${cat}</span>
+                        <span class="text-[12px] font-black uppercase tracking-[3px]">${cat}</span>
                         <div class="glow-dot"></div>
                     </div>`;
             });
@@ -623,7 +623,7 @@
         Survey.state.brands = []; 
         Survey.refreshID();
 
-        // UI Transformation Logic
+        // UI Reset Protocols
         const vg = document.getElementById('varietyGrid'); 
         vg.innerHTML = "";
         document.getElementById('varietyPanel').classList.remove('hidden');
@@ -631,12 +631,12 @@
 
         const cd = window.registryData[m];
         if (cd) {
-            Object.keys(cd).forEach(v => {
-                // Key Logic: Render every key as an individual Tab/Chip
-                if (v !== 'status' && typeof cd[v] === 'object') {
+            Object.keys(cd).forEach(vKey => {
+                // Tab Logic: Explicitly render each Variety as an Individual chip/tab
+                if (vKey !== 'status' && typeof cd[vKey] === 'object') {
                     vg.innerHTML += `
-                        <div class="chip" data-vtype="${v}" onclick="toggleVariety('${v}', this)">
-                            ${v}
+                        <div class="chip" data-variety-id="${vKey}" onclick="toggleVariety('${vKey}', this)">
+                            ${vKey}
                         </div>`;
                 }
             });
@@ -645,7 +645,7 @@
     };
 
     window.toggleVariety = function(v, el) {
-        // Toggle Active State for independent variety tabs
+        // Toggle Local State for independent tabs
         el.classList.toggle('active');
         
         const idx = Survey.state.varieties.indexOf(v);
@@ -655,7 +655,7 @@
             Survey.state.varieties.push(v);
         }
         
-        // Multi-Selection Logic: Populate Brands for all currently active varieties
+        // Dynamic Brand Aggregation Logic
         const bg = document.getElementById('brandGrid');
         const section = document.getElementById('brandSection');
         bg.innerHTML = "";
@@ -664,6 +664,7 @@
             section.classList.remove('hidden');
             const uniqueBrands = new Set();
             
+            // Map every active variety chip to its respective brand registry
             Survey.state.varieties.forEach(varKey => {
                 const brands = window.registryData[Survey.state.mat][varKey]?.brands || [];
                 brands.forEach(b => uniqueBrands.add(b));
@@ -700,25 +701,25 @@
     window.Draft = { 
         save() { 
             Survey.state.firmName = document.getElementById('firmName').value;
-            localStorage.setItem('ns_v23_draft', JSON.stringify(Survey.state)); 
-            alert("💾 Intelligence Draft Secured to Local Core."); 
+            localStorage.setItem('ns_v25_draft', JSON.stringify(Survey.state)); 
+            alert("💾 Draft Protocol Secured: Local Cache Updated."); 
         } 
     };
 
-    // Terminal Initialization Engine
+    // Global Initializer
     window.onload = () => {
         Geo.init(); 
         syncRegistry();
         
-        // Fleet Grid Initialization: Restores all vehicle types
+        // Full Fleet Deployment: 6 Vehicle Types
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         const fGrid = document.getElementById('fleetGrid');
         fGrid.innerHTML = fTypes.map(t => `
             <div class="fleet-unit">
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${t}</span>
-                <div class="flex items-center gap-5">
+                <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">${t}</span>
+                <div class="flex items-center gap-6">
                     <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
-                    <span id="fval-${t}" class="font-black text-lg min-w-[20px] text-center">0</span>
+                    <span id="fval-${t}" class="font-black text-xl min-w-[30px] text-center">0</span>
                     <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
                 </div>
             </div>`).join('');
@@ -727,14 +728,13 @@
             if (!u) {
                 location.href = "../index.html";
             } else {
-                // Identity Stamping
                 document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-8).toUpperCase();
             }
         });
     };
 </script>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>
