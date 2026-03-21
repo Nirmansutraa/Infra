@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Admin Dashboard</title>
+    <title>Infra V2 | Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,17 +11,21 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow: hidden; }
         .sidebar { width: 260px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; z-index: 50; }
         .main-content { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 40px; }
-        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; transition: 0.3s; }
+        .glass-card.archived { opacity: 0.4; border-style: dashed; }
+        .glass-card:hover { border-color: #ff7a00; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left;}
         .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; z-index: 10; }
+        #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         td { padding: 16px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; }
+        input { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; outline: none; }
     </style>
 </head>
 <body class="flex">
+
 <nav class="sidebar p-6 flex flex-col">
     <div class="mb-10 px-2 text-center">
         <h1 class="text-2xl font-black text-white uppercase">INFRA<span class="text-orange-500">V2</span></h1>
@@ -53,8 +57,11 @@
 
     <section id="tab-intel" class="tab-panel">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-extrabold">Material Registry</h2>
-            <button onclick="startWizard()" class="bg-orange-500 px-6 py-2 rounded-xl font-bold text-sm text-white">Add Material</button>
+            <div>
+                <h2 class="text-3xl font-extrabold">Material Registry</h2>
+                <input type="text" id="regSearch" placeholder="Search materials..." class="mt-2 text-xs w-64" onkeyup="filterRegistry()">
+            </div>
+            <button onclick="startWizard()" class="bg-orange-500 px-6 py-2 rounded-xl font-bold text-sm text-white hover:bg-orange-600">Add Material</button>
         </div>
         <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
@@ -95,6 +102,33 @@
         if(id === 'map') setTimeout(initMap, 400);
     }
 
+    // --- UPDATED ACTIONS ---
+    function toggleArchive(cat, variety, currentStatus) {
+        const newStatus = (currentStatus === 'archived') ? 'live' : 'archived';
+        rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(newStatus);
+    }
+
+    function deleteMaterial(cat, variety) {
+        if(confirm(`Permanently delete ${variety}?`)) {
+            rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
+        }
+    }
+
+    function editBrands(cat, variety, currentBrands) {
+        const newBrands = prompt(`Edit Brands for ${variety}:`, currentBrands.join(', '));
+        if (newBrands) {
+            const brandArray = newBrands.split(',').map(b => b.trim());
+            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray);
+        }
+    }
+
+    function startWizard() {
+        const cat = prompt("Material Category?"); if(!cat) return;
+        const variety = prompt("Variety?"); if(!variety) return;
+        const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
+        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands, status: 'live' });
+    }
+
     function initMap() {
         if (!adminMap) {
             adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
@@ -120,10 +154,10 @@
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid).once('value', snap => {
-                if (snap.val()?.role !== 'admin') window.location.href = "../index.html";
+                if (snap.val()?.role !== 'admin') window.location.href = "index.html";
                 else startSync();
             });
-        } else window.location.href = "../index.html";
+        } else window.location.href = "index.html";
     });
 
     function startSync() {
@@ -133,27 +167,47 @@
             const body = document.getElementById('userTableBody'); body.innerHTML = "";
             s.forEach(u => {
                 const data = u.val();
-                body.innerHTML += `<tr><td class="text-white font-bold">${data.name}</td><td>${data.role}</td><td><button onclick="rtdb.ref('users/${u.key}/role').set('admin')" class="text-orange-500 font-bold text-xs uppercase">Approve</button></td></tr>`;
+                body.innerHTML += `<tr><td class="text-white font-bold">${data.name || 'User'}</td><td>${data.role}</td><td><button onclick="rtdb.ref('users/${u.key}/role').set('admin')" class="text-orange-500 font-bold text-xs uppercase">Approve</button></td></tr>`;
             });
         });
+
         rtdb.ref('registry/materials').on('value', snap => {
-            const list = document.getElementById('registryList'); list.innerHTML = "";
-            let count = 0;
-            snap.forEach(cat => {
-                cat.forEach(vn => {
-                    count++; const d = vn.val();
-                    list.innerHTML += `<div class="glass-card p-5 border-t-2 border-orange-500"><p class="text-orange-500 font-bold text-[9px] uppercase">${cat.key}</p><h4 class="text-xl font-bold">${vn.key}</h4><div class="mt-2 flex flex-wrap gap-2">${(d.brands || []).map(b => `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded">${b}</span>`).join('')}</div></div>`;
-                });
-            });
-            document.getElementById('stat-varieties').innerText = count;
+            renderRegistry(snap);
         });
     }
 
-    function startWizard() {
-        const cat = prompt("Material Category (e.g. Cement)"); if(!cat) return;
-        const variety = prompt("Variety (e.g. OPC 53)"); if(!variety) return;
-        const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
-        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands });
+    function renderRegistry(snap) {
+        const list = document.getElementById('registryList'); list.innerHTML = "";
+        let count = 0;
+        snap.forEach(cat => {
+            cat.forEach(vn => {
+                count++; const d = vn.val();
+                const bList = d.brands || [];
+                const status = d.status || 'live';
+                list.innerHTML += `
+                    <div class="glass-card p-5 border-t-2 border-orange-500 relative group ${status === 'archived' ? 'archived' : ''}">
+                        <div class="absolute top-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="toggleArchive('${cat.key}', '${vn.key}', '${status}')" class="text-orange-400 text-[10px] font-bold uppercase">${status === 'archived' ? 'Unarchive' : 'Archive'}</button>
+                            <button onclick="editBrands('${cat.key}', '${vn.key}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})" class="text-blue-400 text-[10px] font-bold uppercase">Edit</button>
+                            <button onclick="deleteMaterial('${cat.key}', '${vn.key}')" class="text-red-500 text-[10px] font-bold uppercase">Delete</button>
+                        </div>
+                        <p class="text-orange-500 font-bold text-[9px] uppercase">${cat.key}</p>
+                        <h4 class="text-xl font-bold">${vn.key} ${status === 'archived' ? '<span class="text-[10px] text-slate-500">(Archived)</span>' : ''}</h4>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            ${bList.map(b => `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded border border-slate-700">${b}</span>`).join('')}
+                        </div>
+                    </div>`;
+            });
+        });
+        document.getElementById('stat-varieties').innerText = count;
+    }
+
+    function filterRegistry() {
+        const val = document.getElementById('regSearch').value.toLowerCase();
+        document.querySelectorAll('#registryList > div').forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(val) ? 'block' : 'none';
+        });
     }
 
     function logout() { auth.signOut(); }
