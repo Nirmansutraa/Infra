@@ -10,45 +10,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
     <style>
-        body { background: #f2f4f7; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 40px; }
-        
-        /* Header Style */
-        .top-nav { background: white; padding: 12px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 16px 16px; margin-bottom: 15px; }
-        .staff-id { font-size: 11px; font-weight: 800; }
-        .logout-btn { color: #ef4444; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-
-        /* Card System */
-        .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .section-num { color: #ff7a00; font-weight: 900; margin-right: 6px; }
+        body { background: #f2f4f7; font-family: 'Inter', sans-serif; color: #1e293b; padding-bottom: 120px; }
+        .card { background: white; padding: 18px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .section-title { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; }
+        .section-num { color: #ff7a00; font-weight: 900; margin-right: 6px; }
+        .id-display { background: #0f1b2d; color: #10b981; text-align: center; padding: 18px; border-radius: 10px; font-size: 24px; font-weight: bold; font-family: monospace; }
         
-        /* ID Display */
-        .id-display { background: #0f1b2d; color: #10b981; text-align: center; padding: 20px; border-radius: 10px; font-size: 24px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
-
-        /* Inputs */
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none; }
-        label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 10px; display: block; }
-
-        /* Material Bars */
+        label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-top: 12px; display: block; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-top: 4px; outline: none; transition: 0.2s; }
+        input:focus { border-color: #ff7a00; }
+        
         .mat-bar { background: #0f1b2d; color: white; padding: 14px 20px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .mat-check { width: 16px; height: 16px; accent-color: #ff7a00; }
-
-        /* Fleet Grid */
+        .mat-bar.active { border-left: 4px solid #ff7a00; }
+        
         .fleet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .fleet-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .f-btn { background: #0f1b2d; color: white; width: 24px; height: 24px; border-radius: 4px; font-weight: bold; }
+        .f-btn { background: #0f1b2d; color: white; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; }
 
-        /* Actions */
-        .footer-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-slate { background: #64748b; color: white; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 12px; text-transform: uppercase; }
-        .btn-green { background: #10b981; color: white; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 12px; text-transform: uppercase; }
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 8px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .photo-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 16px; display: flex; gap: 10px; border-top: 1px solid #e2e8f0; z-index: 1000; }
+        .btn { flex: 1; padding: 16px; border-radius: 10px; font-weight: 800; font-size: 12px; text-transform: uppercase; }
+        .btn-slate { background: #64748b; color: white; }
+        .btn-green { background: #10b981; color: white; }
     </style>
 </head>
 <body>
 
-<nav class="top-nav">
-    <div class="staff-id text-slate-400">Field Staff: <span class="text-orange-500" id="staffTag">FS0000</span></div>
-    <button onclick="logout()" class="logout-btn">Logout</button>
+<nav class="bg-white p-4 flex justify-between items-center rounded-b-2xl border-b mb-4">
+    <div class="text-[11px] font-bold text-slate-400">Field Staff: <span class="text-orange-500" id="staffTag">...</span></div>
+    <button onclick="auth.signOut()" class="text-red-500 text-[10px] font-black uppercase">Logout</button>
 </nav>
 
 <div class="px-4">
@@ -59,38 +52,59 @@
 
     <div class="card">
         <div class="section-title"><span class="section-num">2.</span> ENTITY & CONTACTS</div>
+        <label>Firm Name</label>
         <input id="firm" placeholder="Enter Firm Name">
+        
         <div class="mt-4 pt-2 border-t">
             <p class="text-[10px] font-black text-orange-500 uppercase">Owner Details</p>
             <input id="ownerName" placeholder="Owner Full Name">
-            <div class="grid grid-cols-2 gap-2"><input id="phone" type="tel" placeholder="Phone"><input id="wa" type="tel" placeholder="WhatsApp"></div>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <div><label>Phone</label><input id="ownerPhone" type="tel" oninput="validate(this, 'ownerWa')"></div>
+                <div><label>WhatsApp</label><input id="ownerWa" type="tel"></div>
+            </div>
         </div>
-        <textarea id="address" class="h-16 mt-4" placeholder="Waiting for GPS..." readonly></textarea>
+
+        <div class="mt-4 pt-2 border-t">
+            <p class="text-[10px] font-black text-blue-500 uppercase">Manager Details</p>
+            <input id="mgrName" placeholder="Manager Full Name">
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <div><label>Phone</label><input id="mgrPhone" type="tel" oninput="validate(this, 'mgrWa')"></div>
+                <div><label>WhatsApp</label><input id="mgrWa" type="tel"></div>
+            </div>
+        </div>
+
+        <label>Address</label>
+        <textarea id="address" class="h-16" placeholder="Waiting for GPS..." readonly></textarea>
     </div>
 
     <div class="card">
         <div class="section-title"><span class="section-num">3.</span> GPS & VERIFICATION</div>
         <div id="map" class="h-40 rounded-lg mb-3"></div>
-        <button onclick="capture()" class="btn-slate w-full py-3 text-[10px]">📍 Capture GPS & Address</button>
-        <div class="mt-4 border-2 border-dashed border-slate-200 p-4 rounded-lg text-center"><span class="text-[10px] font-bold text-slate-400">📸 Tap to capture Business photos</span></div>
+        <button onclick="captureGPS()" class="bg-slate-800 text-white w-full py-3 rounded-lg text-[10px] font-bold">📍 CAPTURE GPS & ADDRESS</button>
+        
+        <label>Photos (Max 10)</label>
+        <div class="photo-grid" id="photoContainer">
+            <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-400 text-xl">+</button>
+        </div>
+        <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="handlePhoto(this)">
     </div>
 
     <div class="card">
         <div class="section-title"><span class="section-num">4.</span> MATERIALS INTELLIGENCE</div>
-        <div id="matList"></div>
-        <label>Current Market Price (₹)</label>
-        <input type="number" id="price" placeholder="Price per Unit">
+        <div id="matContainer"></div>
+        <label>Market Price (₹)</label>
+        <input type="number" id="price" placeholder="Enter Price">
     </div>
 
     <div class="card">
         <div class="section-title"><span class="section-num">5.</span> TRANSPORTATION FLEET</div>
         <div id="fleetGrid" class="fleet-grid"></div>
     </div>
+</div>
 
-    <div class="footer-btns">
-        <button onclick="saveLocal()" class="btn-slate">💾 Save Local</button>
-        <button onclick="syncCloud()" id="sBtn" class="btn-green">🚀 Submit Sync</button>
-    </div>
+<div class="sticky-footer">
+    <button onclick="saveLocal()" class="btn btn-slate">💾 Save Local</button>
+    <button onclick="syncCloud()" id="sBtn" class="btn btn-green">🚀 Submit Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -112,73 +126,144 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
-    let state = { location: null, materials: [], fleet: {} };
-    let map, marker;
+    let state = { location: null, materials: [], fleet: {}, photos: [] };
+    let map;
 
-    auth.onAuthStateChanged(user => {
-        if(!user) location.href = "../index.html";
-        document.getElementById('staffTag').innerText = "FS-" + user.uid.slice(-6).toUpperCase();
-        initApp();
+    // --- RE-IMPLEMENTED LOGIC ---
+
+    // 1. Mobile & WhatsApp Logic
+    function validate(input, waId) {
+        let val = input.value.replace(/\D/g, '');
+        if (val.length > 10) val = val.slice(-10);
+        if (val.length === 10) {
+            input.value = "+91 " + val;
+            document.getElementById(waId).value = "+91 " + val; // Auto-fill WhatsApp
+        }
+    }
+
+    // 2. Photo Logic (Timestamp + GPS + Compression)
+    function handlePhoto(input) {
+        if (!state.location) return alert("Capture GPS first to stamp photos!");
+        if (state.photos.length >= 10) return alert("Limit 10 Photos");
+        
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const photoData = {
+                src: e.target.result,
+                stamp: new Date().toLocaleString(),
+                gps: state.location
+            };
+            state.photos.push(photoData);
+            renderPhotos();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function renderPhotos() {
+        const cont = document.getElementById('photoContainer');
+        const addBtn = cont.firstElementChild;
+        cont.innerHTML = "";
+        cont.appendChild(addBtn);
+        state.photos.forEach((p, i) => {
+            cont.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="photo-img"></div>`;
+        });
+    }
+
+    // 3. Material Intelligence (Dynamic Sync)
+    rtdb.ref('registry/materials').on('value', snap => {
+        const cont = document.getElementById('matContainer');
+        cont.innerHTML = "";
+        snap.forEach(cat => {
+            cont.innerHTML += `<div class="mat-bar" onclick="toggleMat('${cat.key}', this)">
+                <span class="text-sm font-bold uppercase">${cat.key}</span>
+                <input type="checkbox" id="check-${cat.key}" class="accent-orange-500">
+            </div>`;
+        });
     });
 
-    function initApp() {
-        map = L.map('map').setView([20.5937, 78.9629], 5);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    function toggleMat(id, el) {
+        const chk = el.querySelector('input');
+        chk.checked = !chk.checked;
+        el.classList.toggle('active', chk.checked);
+        const idx = state.materials.indexOf(id);
+        idx > -1 ? state.materials.splice(idx, 1) : state.materials.push(id);
+        updateID();
+    }
 
-        rtdb.ref('registry/materials').on('value', snap => {
-            const container = document.getElementById('matList'); container.innerHTML = "";
-            snap.forEach(cat => {
-                container.innerHTML += `<div class="mat-bar" onclick="toggleMat('${cat.key}')">
-                    <input type="checkbox" class="mat-check" id="chk-${cat.key}">
-                    <span class="font-bold text-sm">${cat.key}</span>
-                </div>`;
-            });
+    function updateID() {
+        const code = state.materials.length > 0 ? state.materials[0].slice(0,3).toUpperCase() : 'GEN';
+        document.getElementById('trackId').innerText = `ID-${code}-${Date.now().toString().slice(-4)}`;
+    }
+
+    // 4. GPS & Address Logic
+    function captureGPS() {
+        navigator.geolocation.getCurrentPosition(async p => {
+            state.location = { lat: p.coords.latitude, lng: p.coords.longitude };
+            map.setView([state.location.lat, state.location.lng], 16);
+            L.marker([state.location.lat, state.location.lng]).addTo(map);
+            
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${state.location.lat}&lon=${state.location.lng}`);
+            const data = await res.json();
+            document.getElementById('address').value = data.display_name;
         });
+    }
 
+    // 5. Local Storage Logic
+    function saveLocal() {
+        const draft = { ...state, firm: document.getElementById('firm').value };
+        localStorage.setItem('nirmansutra_draft', JSON.stringify(draft));
+        alert("💾 Draft Saved Locally!");
+    }
+
+    // Initialize UI
+    window.onload = () => {
+        map = L.map('map').setView([20.5, 78], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `
-            <div class="fleet-card"><span class="text-[10px] font-bold">${t}</span>
+            <div class="fleet-card">
+                <span class="text-[10px] font-bold">${t}</span>
                 <div class="flex items-center gap-2">
                     <button onclick="step('${t}', -1)" class="f-btn">-</button>
                     <span id="v-${t}" class="text-xs font-black">0</span>
                     <button onclick="step('${t}', 1)" class="f-btn">+</button>
                 </div>
             </div>`).join('');
-    }
-
-    function toggleMat(id) {
-        const chk = document.getElementById('chk-' + id);
-        chk.checked = !chk.checked;
-        const idx = state.materials.indexOf(id);
-        idx > -1 ? state.materials.splice(idx, 1) : state.materials.push(id);
-        document.getElementById('trackId').innerText = `ID-${state.materials[0]?.slice(0,3).toUpperCase() || 'GEN'}-${Date.now().toString().slice(-4)}`;
-    }
-
-    function step(type, val) {
-        state.fleet[type] = Math.max(0, (state.fleet[type] || 0) + val);
-        document.getElementById('v-' + type).innerText = state.fleet[type];
-    }
-
-    async function capture() {
-        navigator.geolocation.getCurrentPosition(async p => {
-            state.location = { lat: p.coords.latitude, lng: p.coords.longitude };
-            map.setView([p.coords.latitude, p.coords.longitude], 16);
-            if(marker) map.removeLayer(marker);
-            marker = L.marker([p.coords.latitude, p.coords.longitude]).addTo(map);
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-            const data = await res.json();
-            document.getElementById('address').value = data.display_name;
+            
+        auth.onAuthStateChanged(u => {
+            if(!u) location.href="../index.html";
+            document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-6).toUpperCase();
         });
+    };
+
+    function step(t, v) {
+        state.fleet[t] = Math.max(0, (state.fleet[t] || 0) + v);
+        document.getElementById('v-' + t).innerText = state.fleet[t];
     }
 
     async function syncCloud() {
-        if(!state.location || !document.getElementById('firm').value) return alert("Missing GPS or Firm Name");
-        const payload = { firm: document.getElementById('firm').value, owner: document.getElementById('ownerName').value, trackingId: document.getElementById('trackId').innerText, materials: state.materials, fleet: state.fleet, price: document.getElementById('price').value, location: state.location, agent: auth.currentUser.email, timestamp: Date.now() };
-        await rtdb.ref('surveys').push(payload);
-        alert("Synced!"); location.reload();
-    }
+        if(!state.location || !document.getElementById('firm').value) return alert("Fill Site Name & GPS First");
+        const btn = document.getElementById('sBtn'); btn.innerText = "Transmitting...";
+        
+        const payload = {
+            ...state,
+            firm: document.getElementById('firm').value,
+            owner: document.getElementById('ownerName').value,
+            ownerPhone: document.getElementById('ownerPhone').value,
+            mgrName: document.getElementById('mgrName').value,
+            mgrPhone: document.getElementById('mgrPhone').value,
+            price: document.getElementById('price').value,
+            agent: auth.currentUser.email,
+            timestamp: Date.now()
+        };
 
-    function logout() { auth.signOut(); }
+        await rtdb.ref('surveys').push(payload);
+        alert("🚀 Data Synced Successfully!");
+        localStorage.removeItem('nirmansutra_draft');
+        location.reload();
+    }
 </script>
 </body>
 </html>
