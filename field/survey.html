@@ -3,79 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Field Terminal</title>
+    <title>Nirmansutra | Field Intelligence Terminal</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/libphonenumber-js/1.10.44/libphonenumber-js.min.js"></script>
+
     <style>
-        body { background: #0f172a; font-family: 'Inter', sans-serif; color: #f8fafc; padding: 20px; }
-        .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-bottom: 15px; }
-        select, input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; margin-top: 8px; outline: none; }
-        .btn-sync { background: #10b981; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; text-transform: uppercase; margin-top: 10px; box-shadow: 0 10px 20px -10px #10b981; border: none; cursor: pointer; }
+        :root { --primary: #0f1b2d; --accent: #ff7a00; --success: #10b981; --error: #ef4444; }
+        body { background: #f8fafc; font-family: 'Inter', sans-serif; color: var(--primary); padding-bottom: 100px; }
+        
+        .card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .section-title { font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-label { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; transition: border 0.2s; }
+        input:focus { border-color: var(--accent); }
+        
+        .btn-sticky { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 16px; display: flex; gap: 10px; border-top: 1px solid #e2e8f0; z-index: 100; }
+        .btn { padding: 14px; border-radius: 12px; font-weight: 800; font-size: 12px; text-transform: uppercase; flex: 1; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        
+        .brand-chip { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; border: 1px solid #e2e8f0; cursor: pointer; background: #f8fafc; }
+        .brand-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+        input[readonly] { background: #f1f5f9; color: #64748b; }
     </style>
 </head>
 <body>
-    <div class="mb-8">
-        <h1 class="text-xl font-black uppercase tracking-tighter text-white text-center">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center">Field Data Terminal</p>
+
+<div class="max-w-md mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Field Data Engine v3.1</p>
+        </div>
+        <div id="syncStatus" class="text-[10px] font-bold uppercase text-slate-400">Online</div>
     </div>
 
-    <div class="card"><p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Site Verification</p><input id="firm" placeholder="Firm/Site Name"></div>
     <div class="card">
-        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Material Intel</p>
-        <select id="cat" onchange="loadVar()"><option>Loading Materials...</option></select>
-        <select id="var" class="mt-4"><option>Select Category First</option></select>
+        <div class="section-title">
+            <span>01. Digital Identity</span>
+            <span id="trackingIdLabel" class="text-slate-400">GEN-0000</span>
+        </div>
+        <div class="input-group">
+            <label class="input-label">Supplier Type</label>
+            <select id="supplierType" onchange="SurveyManager.updateState('type', this.value)">
+                <option value="R">Retailer (R)</option>
+                <option value="W">Wholesaler (W)</option>
+            </select>
+        </div>
+        <input id="firmName" placeholder="Firm Name" oninput="SurveyManager.updateState('firmName', this.value)">
     </div>
-    <div class="text-[9px] text-center text-slate-500 uppercase font-bold mb-4">Auto-Geotagging Active</div>
-    <button onclick="sync()" id="sBtn" class="btn-sync text-white">🚀 Push to Cloud</button>
+
+    <div class="card">
+        <div class="section-title">02. Contact Intelligence</div>
+        <input id="ownerPhone" type="tel" placeholder="Owner Phone (+91)" oninput="ValidationEngine.validatePhone(this, 'owner')">
+        <div class="flex items-center gap-2 my-3">
+            <input type="checkbox" id="syncWhatsapp" onchange="SurveyManager.toggleWhatsappSync(this.checked)">
+            <label class="text-[10px] font-bold text-slate-500 uppercase">Same as WhatsApp</label>
+        </div>
+        <input id="ownerWhatsapp" type="tel" placeholder="Owner WhatsApp" oninput="ValidationEngine.validatePhone(this, 'ownerWA')">
+    </div>
+
+    <div class="card">
+        <div class="section-title">03. Spatial Verification</div>
+        <div id="map" class="h-32 rounded-xl mb-3 border border-slate-200"></div>
+        <button class="btn btn-primary w-full text-[10px]" onclick="GeoModule.capture()">📍 Capture Precise GPS</button>
+        <textarea id="address" class="text-[10px] mt-2 h-12" placeholder="Address auto-fetch..." readonly></textarea>
+    </div>
+
+    <div class="card">
+        <div class="section-title">04. Materials & Price Intel</div>
+        <div id="materialContainer" class="space-y-4"></div>
+        <input type="number" id="marketPrice" class="mt-4" placeholder="Current Market Price (₹)" oninput="SurveyManager.updateState('price', this.value)">
+    </div>
+
+    <div class="card">
+        <div class="section-title">05. Logistics Fleet</div>
+        <div id="fleetContainer" class="grid grid-cols-2 gap-3"></div>
+    </div>
+</div>
+
+<div class="btn-sticky">
+    <button class="btn btn-primary" onclick="SurveyManager.saveLocally()">💾 Save Local</button>
+    <button id="syncBtn" class="btn btn-success" onclick="SurveyManager.initiateSync()">🚀 Push Cloud</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
-        authDomain: "infradepo.firebaseapp.com",
-        projectId: "infradepo",
-        storageBucket: "infradepo.firebasestorage.app",
-        messagingSenderId: "733942710671",
-        appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
-        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const rtdb = firebase.database();
-    const auth = firebase.auth();
-    let registry = {}, coords = null;
+const firebaseConfig = {
+    apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+    authDomain: "infradepo.firebaseapp.com",
+    projectId: "infradepo",
+    storageBucket: "infradepo.firebasestorage.app",
+    messagingSenderId: "733942710671",
+    appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
+    databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+firebase.initializeApp(firebaseConfig);
+const rtdb = firebase.database();
+const auth = firebase.auth();
 
-    navigator.geolocation.getCurrentPosition(p => coords = { lat: p.coords.latitude, lng: p.coords.longitude });
+const SurveyManager = {
+    state: {
+        type: 'R', firmName: '', price: '',
+        contacts: { owner: '', ownerWA: '' },
+        location: { lat: null, lng: null, address: '' },
+        materials: {},
+        fleet: { tractor: 0, miniTruck: 0, truck: 0, dumper: 0 }
+    },
 
-    rtdb.ref('registry/materials').on('value', snap => {
-        registry = snap.val() || {};
-        const sel = document.getElementById('cat'); sel.innerHTML = "<option>Select Material</option>";
-        Object.keys(registry).forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
-    });
+    updateState(key, value) {
+        this.state[key] = value;
+        this.refreshTrackingID();
+    },
 
-    function loadVar() {
-        const c = document.getElementById('cat').value;
-        const sel = document.getElementById('var'); sel.innerHTML = "";
-        if(registry[c]) Object.keys(registry[c]).forEach(v => sel.innerHTML += `<option value="${v}">${v}</option>`);
+    refreshTrackingID() {
+        const id = `${this.state.type}-${Date.now().toString().slice(-4)}`;
+        document.getElementById('trackingIdLabel').innerText = id;
+        this.state.trackingId = id;
+    },
+
+    toggleWhatsappSync(checked) {
+        if(checked) {
+            const val = document.getElementById('ownerPhone').value;
+            document.getElementById('ownerWhatsapp').value = val;
+            this.state.contacts.ownerWA = val;
+        }
+    },
+
+    saveLocally() {
+        localStorage.setItem('survey_draft', JSON.stringify(this.state));
+        alert("Draft saved to phone memory.");
+    },
+
+    async initiateSync() {
+        if(!this.state.firmName || !this.state.location.lat) return alert("Missing Firm Name or GPS!");
+        
+        const btn = document.getElementById('syncBtn');
+        btn.innerText = "Syncing...";
+        
+        try {
+            const payload = { ...this.state, agent: auth.currentUser.email, timestamp: Date.now() };
+            await rtdb.ref('surveys').push(payload);
+            alert("✅ Successfully synced to Singapore Cloud!");
+            location.reload();
+        } catch(e) {
+            alert("Error: " + e.message);
+            btn.innerText = "🚀 Push Cloud";
+        }
     }
+};
 
-    async function sync() {
-        const btn = document.getElementById('sBtn');
-        const data = { 
-            firm: document.getElementById('firm').value, 
-            cat: document.getElementById('cat').value, 
-            var: document.getElementById('var').value, 
-            location: coords, 
-            timestamp: Date.now(),
-            agent: auth.currentUser.email
-        };
-        if(!data.firm || !data.cat || !coords) return alert("Missing Site Name or GPS Signal");
-        btn.innerText = "Transmitting...";
-        await rtdb.ref('surveys').push(data);
-        alert("Transmission Complete!"); location.reload();
+const ValidationEngine = {
+    validatePhone(input, type) {
+        let val = input.value;
+        if(!val.startsWith('+91')) val = '+91' + val.replace(/\D/g,'');
+        input.value = val;
+        SurveyManager.state.contacts[type] = val;
     }
+};
+
+const GeoModule = {
+    map: null,
+    initMap() {
+        this.map = L.map('map').setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+    },
+    capture() {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            this.map.setView([latitude, longitude], 16);
+            L.marker([latitude, longitude]).addTo(this.map);
+            SurveyManager.state.location.lat = latitude;
+            SurveyManager.state.location.lng = longitude;
+            
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const data = await res.json();
+            document.getElementById('address').value = data.display_name;
+            SurveyManager.state.location.address = data.display_name;
+        });
+    }
+};
+
+const MaterialEngine = {
+    render() {
+        rtdb.ref('registry/materials').on('value', snap => {
+            const container = document.getElementById('materialContainer');
+            container.innerHTML = "";
+            snap.forEach(cat => {
+                let catDiv = `<div class="mb-2"><p class="text-[10px] font-bold text-slate-400 uppercase">${cat.key}</p><div class="flex flex-wrap gap-2 mt-1">`;
+                cat.forEach(variety => {
+                    if(variety.val().status !== 'archived') {
+                        catDiv += `<div class="brand-chip" onclick="MaterialEngine.toggle('${cat.key}', '${variety.key}', this)">${variety.key}</div>`;
+                    }
+                });
+                catDiv += `</div></div>`;
+                container.innerHTML += catDiv;
+            });
+        });
+    },
+    toggle(cat, varName, el) {
+        el.classList.toggle('active');
+        if(!SurveyManager.state.materials[cat]) SurveyManager.state.materials[cat] = [];
+        const arr = SurveyManager.state.materials[cat];
+        const idx = arr.indexOf(varName);
+        idx > -1 ? arr.splice(idx, 1) : arr.push(varName);
+    }
+};
+
+const FleetComponent = {
+    render() {
+        const types = ['tractor', 'miniTruck', 'truck', 'dumper'];
+        document.getElementById('fleetContainer').innerHTML = types.map(t => `
+            <div class="bg-slate-50 p-2 rounded-lg border text-center">
+                <p class="text-[8px] font-bold uppercase">${t}</p>
+                <div class="flex justify-between items-center mt-1">
+                    <button onclick="FleetComponent.step('${t}', -1)" class="px-2 bg-white border rounded">-</button>
+                    <span id="f-${t}" class="text-xs font-bold">0</span>
+                    <button onclick="FleetComponent.step('${t}', 1)" class="px-2 bg-white border rounded">+</button>
+                </div>
+            </div>
+        `).join('');
+    },
+    step(t, delta) {
+        const val = Math.max(0, SurveyManager.state.fleet[t] + delta);
+        SurveyManager.state.fleet[t] = val;
+        document.getElementById(`f-${t}`).innerText = val;
+    }
+};
+
+auth.onAuthStateChanged(user => { if(!user) location.href = '../index.html'; });
+window.onload = () => { GeoModule.initMap(); MaterialEngine.render(); FleetComponent.render(); };
 </script>
 </body>
 </html>
