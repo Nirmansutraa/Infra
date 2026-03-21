@@ -22,33 +22,33 @@
             background: var(--bg); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: var(--primary); 
-            padding-bottom: 180px; 
+            padding-bottom: 200px; 
             -webkit-font-smoothing: antialiased; 
         }
         
         /* High-End Card Architecture */
         .card { 
             background: var(--card); 
-            border-radius: 28px; 
-            padding: 30px; 
-            margin-bottom: 24px; 
+            border-radius: 32px; 
+            padding: 35px; 
+            margin-bottom: 28px; 
             border: 1px solid #e5e7eb; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         
         .card:focus-within { 
             border-color: var(--accent); 
-            box-shadow: 0 15px 30px -10px rgba(255, 122, 0, 0.1); 
+            box-shadow: 0 20px 40px -15px rgba(255, 122, 0, 0.12); 
         }
 
         .section-label { 
-            font-size: 10px; 
+            font-size: 11px; 
             font-weight: 900; 
             color: var(--accent); 
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            margin-bottom: 16px; 
+            letter-spacing: 2.5px; 
+            margin-bottom: 18px; 
             display: block; 
         }
 
@@ -57,14 +57,15 @@
             background: var(--primary); 
             color: #10b981; 
             text-align: center; 
-            padding: 35px; 
-            border-radius: 20px; 
-            font-size: 28px; 
+            padding: 40px; 
+            border-radius: 24px; 
+            font-size: 32px; 
             font-weight: 900; 
             font-family: monospace; 
-            letter-spacing: 3px; 
+            letter-spacing: 4px; 
             border: 2px solid #1e293b; 
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: inset 0 4px 15px rgba(0,0,0,0.3);
+            text-shadow: 0 0 10px rgba(16,185,129,0.4);
         }
 
         /* Apple-Style Input Field Logic */
@@ -72,39 +73,39 @@
             width: 100%; 
             background: #f8fafc; 
             border: 1px solid #e2e8f0; 
-            padding: 18px; 
-            border-radius: 16px; 
-            font-size: 15px; 
+            padding: 20px; 
+            border-radius: 18px; 
+            font-size: 16px; 
             font-weight: 600;
-            margin-top: 8px; 
+            margin-top: 10px; 
             outline: none; 
-            transition: 0.2s ease; 
+            transition: 0.25s ease; 
             -webkit-appearance: none; 
         }
         
         input:focus, select:focus { 
             border-color: var(--accent); 
             background: #fff; 
-            box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.05);
+            box-shadow: 0 0 0 5px rgba(255, 122, 0, 0.08);
         }
         
         label { 
-            font-size: 9px; 
+            font-size: 10px; 
             font-weight: 800; 
             color: var(--text-dim); 
             text-transform: uppercase; 
-            margin-top: 16px; 
+            margin-top: 20px; 
             display: block; 
-            padding-left: 6px; 
+            padding-left: 8px; 
         }
 
         /* Interactive Selection UI */
         .mat-item { 
             background: var(--primary); 
             color: white; 
-            padding: 22px 26px; 
-            border-radius: 20px; 
-            margin-bottom: 12px; 
+            padding: 24px 30px; 
+            border-radius: 24px; 
+            margin-bottom: 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -116,12 +117,12 @@
         .mat-item.active { 
             border-color: var(--accent); 
             transform: scale(1.02); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
         }
         
         .glow-dot { 
-            width: 12px; 
-            height: 12px; 
+            width: 14px; 
+            height: 14px; 
             border-radius: 50%; 
             background: #334155; 
             transition: 0.3s; 
@@ -129,50 +130,55 @@
         
         .mat-item.active .glow-dot { 
             background: var(--accent); 
-            box-shadow: 0 0 15px var(--accent); 
+            box-shadow: 0 0 20px var(--accent); 
         }
 
-        /* Dual-Tab UI Grid */
+        /* Multi-Tab Logic Grid */
         .tab-grid { 
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px; 
-            margin-top: 15px; 
+            grid-template-columns: 1fr 1fr;
+            gap: 14px; 
+            margin-top: 18px; 
         }
         
         .chip { 
             background: white; 
             border: 1px solid #e2e8f0; 
-            padding: 14px 10px; 
-            border-radius: 16px; 
-            font-size: 11px; 
+            padding: 18px 14px; 
+            border-radius: 20px; 
+            font-size: 12px; 
             font-weight: 800; 
             color: #475569; 
             cursor: pointer; 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
             text-align: center; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+            line-height: 1.4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
         
         .chip.active { 
             background: var(--accent); 
             color: white; 
             border-color: var(--accent); 
-            transform: translateY(-4px); 
-            box-shadow: 0 8px 15px rgba(255,122,0,0.2); 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 20px rgba(255,122,0,0.25); 
         }
 
         /* Fleet Control System */
         .fleet-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 18px; 
+            gap: 20px; 
         }
         
         .fleet-unit { 
             background: #f8fafc; 
-            padding: 20px; 
-            border-radius: 20px; 
+            padding: 22px; 
+            border-radius: 24px; 
             border: 1px solid #e2e8f0; 
             display: flex; 
             justify-content: space-between; 
@@ -180,9 +186,9 @@
         }
         
         .circle-btn { 
-            width: 38px; 
-            height: 38px; 
-            border-radius: 14px; 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 16px; 
             background: var(--primary); 
             color: white; 
             display: flex; 
@@ -191,15 +197,16 @@
             font-weight: bold; 
             cursor: pointer; 
             transition: 0.2s;
+            font-size: 18px;
         }
         
-        .circle-btn:active { transform: scale(0.9); }
+        .circle-btn:active { transform: scale(0.85); }
 
         /* Photo Evidence Metadata Architecture */
         .photo-slot { 
             aspect-ratio: 1; 
             background: #f1f5f9; 
-            border-radius: 18px; 
+            border-radius: 20px; 
             border: 2px dashed #cbd5e1; 
             display: flex; 
             align-items: center; 
@@ -219,13 +226,13 @@
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(0,0,0,0.75); 
+            background: rgba(0,0,0,0.8); 
             color: white; 
-            font-size: 7px; 
-            padding: 8px; 
+            font-size: 8px; 
+            padding: 10px; 
             font-weight: 800; 
-            line-height: 1.5; 
-            border-top: 1px solid rgba(255,255,255,0.1); 
+            line-height: 1.6; 
+            border-top: 1px solid rgba(255,255,255,0.15); 
         }
 
         /* Sticky Executive Action Bar */
@@ -234,45 +241,52 @@
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(255,255,255,0.95); 
-            backdrop-filter: blur(30px); 
-            padding: 26px; 
+            background: rgba(255,255,255,0.96); 
+            backdrop-filter: blur(40px); 
+            padding: 28px; 
             display: flex; 
-            gap: 18px; 
+            gap: 20px; 
             border-top: 1px solid #e2e8f0; 
             z-index: 1000; 
         }
         
         .btn { 
             flex: 1; 
-            padding: 22px; 
-            border-radius: 20px; 
+            padding: 24px; 
+            border-radius: 22px; 
             font-weight: 900; 
-            font-size: 13px; 
+            font-size: 14px; 
             text-transform: uppercase; 
-            letter-spacing: 1px; 
-            transition: 0.3s; 
+            letter-spacing: 1.5px; 
+            transition: 0.3s ease; 
         }
         
-        .btn-slate { background: #64748b; color: white; }
+        .btn-slate { 
+            background: #64748b; 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(100,116,139,0.2);
+        }
+        
         .btn-green { 
             background: #10b981; 
             color: white; 
-            box-shadow: 0 10px 25px rgba(16,185,129,0.25); 
+            box-shadow: 0 15px 30px rgba(16,185,129,0.3); 
         }
+        
+        .btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-7 flex justify-between items-center rounded-b-[45px] border-b mb-12 shadow-sm">
+<nav class="bg-white p-8 flex justify-between items-center rounded-b-[50px] border-b mb-14 shadow-sm">
     <div>
-        <h1 class="text-xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Field Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
+        <h1 class="text-2xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[3px] mt-1">Field Intelligence Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
     </div>
-    <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-5 py-2.5 rounded-full">Logout</button>
+    <button onclick="auth.signOut()" class="text-red-500 text-[12px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all">Logout</button>
 </nav>
 
-<div class="max-w-md mx-auto px-7">
+<div class="max-w-md mx-auto px-8">
     <div class="card">
         <span class="section-label">01. Session Tracking ID</span>
         <div id="trackId" class="id-box">RJ-UDR-ID---</div>
@@ -281,43 +295,61 @@
     <div class="card">
         <span class="section-label">02. Entity & Contact Matrix</span>
         
-        <label>Supplier Classification</label>
+        <label>Supplier Intelligence Category</label>
         <select id="supplierType" onchange="Survey.refreshID()">
             <option value="Retailer">Retailer (R)</option>
             <option value="Wholesaler">Wholesaler (W)</option>
         </select>
 
-        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-8">
+        <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-10">
         
-        <div class="mt-12 pt-8 border-t border-slate-100">
-            <p class="text-[11px] font-black text-orange-500 uppercase mb-5">Primary Owner Hub</p>
-            <input id="ownerName" placeholder="Owner Legal Name">
-            <div class="grid grid-cols-2 gap-5 mt-2">
-                <div><label>Phone</label><input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')"></div>
-                <div><div class="flex items-center gap-2"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-3.5 h-3.5 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div><input id="ownerWa" type="tel" placeholder="+91"></div>
+        <div class="mt-14 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-orange-500 uppercase mb-6 tracking-wider">Primary Owner Intelligence</p>
+            <input id="ownerName" placeholder="Owner Legal Full Name">
+            <div class="grid grid-cols-2 gap-6 mt-2">
+                <div>
+                    <label>Direct Phone</label>
+                    <input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <label>Auto WA Sync</label>
+                        <input type="checkbox" id="syncOwner" class="w-4 h-4 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
+                    </div>
+                    <input id="ownerWa" type="tel" placeholder="+91 WhatsApp">
+                </div>
             </div>
         </div>
 
-        <div class="mt-12 pt-8 border-t border-slate-100">
-            <p class="text-[11px] font-black text-blue-500 uppercase mb-5">Operational Site Manager</p>
-            <input id="mgrName" placeholder="Manager Name">
-            <div class="grid grid-cols-2 gap-5 mt-2">
-                <div><label>Phone</label><input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')"></div>
-                <div><div class="flex items-center gap-2"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-3.5 h-3.5 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div><input id="mgrWa" type="tel" placeholder="+91"></div>
+        <div class="mt-14 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-blue-500 uppercase mb-6 tracking-wider">Operational Site Manager</p>
+            <input id="mgrName" placeholder="Manager Full Name">
+            <div class="grid grid-cols-2 gap-6 mt-2">
+                <div>
+                    <label>Manager Phone</label>
+                    <input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <label>Auto WA Sync</label>
+                        <input type="checkbox" id="syncMgr" class="w-4 h-4 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
+                    </div>
+                    <input id="mgrWa" type="tel" placeholder="+91 WhatsApp">
+                </div>
             </div>
         </div>
     </div>
 
     <div class="card">
         <span class="section-label">03. GPS & Spatial Proofs</span>
-        <div id="map" class="h-60 rounded-[35px] mb-8 border border-slate-200"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-6 rounded-2xl font-black text-[13px] uppercase tracking-widest mb-6">桃 Capture Geotagged Location</button>
-        <textarea id="address" class="h-28 text-[12px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
+        <div id="map" class="h-64 rounded-[40px] mb-10 border border-slate-200 shadow-inner"></div>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-7 rounded-2xl font-black text-[14px] uppercase tracking-[2px] mb-8 active:scale-95 transition-transform">📍 Capture Geotagged Location</button>
+        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
         
-        <div class="mt-10">
-            <label>Field Evidence (Max 10 with Meta-Stamps)</label>
-            <div class="grid grid-cols-4 gap-4 mt-5" id="photoGrid">
-                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-4xl">+</button>
+        <div class="mt-12">
+            <label>Field Evidence Matrix (Max 10 with Meta-Stamps)</label>
+            <div class="grid grid-cols-4 gap-5 mt-6" id="photoGrid">
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-200 transition-colors">+</button>
             </div>
             <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
         </div>
@@ -325,32 +357,35 @@
 
     <div class="card">
         <span class="section-label">04. Material Intelligence (Admin Synced)</span>
-        <div id="matSelector" class="space-y-4">
+        <div id="matSelector" class="space-y-5">
             </div>
 
-        <div id="varietyPanel" class="mt-12 hidden bg-slate-50 p-10 rounded-[35px] border border-slate-200">
+        <div id="varietyPanel" class="mt-14 hidden bg-slate-50 p-12 rounded-[40px] border border-slate-200">
             <label class="section-label" style="color:#64748b">Step 2: Select Variety Tabs</label>
-            <div id="varietyGrid" class="tab-grid"></div>
+            <div id="varietyGrid" class="tab-grid">
+                </div>
 
-            <div id="brandSection" class="hidden mt-12">
+            <div id="brandSection" class="hidden mt-14">
                 <label class="section-label" style="color:#64748b">Step 3: Select Brand Tabs</label>
-                <div id="brandGrid" class="tab-grid"></div>
+                <div id="brandGrid" class="tab-grid">
+                    </div>
             </div>
         </div>
 
-        <label class="section-label mt-12" style="color:#64748b">Step 4: Market Price Quote (竄ｹ)</label>
-        <input type="number" id="price" placeholder="Rate per unit" oninput="Survey.updateState('price', this.value)">
+        <label class="section-label mt-14" style="color:#64748b">Step 4: Market Price Quote (₹)</label>
+        <input type="number" id="price" placeholder="Enter standard rate per unit" oninput="Survey.updateState('price', this.value)">
     </div>
 
     <div class="card">
         <span class="section-label">05. Transportation Fleet Capacity</span>
-        <div id="fleetGrid" class="grid grid-cols-2 gap-6"></div>
+        <div id="fleetGrid" class="grid grid-cols-2 gap-8">
+            </div>
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="Draft.save()" class="btn btn-slate">沈 Save Local</button>
-    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">噫 Submit Sync</button>
+    <button onclick="Draft.save()" class="btn btn-slate">💾 Save Local</button>
+    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Submit Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -361,12 +396,13 @@
 <script>
     /**
      * REGIONAL SMART ID ENGINE
-     * Implements RJ-UDR Logic based on supplier and material
+     * Implements Rajasthan-Udaipur Logic based on supplier and material telemetry
      */
     function generateSmartID(supplierType, activeMaterial, currentCount) {
         const state = "RJ", dist = "UDR";
-        const typeCode = supplierType === "Wholesaler" ? "W" : "R";
-        let matCode = "X", matSearch = (activeMaterial || "").toLowerCase();
+        const typeCode = (supplierType === "Wholesaler") ? "W" : "R";
+        let matCode = "X";
+        let matSearch = (activeMaterial || "").toLowerCase();
 
         if (matSearch.includes("cement")) matCode = "C";
         else if (matSearch.includes("tmt") || matSearch.includes("steel")) matCode = "T";
@@ -375,7 +411,8 @@
         else if (matSearch.includes("stone")) matCode = "O";
         else if (matSearch.includes("brick")) matCode = "B";
 
-        return `${state}-${dist}-${typeCode}${matCode}-${String(currentCount + 1).padStart(3, '0')}`;
+        const serial = String(currentCount + 1).padStart(3, '0');
+        return `${state}-${dist}-${typeCode}${matCode}-${serial}`;
     }
 
     const firebaseConfig = {
@@ -387,12 +424,23 @@
         appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
+    // Global Terminal State Architecture
     window.Survey = {
-        state: { location: null, mat: null, variety: null, brands: [], fleet: {}, photos: [], price: null, trackingId: "" },
+        state: { 
+            location: null, 
+            mat: null, 
+            varieties: [], 
+            brands: [], 
+            fleet: {}, 
+            photos: [], 
+            price: null, 
+            trackingId: "" 
+        },
         
         updateState(key, val) { 
             this.state[key] = val; 
@@ -400,41 +448,63 @@
         },
 
         async refreshID() {
-            const sType = document.getElementById('supplierType').value;
-            const snap = await rtdb.ref('surveys').once('value');
-            const smartId = generateSmartID(sType, this.state.mat || "Mixed", snap.numChildren());
-            document.getElementById('trackId').innerText = smartId;
-            this.state.trackingId = smartId;
+            try {
+                const sType = document.getElementById('supplierType').value;
+                const snap = await rtdb.ref('surveys').once('value');
+                const totalCount = snap.numChildren();
+                
+                const smartId = generateSmartID(sType, this.state.mat || "Mixed", totalCount);
+                document.getElementById('trackId').innerText = smartId;
+                this.state.trackingId = smartId;
+            } catch (error) {
+                console.error("ID Generation Fault", error);
+            }
         },
 
         async sync() {
             const firm = document.getElementById('firmName').value;
-            if(!this.state.location || !firm) return alert("竄渧 Site Data Error: Name and GPS required.");
+            if (!this.state.location || !firm) {
+                return alert("❌ Site Protocols Incomplete: Name and GPS Geotag are mandatory.");
+            }
             
             const btn = document.getElementById('sBtn');
-            btn.innerText = "UPLOADING...";
-            
+            btn.innerText = "TRANSMITTING...";
+            btn.disabled = true;
+
             const payload = { 
                 ...this.state, 
                 firm: firm,
+                ownerName: document.getElementById('ownerName').value,
+                ownerPhone: document.getElementById('ownerPhone').value,
+                mgrName: document.getElementById('mgrName').value,
+                mgrPhone: document.getElementById('mgrPhone').value,
                 agent: auth.currentUser.email, 
                 timestamp: Date.now() 
             };
 
-            await rtdb.ref('surveys').push(payload);
-            alert("竄氾 Sync Complete: Node Synchronized.");
-            location.reload();
+            try {
+                await rtdb.ref('surveys').push(payload);
+                alert("✅ Terminal Synchronized: Intelligence Node Logged.");
+                localStorage.removeItem('ns_v23_draft');
+                location.reload();
+            } catch (e) {
+                alert("Transmission Fault: " + e.message);
+                btn.innerText = "🚀 Submit Sync";
+                btn.disabled = false;
+            }
         }
     };
 
     window.Validation = {
         phone(input, waId) {
             let val = input.value.trim().replace(/\D/g, '');
-            if(val.length > 10) val = val.slice(-10);
-            if(val.length === 10) { 
+            if (val.length > 10) val = val.slice(-10);
+            if (val.length === 10) { 
                 input.value = "+91 " + val; 
-                const syncID = input.id === 'ownerPhone' ? 'syncOwner' : 'syncMgr';
-                if(document.getElementById(syncID).checked) {
+                // Auto-Sync Logic: Update WhatsApp field if toggle is active
+                const isOwner = (input.id === 'ownerPhone');
+                const syncToggle = document.getElementById(isOwner ? 'syncOwner' : 'syncMgr');
+                if (syncToggle.checked) {
                     document.getElementById(waId).value = "+91 " + val;
                 }
             }
@@ -442,7 +512,7 @@
         syncWA(phoneId, waId, isChecked) {
             const phone = document.getElementById(phoneId);
             const wa = document.getElementById(waId);
-            if(isChecked) { 
+            if (isChecked && phone.value.length >= 10) { 
                 wa.value = phone.value; 
                 wa.readOnly = true; 
             } else { 
@@ -452,39 +522,51 @@
     };
 
     window.Geo = {
-        map: null, marker: null,
+        map: null,
+        marker: null,
         init() {
-            this.map = L.map('map', { zoomControl: false }).setView([20.59, 78.96], 5);
+            this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         },
         capture() {
             navigator.geolocation.getCurrentPosition(async p => {
                 const { latitude, longitude } = p.coords;
                 Survey.state.location = { lat: latitude, lng: longitude };
+                
                 this.map.setView([latitude, longitude], 16);
-                if(this.marker) this.map.removeLayer(this.marker);
+                if (this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const data = await res.json();
-                document.getElementById('address').value = data.display_name;
-            }, () => alert("GPS Permission Denied."), { enableHighAccuracy: true });
+                
+                // Nominatim Reverse Geocoding Engine
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data = await res.json();
+                    document.getElementById('address').value = data.display_name || "GPS Lock Verified";
+                } catch (e) {
+                    document.getElementById('address').value = `Verified: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+                }
+            }, (err) => {
+                alert("Spatial Error: Geolocation access denied or unavailable.");
+            }, { enableHighAccuracy: true });
         }
     };
 
     window.Evidence = {
         handle(input) {
-            if(!Survey.state.location) return alert("竄渧 GPS locked required for Meta-Stamps.");
-            if(Survey.state.photos.length >= 10) return alert("Site capacity reached (10 Photos).");
+            if (!Survey.state.location) return alert("📍 Evidence Failure: Active GPS lock required for metadata stamping.");
+            if (Survey.state.photos.length >= 10) return alert("Buffer Exhausted: Maximum 10 photos per intelligence node.");
             
             const file = input.files[0];
             const reader = new FileReader();
             reader.onload = e => {
-                const pObj = { 
+                // Fraud Prevention: Hard-stamp time and location into preview object
+                const photoObj = { 
                     src: e.target.result, 
                     time: new Date().toLocaleString(), 
-                    lat: Survey.state.location.lat.toFixed(5) 
+                    lat: Survey.state.location.lat.toFixed(5),
+                    lng: Survey.state.location.lng.toFixed(5)
                 };
-                Survey.state.photos.push(pObj);
+                Survey.state.photos.push(photoObj);
                 this.render();
             };
             reader.readAsDataURL(file);
@@ -492,20 +574,25 @@
         render() {
             const grid = document.getElementById('photoGrid');
             const addBtn = grid.firstElementChild;
-            grid.innerHTML = ""; grid.appendChild(addBtn);
+            grid.innerHTML = ""; 
+            grid.appendChild(addBtn);
+            
             Survey.state.photos.forEach(p => {
                 grid.innerHTML += `
                     <div class="photo-slot">
                         <img src="${p.src}" class="photo-img">
-                        <div class="stamp-overlay">${p.time}<br>LAT: ${p.lat}</div>
+                        <div class="stamp-overlay">
+                            ${p.time}<br>
+                            COORD: ${p.lat}, ${p.lng}
+                        </div>
                     </div>`;
             });
         }
     };
 
     /**
-     * MATERIAL DUAL-TAB SYNC ENGINE
-     * Converts nested database lists into Variety and Brand Tabs
+     * MATERIAL MULTI-TAB ENGINE
+     * Implements Dual-Grid architecture for independent Variety and Brand selection
      */
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
@@ -514,10 +601,12 @@
             window.registryData = snap.val() || {};
             
             Object.keys(window.registryData).forEach(cat => {
-                if(window.registryData[cat].status === 'archived') return;
+                // Status Check: Skip materials marked as archived in Admin Dashboard
+                if (window.registryData[cat].status === 'archived') return;
+                
                 cont.innerHTML += `
                     <div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')">
-                        <span class="text-xs font-black uppercase tracking-widest">${cat}</span>
+                        <span class="text-xs font-black uppercase tracking-[2px]">${cat}</span>
                         <div class="glow-dot"></div>
                     </div>`;
             });
@@ -530,81 +619,122 @@
         document.getElementById('mat-'+m).classList.add('active');
         
         Survey.state.mat = m; 
-        Survey.state.variety = null; 
+        Survey.state.varieties = []; 
         Survey.state.brands = []; 
         Survey.refreshID();
 
-        const vg = document.getElementById('varietyGrid'); vg.innerHTML = "";
+        // UI Transformation Logic
+        const vg = document.getElementById('varietyGrid'); 
+        vg.innerHTML = "";
         document.getElementById('varietyPanel').classList.remove('hidden');
         document.getElementById('brandSection').classList.add('hidden');
 
         const cd = window.registryData[m];
-        if(cd) {
+        if (cd) {
             Object.keys(cd).forEach(v => {
-                if(v !== 'status') {
-                    vg.innerHTML += `<div class="chip" onclick="selectVariety('${v}', this)">${v}</div>`;
+                // Key Logic: Render every key as an individual Tab/Chip
+                if (v !== 'status' && typeof cd[v] === 'object') {
+                    vg.innerHTML += `
+                        <div class="chip" data-vtype="${v}" onclick="toggleVariety('${v}', this)">
+                            ${v}
+                        </div>`;
                 }
             });
         }
+        document.getElementById('varietyPanel').scrollIntoView({ behavior: 'smooth' });
     };
 
-    window.selectVariety = function(v, el) {
-        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        Survey.state.variety = v;
-        Survey.state.brands = [];
+    window.toggleVariety = function(v, el) {
+        // Toggle Active State for independent variety tabs
+        el.classList.toggle('active');
         
-        const bg = document.getElementById('brandGrid'); bg.innerHTML = "";
-        document.getElementById('brandSection').classList.remove('hidden');
-
-        const mat = Survey.state.mat;
-        if(window.registryData[mat][v] && window.registryData[mat][v].brands) {
-            window.registryData[mat][v].brands.forEach(b => {
-                bg.innerHTML += `<div class="chip" onclick="toggleBrand('${b}', this)">${b}</div>`;
+        const idx = Survey.state.varieties.indexOf(v);
+        if (idx > -1) {
+            Survey.state.varieties.splice(idx, 1);
+        } else {
+            Survey.state.varieties.push(v);
+        }
+        
+        // Multi-Selection Logic: Populate Brands for all currently active varieties
+        const bg = document.getElementById('brandGrid');
+        const section = document.getElementById('brandSection');
+        bg.innerHTML = "";
+        
+        if (Survey.state.varieties.length > 0) {
+            section.classList.remove('hidden');
+            const uniqueBrands = new Set();
+            
+            Survey.state.varieties.forEach(varKey => {
+                const brands = window.registryData[Survey.state.mat][varKey]?.brands || [];
+                brands.forEach(b => uniqueBrands.add(b));
             });
+            
+            uniqueBrands.forEach(b => {
+                const isActive = Survey.state.brands.includes(b) ? 'active' : '';
+                bg.innerHTML += `
+                    <div class="chip ${isActive}" onclick="toggleBrand('${b}', this)">
+                        ${b}
+                    </div>`;
+            });
+        } else {
+            section.classList.add('hidden');
         }
     };
 
     window.toggleBrand = function(b, el) {
         el.classList.toggle('active');
         const idx = Survey.state.brands.indexOf(b);
-        idx > -1 ? Survey.state.brands.splice(idx, 1) : Survey.state.brands.push(b);
+        if (idx > -1) {
+            Survey.state.brands.splice(idx, 1);
+        } else {
+            Survey.state.brands.push(b);
+        }
     };
 
     window.fleetStep = function(t, v) {
-        Survey.state.fleet[t] = Math.max(0, (Survey.state.fleet[t] || 0) + v);
+        if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0;
+        Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v);
         document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t];
     };
 
     window.Draft = { 
         save() { 
-            localStorage.setItem('ns_v21_draft', JSON.stringify(Survey.state)); 
-            alert("沈 Draft Secured Local Storage."); 
+            Survey.state.firmName = document.getElementById('firmName').value;
+            localStorage.setItem('ns_v23_draft', JSON.stringify(Survey.state)); 
+            alert("💾 Intelligence Draft Secured to Local Core."); 
         } 
     };
 
+    // Terminal Initialization Engine
     window.onload = () => {
-        Geo.init(); syncRegistry();
+        Geo.init(); 
+        syncRegistry();
+        
+        // Fleet Grid Initialization: Restores all vehicle types
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         const fGrid = document.getElementById('fleetGrid');
         fGrid.innerHTML = fTypes.map(t => `
             <div class="fleet-unit">
-                <span class="text-[9px] font-bold text-slate-500 uppercase">${t}</span>
-                <div class="flex items-center gap-4">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${t}</span>
+                <div class="flex items-center gap-5">
                     <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
-                    <span id="fval-${t}" class="font-black text-sm">0</span>
+                    <span id="fval-${t}" class="font-black text-lg min-w-[20px] text-center">0</span>
                     <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
                 </div>
             </div>`).join('');
             
         auth.onAuthStateChanged(u => {
-            if(!u) location.href = "../index.html";
-            document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-6).toUpperCase();
+            if (!u) {
+                location.href = "../index.html";
+            } else {
+                // Identity Stamping
+                document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-8).toUpperCase();
+            }
         });
     };
 </script>
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>
