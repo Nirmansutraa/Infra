@@ -3,91 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra V2 | Field Terminal</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <title>Nirmansutra | Field Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
     <style>
-        body { background: #0f172a; font-family: 'Inter', sans-serif; color: #f8fafc; padding-bottom: 40px; }
-        .card { background: #1e293b; padding: 20px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #334155; }
-        .title { font-size: 10px; color: #ff7a00; font-weight: 800; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        #map { height: 180px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 10px; z-index: 10; }
-
-        .material-btn { 
-            background: #334155; 
-            padding: 16px; 
-            border-radius: 12px; 
-            margin-bottom: 8px; 
-            cursor: pointer; 
-            display: flex; 
-            justify-content: space-between; 
-            font-weight: 700;
-            transition: 0.2s;
-        }
-        .material-btn:active { transform: scale(0.98); }
-        
-        .variety-box { display: none; padding: 10px; background: #0f172a; border-radius: 12px; margin-bottom: 10px; }
-        .brand-box { display: none; padding: 10px; margin-left: 15px; border-left: 2px solid #334155; }
-
-        input, select { 
-            width: 100%; background: #0f172a; border: 1px solid #334155; 
-            padding: 12px; border-radius: 10px; color: white; outline: none; margin-top: 8px;
-        }
-        input:focus { border-color: #ff7a00; }
-
-        .btn-sync { 
-            background: #10b981; color: white; width: 100%; padding: 18px; 
-            border-radius: 12px; font-weight: 800; text-transform: uppercase;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-        }
-        .btn-sync:disabled { background: #334155; opacity: 0.5; box-shadow: none; }
+        body { background: #0f172a; font-family: 'Inter', sans-serif; color: #f8fafc; padding: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-bottom: 15px; }
+        select, input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; margin-top: 8px; outline: none; }
+        .btn-sync { background: #10b981; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; text-transform: uppercase; margin-top: 10px; box-shadow: 0 10px 20px -10px #10b981; }
     </style>
 </head>
 <body>
-
-<div class="p-4 max-w-md mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-black tracking-tighter uppercase">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <div id="userBadge" class="text-[10px] bg-slate-800 px-3 py-1 rounded-full border border-slate-700 font-bold text-slate-400 uppercase">OFFLINE</div>
+    <div class="mb-8">
+        <h1 class="text-xl font-black uppercase tracking-tighter text-white">INFRA<span class="text-orange-500">V2</span></h1>
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Field Data Transceiver</p>
     </div>
 
+    <div class="card"><p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Entity Verification</p><input id="firm" placeholder="Firm/Site Name"></div>
     <div class="card">
-        <div class="title">Project Entity</div>
-        <input id="firmName" placeholder="Firm Name (e.g. Gupta Traders)">
-        <select id="supplierType">
-            <option value="Retailer">Retailer</option>
-            <option value="Wholesaler">Wholesaler</option>
-            <option value="Distributor">Distributor</option>
-        </select>
+        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Material Intelligence</p>
+        <select id="cat" onchange="loadVar()"><option>Syncing Materials...</option></select>
+        <select id="var" class="mt-4"><option>Select Category Above</option></select>
     </div>
+    <div class="text-[9px] text-center text-slate-500 uppercase font-bold mb-4">Auto-Geotagging Active</div>
+    <button onclick="sync()" id="sBtn" class="btn-sync text-white">🚀 Push to Enterprise Cloud</button>
 
-    <div class="card">
-        <div class="title">Material Intelligence Board</div>
-        <div id="materialsContainer">
-            <p class="text-center text-slate-500 text-xs py-4 animate-pulse uppercase tracking-widest">Syncing Registry...</p>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="title">Geospatial Verification</div>
-        <div id="map"></div>
-        <div id="locationData" class="text-[10px] font-bold text-slate-500 mb-2 uppercase text-center">Awaiting Lat/Lng Signal...</div>
-        <button onclick="getLocation()" class="text-xs font-bold text-orange-500 bg-orange-500/10 w-full py-2 rounded-lg uppercase tracking-widest">Update GPS Location</button>
-    </div>
-
-    <button id="syncBtn" class="btn-sync" onclick="syncToCloud()">🚀 Push to Enterprise Cloud</button>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
-    // 1. Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -99,141 +44,36 @@
     };
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
-    const auth = firebase.auth();
+    let registry = {}, coords = null;
 
-    let map, marker, userCoords = null;
+    navigator.geolocation.getCurrentPosition(p => coords = { lat: p.coords.latitude, lng: p.coords.longitude });
 
-    // 2. Auth Guard & UI Setup
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('userBadge').innerText = "LIVE: " + user.email.split('@')[0];
-            document.getElementById('userBadge').classList.replace('text-slate-400', 'text-emerald-400');
-            loadMaterialBoard();
-            initMap();
-        } else {
-            window.location.href = "../index.html";
-        }
+    rtdb.ref('registry/materials').on('value', snap => {
+        registry = snap.val() || {};
+        const sel = document.getElementById('cat'); sel.innerHTML = "<option>Select Category</option>";
+        Object.keys(registry).forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
     });
 
-    // 3. Load Registry with Expandable UI
-    function loadMaterialBoard() {
-        rtdb.ref('registry/materials').on('value', (snapshot) => {
-            const data = snapshot.val();
-            const container = document.getElementById('materialsContainer');
-            container.innerHTML = ""; 
-
-            if (!data) {
-                container.innerHTML = "<p class='text-slate-500 text-center text-xs'>Registry Empty. Update via Admin Panel.</p>";
-                return;
-            }
-
-            for (let cat in data) {
-                const safeCat = cat.replace(/\s/g, '');
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <div class="material-btn" onclick="toggleBox('var_${safeCat}')">
-                        <span>${cat}</span><span class="text-orange-500 text-xs">▼</span>
-                    </div>
-                    <div id="var_${safeCat}" class="variety-box"></div>
-                `;
-                container.appendChild(div);
-
-                const vBox = document.getElementById(`var_${safeCat}`);
-                for (let variety in data[cat]) {
-                    const safeVar = (safeCat + variety).replace(/\s/g, '');
-                    vBox.innerHTML += `
-                        <div class="py-2 border-b border-slate-800 last:border-0">
-                            <label class="flex items-center gap-3 text-sm font-bold text-slate-300" onclick="toggleBox('brand_${safeVar}')">
-                                <input type="checkbox" name="variety" class="w-4 h-4 accent-orange-500" data-cat="${cat}" value="${variety}">
-                                ${variety}
-                            </label>
-                            <div id="brand_${safeVar}" class="brand-box text-xs text-slate-400 mt-2 space-y-2">
-                                ${data[cat][variety].brands.map(b => `
-                                    <label class="flex items-center gap-2">
-                                        <input type="checkbox" name="brand" class="w-3 h-3 accent-emerald-500" value="${b}"> ${b}
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-        });
+    function loadVar() {
+        const c = document.getElementById('cat').value;
+        const sel = document.getElementById('var'); sel.innerHTML = "";
+        if(registry[c]) Object.keys(registry[c]).forEach(v => sel.innerHTML += `<option value="${v}">${v}</option>`);
     }
 
-    function toggleBox(id) {
-        const el = document.getElementById(id);
-        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    }
-
-    // 4. Geospatial Logic
-    function initMap() {
-        map = L.map('map').setView([20.5937, 78.9629], 5);
-        L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-        getLocation();
-    }
-
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                document.getElementById('locationData').innerText = `LOCK: ${userCoords.lat.toFixed(4)}, ${userCoords.lng.toFixed(4)}`;
-                map.setView([userCoords.lat, userCoords.lng], 15);
-                if (marker) map.removeLayer(marker);
-                marker = L.marker([userCoords.lat, userCoords.lng]).addTo(map);
-            });
-        }
-    }
-
-    // 5. Submit to Cloud
-    async function syncToCloud() {
-        const firm = document.getElementById('firmName').value;
-        const type = document.getElementById('supplierType').value;
-        const btn = document.getElementById('syncBtn');
-
-        // Collect Checked Materials
-        const selectedMaterials = [];
-        document.querySelectorAll('input[name="variety"]:checked').forEach(vInput => {
-            const variety = vInput.value;
-            const cat = vInput.getAttribute('data-cat');
-            // Find brands checked under THIS variety
-            const brands = [];
-            const brandBox = vInput.parentElement.nextElementSibling;
-            brandBox.querySelectorAll('input[name="brand"]:checked').forEach(bInput => {
-                brands.push(bInput.value);
-            });
-            selectedMaterials.push({ category: cat, variety: variety, brands: brands });
-        });
-
-        if (!firm || !userCoords || selectedMaterials.length === 0) {
-            alert("Incomplete Data: Ensure Firm Name, GPS, and at least 1 Material are selected.");
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerText = "Transmitting...";
-
-        const surveyPayload = {
-            agent: auth.currentUser.email,
-            firm: firm,
-            type: type,
-            materials: selectedMaterials,
-            location: userCoords,
-            timestamp: Date.now()
+    async function sync() {
+        const btn = document.getElementById('sBtn');
+        const data = { 
+            firm: document.getElementById('firm').value, 
+            cat: document.getElementById('cat').value, 
+            var: document.getElementById('var').value, 
+            location: coords, 
+            timestamp: Date.now() 
         };
-
-        try {
-            await rtdb.ref('surveys').push(surveyPayload);
-            alert("Transmission Complete. Cloud Database Updated.");
-            location.reload();
-        } catch (e) {
-            alert("Error: " + e.message);
-            btn.disabled = false;
-        }
+        if(!data.firm || !data.cat || !coords) return alert("Missing Site Name or GPS Signal");
+        btn.innerText = "Transmitting...";
+        await rtdb.ref('surveys').push(data);
+        alert("Synced Successfully!"); location.reload();
     }
-
-    function logout() { auth.signOut().then(() => window.location.href = "../index.html"); }
 </script>
-
 </body>
 </html>
