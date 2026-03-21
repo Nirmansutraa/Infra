@@ -3,108 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Command Center</title>
-    
+    <title>Infra V2 | Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow: hidden; }
-        .sidebar { width: 280px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; z-index: 50; }
-        .main-content { margin-left: 280px; height: 100vh; overflow-y: auto; padding: 40px; }
+        .sidebar { width: 260px; height: 100vh; background: #0f172a; border-right: 1px solid #1e293b; position: fixed; z-index: 50; }
+        .main-content { margin-left: 260px; height: 100vh; overflow-y: auto; padding: 40px; }
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 16px; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left;}
         .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
         #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; z-index: 10; }
-        
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        th { text-align: left; padding: 12px; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        td { padding: 16px; background: rgba(30, 41, 59, 0.4); }
-        tr td:first-child { border-radius: 12px 0 0 12px; }
-        tr td:last-child { border-radius: 0 12px 12px 0; }
-
-        .btn-action { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; transition: 0.2s; }
-        
-        /* Map Popup Styling */
-        .leaflet-popup-content-wrapper { background: #1e293b; color: white; border: 1px solid #ff7a00; }
-        .leaflet-popup-tip { background: #ff7a00; }
+        td { padding: 16px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; }
     </style>
 </head>
 <body class="flex">
-
 <nav class="sidebar p-6 flex flex-col">
     <div class="mb-10 px-2">
-        <h1 class="text-2xl font-black tracking-tighter text-white">INFRA<span class="text-orange-500">V2</span></h1>
-        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[3px]">Admin Command</p>
+        <h1 class="text-2xl font-black text-white uppercase">INFRA<span class="text-orange-500">V2</span></h1>
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Command Center</p>
     </div>
-
     <div class="space-y-2 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
-        <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Material Registry</button>
-        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> User Access (RBAC)</button>
+        <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Registry</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> RBAC</button>
     </div>
-
-    <button onclick="logout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto font-bold uppercase text-[10px]">🔒 Logout</button>
+    <button onclick="logout()" class="nav-link text-red-400 mt-auto font-bold text-[10px] uppercase">🔒 Logout</button>
 </nav>
 
 <main class="main-content w-full">
-    
     <section id="tab-dash" class="tab-panel active">
-        <h2 class="text-3xl font-extrabold mb-8 text-white">Intelligence Overview</h2>
+        <h2 class="text-3xl font-extrabold mb-8">Intelligence Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-card p-6 border-l-4 border-orange-500">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Total Field Surveys</p>
-                <h3 id="stat-surveys" class="text-4xl font-black mt-2 text-white">0</h3>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-blue-500">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Registered Users</p>
-                <h3 id="stat-users" class="text-4xl font-black mt-2 text-white">0</h3>
-            </div>
-            <div class="glass-card p-6 border-l-4 border-emerald-500">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Live Materials</p>
-                <h3 id="stat-varieties" class="text-4xl font-black mt-2 text-white">0</h3>
-            </div>
+            <div class="glass-card p-6 border-l-4 border-orange-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Surveys</p><h3 id="stat-surveys" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-blue-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Users</p><h3 id="stat-users" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Materials</p><h3 id="stat-varieties" class="text-4xl font-black mt-2">0</h3></div>
         </div>
     </section>
 
     <section id="tab-map" class="tab-panel">
-        <h2 class="text-3xl font-extrabold mb-8 text-white">Geospatial Distribution</h2>
+        <h2 class="text-3xl font-extrabold mb-8">Live Field Feed</h2>
         <div class="glass-card p-2"><div id="adminMap"></div></div>
     </section>
 
     <section id="tab-intel" class="tab-panel">
         <div class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-3xl font-extrabold text-white">Material Intelligence</h2>
-                <p class="text-slate-400 text-sm">Active inventory visible to field terminals.</p>
-            </div>
-            <button onclick="startMaterialWizard()" class="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-xl font-bold text-xs text-white uppercase tracking-widest transition shadow-lg shadow-orange-500/20">Add New Material</button>
+            <h2 class="text-3xl font-extrabold">Material Registry</h2>
+            <button onclick="startWizard()" class="bg-orange-500 px-6 py-2 rounded-xl font-bold text-sm text-white">Add Material</button>
         </div>
         <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
 
     <section id="tab-rbac" class="tab-panel">
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-3xl font-extrabold text-white">User Access Control</h2>
-                <p class="text-slate-400 text-sm">Manage permissions and revoke access instantly.</p>
-            </div>
-            <button onclick="addUserManually()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-bold text-xs text-white uppercase tracking-widest transition">Grant New Access</button>
-        </div>
+        <h2 class="text-3xl font-extrabold mb-8 text-white">User Access</h2>
         <div class="glass-card p-6 overflow-x-auto">
-            <table>
-                <thead>
-                    <tr><th>User Name</th><th>Email</th><th>Current Role</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
+            <table><tbody id="userTableBody"></tbody></table>
         </div>
     </section>
-
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -122,11 +82,9 @@
         appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
         databaseURL: "https://infradepo-default-rtdb.firebaseio.com"
     };
-
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
     const auth = firebase.auth();
-
     let adminMap, markersLayer;
 
     function switchTab(id) {
@@ -137,88 +95,28 @@
         if(id === 'map') setTimeout(initMap, 400);
     }
 
-    // --- MAP LOGIC ---
     function initMap() {
         if (!adminMap) {
             adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
             L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
             markersLayer = L.layerGroup().addTo(adminMap);
         }
-        syncMapMarkers();
+        syncMarkers();
     }
 
-    function syncMapMarkers() {
+    function syncMarkers() {
         rtdb.ref('surveys').on('value', snap => {
             markersLayer.clearLayers();
             snap.forEach(child => {
-                const data = child.val();
-                if (data.location) {
-                    const marker = L.marker([data.location.lat, data.location.lng]);
-                    marker.bindPopup(`
-                        <div style="font-family: sans-serif;">
-                            <b style="color:#ff7a00; font-size:14px;">${data.firm}</b><br>
-                            <small>${data.type}</small><hr style="border-color:#334155;">
-                            <div style="font-size:11px; margin-top:5px;">
-                                <b>Agent:</b> ${data.agent.split('@')[0]}<br>
-                                <b>Materials:</b> ${data.materials.map(m => m.variety).join(', ')}
-                            </div>
-                        </div>
-                    `);
-                    markersLayer.addLayer(marker);
+                const d = child.val();
+                if (d.location) {
+                    L.marker([d.location.lat, d.location.lng]).addTo(markersLayer)
+                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat}: ${d.var}</small>`);
                 }
             });
         });
     }
 
-    // --- MATERIAL MANAGEMENT ---
-    async function startMaterialWizard() {
-        const cat = prompt("Material Category (e.g., Cement)");
-        if (!cat) return;
-        const variety = prompt(`Variety for ${cat} (e.g., OPC 53)`);
-        if (!variety) return;
-        const brandsRaw = prompt("Brands (separate with commas)");
-        if (!brandsRaw) return;
-        const brands = brandsRaw.split(',').map(b => b.trim()).filter(b => b !== "").slice(0, 10);
-
-        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands, status: 'live' });
-    }
-
-    function editMaterial(cat, variety, oldBrands) {
-        const newBrands = prompt(`Edit Brands for ${variety} (Current: ${oldBrands})`, oldBrands);
-        if (newBrands) {
-            const brands = newBrands.split(',').map(b => b.trim()).filter(b => b !== "").slice(0, 10);
-            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brands);
-        }
-    }
-
-    function archiveMaterial(cat, variety) {
-        if(confirm(`Archive ${variety}? It will disappear from field terminals.`)) {
-            rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
-        }
-    }
-
-    // --- USER MANAGEMENT ---
-    function addUserManually() {
-        const email = prompt("Enter User Email:");
-        if (!email) return;
-        const name = prompt("Enter User Full Name:");
-        const role = prompt("Assign Role (admin/agent):", "agent");
-        const tempId = "user_" + Date.now();
-        rtdb.ref(`users/${tempId}`).set({ email: email, name: name, role: role });
-    }
-
-    function changeRole(uid, currentRole) {
-        const newRole = currentRole === 'admin' ? 'agent' : 'admin';
-        if(confirm(`Switch user role to ${newRole}?`)) {
-            rtdb.ref(`users/${uid}/role`).set(newRole);
-        }
-    }
-
-    function deleteAccess(uid) {
-        if(confirm("Revoke access?")) rtdb.ref(`users/${uid}`).remove();
-    }
-
-    // --- SYNC ENGINE ---
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid).once('value', snap => {
@@ -232,59 +130,33 @@
         rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
         rtdb.ref('users').on('value', s => {
             document.getElementById('stat-users').innerText = s.numChildren() || 0;
-            renderUsers(s);
+            const body = document.getElementById('userTableBody'); body.innerHTML = "";
+            s.forEach(u => {
+                const data = u.val();
+                body.innerHTML += `<tr><td class="text-white font-bold">${data.name}</td><td>${data.role}</td><td><button onclick="rtdb.ref('users/${u.key}/role').set('admin')" class="text-orange-500 font-bold text-xs uppercase">Approve</button></td></tr>`;
+            });
         });
-
         rtdb.ref('registry/materials').on('value', snap => {
-            const list = document.getElementById('registryList');
-            list.innerHTML = "";
+            const list = document.getElementById('registryList'); list.innerHTML = "";
             let count = 0;
             snap.forEach(cat => {
-                cat.forEach(varNode => {
-                    count++;
-                    const data = varNode.val();
-                    const bList = data.brands || [];
-                    list.innerHTML += `
-                        <div class="glass-card p-5 border-t-2 border-orange-500">
-                            <div class="flex justify-between items-start mb-1">
-                                <p class="text-orange-500 font-bold text-[9px] uppercase tracking-widest">${cat.key}</p>
-                                <div class="flex gap-2">
-                                    <button onclick="editMaterial('${cat.key}', '${varNode.key}', '${bList.join(',')}')" class="text-blue-400 text-[10px] font-bold uppercase hover:underline">Edit</button>
-                                    <button onclick="archiveMaterial('${cat.key}', '${varNode.key}')" class="text-red-400 text-[10px] font-bold uppercase hover:underline">Archive</button>
-                                </div>
-                            </div>
-                            <h4 class="text-xl font-bold text-white">${varNode.key}</h4>
-                            <div class="mt-3 flex flex-wrap gap-2">
-                                ${bList.map(b => `<span class="bg-slate-800 text-slate-300 text-[10px] px-2 py-1 rounded-md border border-slate-700">${b}</span>`).join('')}
-                            </div>
-                        </div>`;
+                cat.forEach(vn => {
+                    count++; const d = vn.val();
+                    list.innerHTML += `<div class="glass-card p-5 border-t-2 border-orange-500"><p class="text-orange-500 font-bold text-[9px] uppercase">${cat.key}</p><h4 class="text-xl font-bold">${vn.key}</h4><div class="mt-2 flex flex-wrap gap-2">${(d.brands || []).map(b => `<span class="bg-slate-800 text-[10px] px-2 py-1 rounded">${b}</span>`).join('')}</div></div>`;
                 });
             });
             document.getElementById('stat-varieties').innerText = count;
         });
     }
 
-    function renderUsers(snapshot) {
-        const body = document.getElementById('userTableBody');
-        body.innerHTML = "";
-        snapshot.forEach(userSnap => {
-            const user = userSnap.val();
-            body.innerHTML += `
-                <tr>
-                    <td class="font-bold text-white">${user.name || 'Pending'}</td>
-                    <td class="text-slate-400 text-xs">${user.email}</td>
-                    <td><span class="bg-orange-500/10 text-orange-500 text-[10px] px-2 py-1 rounded font-bold uppercase">${user.role}</span></td>
-                    <td>
-                        <div class="flex gap-4">
-                            <button onclick="changeRole('${userSnap.key}', '${user.role}')" class="text-blue-400 btn-action hover:bg-blue-500/10">Edit Role</button>
-                            <button onclick="deleteAccess('${userSnap.key}')" class="text-red-400 btn-action hover:bg-red-500/10">Delete Access</button>
-                        </div>
-                    </td>
-                </tr>`;
-        });
+    function startWizard() {
+        const cat = prompt("Material Category?"); if(!cat) return;
+        const variety = prompt("Variety?"); if(!variety) return;
+        const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
+        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands });
     }
 
-    function logout() { auth.signOut().then(() => window.location.href = "../index.html"); }
+    function logout() { auth.signOut(); }
 </script>
 </body>
 </html>
