@@ -44,6 +44,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
+    const auth = firebase.auth();
     let registry = {}, coords = null;
 
     navigator.geolocation.getCurrentPosition(p => coords = { lat: p.coords.latitude, lng: p.coords.longitude });
@@ -67,7 +68,8 @@
             cat: document.getElementById('cat').value, 
             var: document.getElementById('var').value, 
             location: coords, 
-            timestamp: Date.now() 
+            timestamp: Date.now(),
+            agent: auth.currentUser.email
         };
         if(!data.firm || !data.cat || !coords) return alert("Missing Site Name or GPS Signal");
         btn.innerText = "Transmitting...";
