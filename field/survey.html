@@ -10,23 +10,23 @@
         body { background: #0f172a; font-family: 'Inter', sans-serif; color: #f8fafc; padding: 20px; }
         .card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-bottom: 15px; }
         select, input { width: 100%; background: #0f172a; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; margin-top: 8px; outline: none; }
-        .btn-sync { background: #10b981; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; text-transform: uppercase; margin-top: 10px; box-shadow: 0 10px 20px -10px #10b981; }
+        .btn-sync { background: #10b981; width: 100%; padding: 18px; border-radius: 14px; font-weight: 800; text-transform: uppercase; margin-top: 10px; box-shadow: 0 10px 20px -10px #10b981; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="mb-8">
-        <h1 class="text-xl font-black uppercase tracking-tighter text-white">INFRA<span class="text-orange-500">V2</span></h1>
-        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Field Data Transceiver</p>
+        <h1 class="text-xl font-black uppercase tracking-tighter text-white text-center">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest text-center">Field Data Terminal</p>
     </div>
 
-    <div class="card"><p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Entity Verification</p><input id="firm" placeholder="Firm/Site Name"></div>
+    <div class="card"><p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Site Verification</p><input id="firm" placeholder="Firm/Site Name"></div>
     <div class="card">
-        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Material Intelligence</p>
-        <select id="cat" onchange="loadVar()"><option>Syncing Materials...</option></select>
-        <select id="var" class="mt-4"><option>Select Category Above</option></select>
+        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Material Intel</p>
+        <select id="cat" onchange="loadVar()"><option>Loading Materials...</option></select>
+        <select id="var" class="mt-4"><option>Select Category First</option></select>
     </div>
     <div class="text-[9px] text-center text-slate-500 uppercase font-bold mb-4">Auto-Geotagging Active</div>
-    <button onclick="sync()" id="sBtn" class="btn-sync text-white">🚀 Push to Enterprise Cloud</button>
+    <button onclick="sync()" id="sBtn" class="btn-sync text-white">🚀 Push to Cloud</button>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
@@ -40,7 +40,7 @@
         storageBucket: "infradepo.firebasestorage.app",
         messagingSenderId: "733942710671",
         appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
-        databaseURL: "https://infradepo-default-rtdb.firebaseio.com"
+        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
@@ -50,7 +50,7 @@
 
     rtdb.ref('registry/materials').on('value', snap => {
         registry = snap.val() || {};
-        const sel = document.getElementById('cat'); sel.innerHTML = "<option>Select Category</option>";
+        const sel = document.getElementById('cat'); sel.innerHTML = "<option>Select Material</option>";
         Object.keys(registry).forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
     });
 
@@ -72,7 +72,7 @@
         if(!data.firm || !data.cat || !coords) return alert("Missing Site Name or GPS Signal");
         btn.innerText = "Transmitting...";
         await rtdb.ref('surveys').push(data);
-        alert("Synced Successfully!"); location.reload();
+        alert("Transmission Complete!"); location.reload();
     }
 </script>
 </body>
