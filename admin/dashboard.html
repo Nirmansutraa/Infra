@@ -199,9 +199,9 @@
             body.innerHTML += `
                 <tr>
                     <td class="font-bold text-white">${d.firm}</td>
-                    <td><span class="text-orange-500 font-bold">${d.cat}</span><br><span class="text-[10px] text-slate-400">${d.var}</span></td>
+                    <td><span class="text-orange-500 font-bold">${d.cat || d.mat}</span><br><span class="text-[10px] text-slate-400">${d.var || d.variety}</span></td>
                     <td class="font-black text-emerald-500">${d.price || 'N/A'}</td>
-                    <td class="text-[10px] text-slate-400">${d.agent.split('@')[0]}</td>
+                    <td class="text-[10px] text-slate-400">${d.agent ? d.agent.split('@')[0] : 'N/A'}</td>
                     <td class="text-[10px] text-slate-500">${date}</td>
                     <td>
                         <button onclick="zoomToSurvey(${d.location?.lat}, ${d.location?.lng})" class="text-[10px] font-bold text-orange-500 underline uppercase">Map View</button>
@@ -253,7 +253,7 @@
                 const d = child.val();
                 if (d.location) {
                     L.marker([d.location.lat, d.location.lng]).addTo(markersLayer)
-                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat}: ${d.var}</small>`);
+                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat || d.mat}: ${d.var || d.variety}</small>`);
                 }
             });
         });
@@ -281,6 +281,20 @@
 
     function toggleArchive(cat, variety, status) {
         rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(status === 'archived' ? 'live' : 'archived');
+    }
+
+    function deleteMaterial(cat, variety) {
+        if(confirm(`Permanently delete ${variety}? This cannot be undone.`)) {
+            rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
+        }
+    }
+
+    function editBrands(cat, variety, currentBrands) {
+        const newBrands = prompt(`Edit Brands for ${variety}:`, currentBrands.join(', '));
+        if (newBrands) {
+            const brandArray = newBrands.split(',').map(b => b.trim());
+            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray);
+        }
     }
 
     function startWizard() {
