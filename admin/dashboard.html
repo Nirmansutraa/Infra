@@ -23,7 +23,7 @@
 </head>
 <body class="flex">
 <nav class="sidebar p-6 flex flex-col">
-    <div class="mb-10 px-2">
+    <div class="mb-10 px-2 text-center">
         <h1 class="text-2xl font-black text-white uppercase">INFRA<span class="text-orange-500">V2</span></h1>
         <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Command Center</p>
     </div>
@@ -31,7 +31,7 @@
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Registry</button>
-        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> RBAC</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> RBAC Control</button>
     </div>
     <button onclick="logout()" class="nav-link text-red-400 mt-auto font-bold text-[10px] uppercase">🔒 Logout</button>
 </nav>
@@ -60,7 +60,7 @@
     </section>
 
     <section id="tab-rbac" class="tab-panel">
-        <h2 class="text-3xl font-extrabold mb-8 text-white">User Access</h2>
+        <h2 class="text-3xl font-extrabold mb-8 text-white">User Access (RBAC)</h2>
         <div class="glass-card p-6 overflow-x-auto">
             <table><tbody id="userTableBody"></tbody></table>
         </div>
@@ -80,7 +80,7 @@
         storageBucket: "infradepo.firebasestorage.app",
         messagingSenderId: "733942710671",
         appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
-        databaseURL: "https://infradepo-default-rtdb.firebaseio.com"
+        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
@@ -150,8 +150,8 @@
     }
 
     function startWizard() {
-        const cat = prompt("Material Category?"); if(!cat) return;
-        const variety = prompt("Variety?"); if(!variety) return;
+        const cat = prompt("Material Category (e.g. Cement)"); if(!cat) return;
+        const variety = prompt("Variety (e.g. OPC 53)"); if(!variety) return;
         const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
         rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands });
     }
