@@ -18,7 +18,7 @@
         .nav-link.active { background: #ff7a00; color: white; font-weight: 700; }
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
-        #adminMap { height: 400px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
+        #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; z-index: 10; }
         
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         th { text-align: left; padding: 12px; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
@@ -27,6 +27,10 @@
         tr td:last-child { border-radius: 0 12px 12px 0; }
 
         .btn-action { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; transition: 0.2s; }
+        
+        /* Map Popup Styling */
+        .leaflet-popup-content-wrapper { background: #1e293b; color: white; border: 1px solid #ff7a00; }
+        .leaflet-popup-tip { background: #ff7a00; }
     </style>
 </head>
 <body class="flex">
@@ -123,12 +127,47 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
+    let adminMap, markersLayer;
+
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
         if(id === 'map') setTimeout(initMap, 400);
+    }
+
+    // --- MAP LOGIC ---
+    function initMap() {
+        if (!adminMap) {
+            adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
+            markersLayer = L.layerGroup().addTo(adminMap);
+        }
+        syncMapMarkers();
+    }
+
+    function syncMapMarkers() {
+        rtdb.ref('surveys').on('value', snap => {
+            markersLayer.clearLayers();
+            snap.forEach(child => {
+                const data = child.val();
+                if (data.location) {
+                    const marker = L.marker([data.location.lat, data.location.lng]);
+                    marker.bindPopup(`
+                        <div style="font-family: sans-serif;">
+                            <b style="color:#ff7a00; font-size:14px;">${data.firm}</b><br>
+                            <small>${data.type}</small><hr style="border-color:#334155;">
+                            <div style="font-size:11px; margin-top:5px;">
+                                <b>Agent:</b> ${data.agent.split('@')[0]}<br>
+                                <b>Materials:</b> ${data.materials.map(m => m.variety).join(', ')}
+                            </div>
+                        </div>
+                    `);
+                    markersLayer.addLayer(marker);
+                }
+            });
+        });
     }
 
     // --- MATERIAL MANAGEMENT ---
@@ -158,15 +197,12 @@
         }
     }
 
-    // --- USER MANAGEMENT (RBAC) ---
+    // --- USER MANAGEMENT ---
     function addUserManually() {
-        const email = prompt("Enter User Email to grant access:");
+        const email = prompt("Enter User Email:");
         if (!email) return;
         const name = prompt("Enter User Full Name:");
         const role = prompt("Assign Role (admin/agent):", "agent");
-        
-        // Note: In real scenarios, users must sign up first to get a UID. 
-        // This adds a placeholder record.
         const tempId = "user_" + Date.now();
         rtdb.ref(`users/${tempId}`).set({ email: email, name: name, role: role });
     }
@@ -179,9 +215,7 @@
     }
 
     function deleteAccess(uid) {
-        if(confirm("Permanently revoke access for this user?")) {
-            rtdb.ref(`users/${uid}`).remove();
-        }
+        if(confirm("Revoke access?")) rtdb.ref(`users/${uid}`).remove();
     }
 
     // --- SYNC ENGINE ---
@@ -195,14 +229,12 @@
     });
 
     function startSync() {
-        // Stats
         rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
         rtdb.ref('users').on('value', s => {
             document.getElementById('stat-users').innerText = s.numChildren() || 0;
             renderUsers(s);
         });
 
-        // Registry
         rtdb.ref('registry/materials').on('value', snap => {
             const list = document.getElementById('registryList');
             list.innerHTML = "";
@@ -250,14 +282,6 @@
                     </td>
                 </tr>`;
         });
-    }
-
-    let map;
-    function initMap() {
-        if (!map) {
-            map = L.map('adminMap').setView([20.5937, 78.9629], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        }
     }
 
     function logout() { auth.signOut().then(() => window.location.href = "../index.html"); }
