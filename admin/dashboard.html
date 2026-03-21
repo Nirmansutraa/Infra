@@ -20,7 +20,8 @@
         .tab-panel.active { display: block; }
         #adminMap { height: 500px; border-radius: 16px; border: 1px solid #334155; width: 100%; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        td { padding: 16px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; }
+        td { padding: 16px; background: rgba(30, 41, 59, 0.4); border-radius: 12px; vertical-align: middle; }
+        th { padding: 0 16px; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; text-align: left; }
         input { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; color: white; outline: none; }
     </style>
 </head>
@@ -33,6 +34,7 @@
     </div>
     <div class="space-y-2 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active"><span>📊</span> Analytics</button>
+        <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link"><span>📋</span> Data Explorer</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link"><span>📍</span> Live Map</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link"><span>⚒️</span> Registry</button>
         <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link"><span>🛡️</span> RBAC Control</button>
@@ -46,7 +48,26 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass-card p-6 border-l-4 border-orange-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Surveys</p><h3 id="stat-surveys" class="text-4xl font-black mt-2">0</h3></div>
             <div class="glass-card p-6 border-l-4 border-blue-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Total Users</p><h3 id="stat-users" class="text-4xl font-black mt-2">0</h3></div>
-            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Materials</p><h3 id="stat-varieties" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Active Materials</p><h3 id="stat-varieties" class="text-4xl font-black mt-2">0</h3></div>
+        </div>
+    </section>
+
+    <section id="tab-explorer" class="tab-panel">
+        <h2 class="text-3xl font-extrabold mb-8">Field Intelligence Explorer</h2>
+        <div class="glass-card p-6 overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th>Firm / Site</th>
+                        <th>Material Details</th>
+                        <th>Price (₹)</th>
+                        <th>Agent</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="explorerTableBody"></tbody>
+            </table>
         </div>
     </section>
 
@@ -69,12 +90,12 @@
     <section id="tab-rbac" class="tab-panel">
         <h2 class="text-3xl font-extrabold mb-8 text-white">Access Control (RBAC)</h2>
         <div class="glass-card p-6 overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full">
                 <thead>
-                    <tr class="text-[10px] text-slate-500 uppercase font-black">
-                        <th class="pb-4 px-4">User Name & Email</th>
-                        <th class="pb-4 px-4">Access Level</th>
-                        <th class="pb-4 px-4">Action</th>
+                    <tr>
+                        <th>User Name & Email</th>
+                        <th>Access Level</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody"></tbody>
@@ -111,102 +132,32 @@
         if(id === 'map') setTimeout(initMap, 400);
     }
 
-    // --- RBAC MANAGEMENT ---
-    async function manageAccess(uid, name) {
-        const choice = prompt(
-            `Set access for: ${name}\n\n` +
-            `Type the number:\n` +
-            `1. field_staff (Survey Staff)\n` +
-            `2. admin_staff (Admin Staff)\n` +
-            `3. admin (Admin)\n` +
-            `4. super_admin (Super Admin)`
-        );
-
-        let role = "";
-        if (choice === "1") role = "field_staff";
-        else if (choice === "2") role = "admin_staff";
-        else if (choice === "3") role = "admin";
-        else if (choice === "4") role = "super_admin";
-        else return;
-
-        if (confirm(`Are you sure you want to grant ${role.toUpperCase()} access to ${name}?`)) {
-            await rtdb.ref(`users/${uid}/role`).set(role);
-            alert("Access Approved.");
-        }
-    }
-
-    async function deactivateUser(uid, name) {
-        if (confirm(`DANGER:\nAre you sure you want to block all access for ${name}?`)) {
-            await rtdb.ref(`users/${uid}/role`).set('deactivated');
-            alert(`${name} has been deactivated.`);
-        }
-    }
-
-    // --- MATERIAL ACTIONS ---
-    function toggleArchive(cat, variety, currentStatus) {
-        const newStatus = (currentStatus === 'archived') ? 'live' : 'archived';
-        rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(newStatus);
-    }
-
-    function deleteMaterial(cat, variety) {
-        if(confirm(`Permanently delete ${variety}?`)) {
-            rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
-        }
-    }
-
-    function editBrands(cat, variety, currentBrands) {
-        const newBrands = prompt(`Edit Brands for ${variety}:`, currentBrands.join(', '));
-        if (newBrands) {
-            const brandArray = newBrands.split(',').map(b => b.trim());
-            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray);
-        }
-    }
-
-    function startWizard() {
-        const cat = prompt("Material Category?"); if(!cat) return;
-        const variety = prompt("Variety?"); if(!variety) return;
-        const brands = prompt("Brands (comma separated)").split(',').map(b => b.trim());
-        rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands, status: 'live' });
-    }
-
-    // --- MAP ---
-    function initMap() {
-        if (!adminMap) {
-            adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
-            L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
-            markersLayer = L.layerGroup().addTo(adminMap);
-        }
-        syncMarkers();
-    }
-
-    function syncMarkers() {
-        rtdb.ref('surveys').on('value', snap => {
-            markersLayer.clearLayers();
-            snap.forEach(child => {
-                const d = child.val();
-                if (d.location) {
-                    L.marker([d.location.lat, d.location.lng]).addTo(markersLayer)
-                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat}: ${d.var}</small>`);
-                }
-            });
-        });
-    }
-
-    // --- DATA SYNC ---
+    // --- SECURITY & AUTH ---
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid).once('value', snap => {
-                const role = snap.val()?.role;
-                if (!['admin', 'super_admin', 'admin_staff'].includes(role)) window.location.href = "index.html";
-                else startSync();
+                const userData = snap.val();
+                const allowedRoles = ['admin', 'super_admin', 'admin_staff'];
+                if (!userData || !allowedRoles.includes(userData.role)) {
+                    auth.signOut().then(() => { window.location.href = "../index.html"; });
+                } else {
+                    startSync();
+                }
             });
-        } else window.location.href = "index.html";
+        } else {
+            window.location.href = "../index.html";
+        }
     });
 
+    // --- DATA SYNC ENGINES ---
     function startSync() {
-        rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
-        
-        // UPGRADED RBAC SYNC: Show user details, access level, and manage buttons
+        // Surveys Sync (For Analytics & Explorer)
+        rtdb.ref('surveys').on('value', s => {
+            document.getElementById('stat-surveys').innerText = s.numChildren() || 0;
+            renderExplorer(s);
+        });
+
+        // RBAC Sync
         rtdb.ref('users').on('value', s => {
             document.getElementById('stat-users').innerText = s.numChildren() || 0;
             const body = document.getElementById('userTableBody'); body.innerHTML = "";
@@ -214,29 +165,49 @@
                 const data = u.val();
                 const uid = u.key;
                 body.innerHTML += `
-                    <tr class="border-b border-slate-800">
-                        <td class="py-4 px-4">
+                    <tr>
+                        <td>
                             <div class="font-bold text-white">${data.name || 'User'}</div>
                             <div class="text-[10px] text-slate-500">${data.email}</div>
                         </td>
-                        <td class="py-4 px-4">
+                        <td>
                             <span class="bg-slate-800 text-[10px] px-2 py-1 rounded-md font-bold text-orange-400 uppercase">
                                 ${data.role}
                             </span>
                         </td>
-                        <td class="py-4 px-4 flex gap-2">
-                            <button onclick="manageAccess('${uid}', '${data.name}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-bold px-3 py-2 rounded-lg transition">
-                                MANAGE ACCESS
-                            </button>
-                            <button onclick="deactivateUser('${uid}', '${data.name}')" class="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-bold px-3 py-2 rounded-lg transition">
-                                DEACTIVATE
-                            </button>
+                        <td class="flex gap-2">
+                            <button onclick="manageAccess('${uid}', '${data.name}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-bold px-3 py-2 rounded-lg">MANAGE Access</button>
+                            <button onclick="deactivateUser('${uid}', '${data.name}')" class="bg-red-500/20 text-red-500 hover:bg-red-500 text-[10px] font-bold px-3 py-2 rounded-lg">DEACTIVATE</button>
                         </td>
                     </tr>`;
             });
         });
 
+        // Registry Sync
         rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
+    }
+
+    // --- RENDERERS ---
+    function renderExplorer(snap) {
+        const body = document.getElementById('explorerTableBody');
+        body.innerHTML = "";
+        const items = [];
+        snap.forEach(child => items.unshift({id: child.key, ...child.val()})); // Latest first
+
+        items.forEach(d => {
+            const date = new Date(d.timestamp).toLocaleDateString();
+            body.innerHTML += `
+                <tr>
+                    <td class="font-bold text-white">${d.firm}</td>
+                    <td><span class="text-orange-500 font-bold">${d.cat}</span><br><span class="text-[10px] text-slate-400">${d.var}</span></td>
+                    <td class="font-black text-emerald-500">${d.price || 'N/A'}</td>
+                    <td class="text-[10px] text-slate-400">${d.agent.split('@')[0]}</td>
+                    <td class="text-[10px] text-slate-500">${date}</td>
+                    <td>
+                        <button onclick="zoomToSurvey(${d.location?.lat}, ${d.location?.lng})" class="text-[10px] font-bold text-orange-500 underline uppercase">Map View</button>
+                    </td>
+                </tr>`;
+        });
     }
 
     function renderRegistry(snap) {
@@ -265,12 +236,56 @@
         document.getElementById('stat-varieties').innerText = count;
     }
 
-    function filterRegistry() {
-        const val = document.getElementById('regSearch').value.toLowerCase();
-        document.querySelectorAll('#registryList > div').forEach(card => {
-            const text = card.innerText.toLowerCase();
-            card.style.display = text.includes(val) ? 'block' : 'none';
+    // --- MAP FUNCTIONS ---
+    function initMap() {
+        if (!adminMap) {
+            adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
+            markersLayer = L.layerGroup().addTo(adminMap);
+        }
+        syncMarkers();
+    }
+
+    function syncMarkers() {
+        rtdb.ref('surveys').on('value', snap => {
+            markersLayer.clearLayers();
+            snap.forEach(child => {
+                const d = child.val();
+                if (d.location) {
+                    L.marker([d.location.lat, d.location.lng]).addTo(markersLayer)
+                    .bindPopup(`<b style="color:#ff7a00">${d.firm}</b><br><small>${d.cat}: ${d.var}</small>`);
+                }
+            });
         });
+    }
+
+    function zoomToSurvey(lat, lng) {
+        if(!lat || !lng) return alert("No GPS data for this entry.");
+        switchTab('map');
+        setTimeout(() => {
+            adminMap.setView([lat, lng], 15);
+        }, 500);
+    }
+
+    // --- RBAC & REGISTRY LOGIC ---
+    async function manageAccess(uid, name) {
+        const c = prompt(`Set access for ${name}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`);
+        let r = "";
+        if (c === "1") r = "field_staff"; else if (c === "2") r = "admin_staff"; else if (c === "3") r = "admin"; else if (c === "4") r = "super_admin"; else return;
+        if (confirm(`Confirm ${r.toUpperCase()} for ${name}?`)) await rtdb.ref(`users/${uid}/role`).set(r);
+    }
+
+    async function deactivateUser(uid, name) {
+        if (confirm(`Block ${name}?`)) await rtdb.ref(`users/${uid}/role`).set('deactivated');
+    }
+
+    function toggleArchive(cat, variety, status) {
+        rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(status === 'archived' ? 'live' : 'archived');
+    }
+
+    function startWizard() {
+        const cat = prompt("Category?"); const v = prompt("Variety?"); const b = prompt("Brands (comma separated)").split(',').map(i => i.trim());
+        if(cat && v) rtdb.ref(`registry/materials/${cat}/${v}`).set({ brands: b, status: 'live' });
     }
 
     function logout() { auth.signOut(); }
