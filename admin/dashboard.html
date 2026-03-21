@@ -45,7 +45,7 @@
         <h2 class="text-3xl font-extrabold mb-8">Intelligence Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="glass-card p-6 border-l-4 border-orange-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Surveys</p><h3 id="stat-surveys" class="text-4xl font-black mt-2">0</h3></div>
-            <div class="glass-card p-6 border-l-4 border-blue-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Users</p><h3 id="stat-users" class="text-4xl font-black mt-2">0</h3></div>
+            <div class="glass-card p-6 border-l-4 border-blue-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Total Users</p><h3 id="stat-users" class="text-4xl font-black mt-2">0</h3></div>
             <div class="glass-card p-6 border-l-4 border-emerald-500"><p class="text-[10px] font-bold text-slate-400 uppercase">Materials</p><h3 id="stat-varieties" class="text-4xl font-black mt-2">0</h3></div>
         </div>
     </section>
@@ -67,9 +67,18 @@
     </section>
 
     <section id="tab-rbac" class="tab-panel">
-        <h2 class="text-3xl font-extrabold mb-8 text-white">User Access (RBAC)</h2>
+        <h2 class="text-3xl font-extrabold mb-8 text-white">Access Control (RBAC)</h2>
         <div class="glass-card p-6 overflow-x-auto">
-            <table><tbody id="userTableBody"></tbody></table>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] text-slate-500 uppercase font-black">
+                        <th class="pb-4 px-4">User Name & Email</th>
+                        <th class="pb-4 px-4">Access Level</th>
+                        <th class="pb-4 px-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
         </div>
     </section>
 </main>
@@ -102,7 +111,38 @@
         if(id === 'map') setTimeout(initMap, 400);
     }
 
-    // --- UPDATED ACTIONS ---
+    // --- RBAC MANAGEMENT ---
+    async function manageAccess(uid, name) {
+        const choice = prompt(
+            `Set access for: ${name}\n\n` +
+            `Type the number:\n` +
+            `1. field_staff (Survey Staff)\n` +
+            `2. admin_staff (Admin Staff)\n` +
+            `3. admin (Admin)\n` +
+            `4. super_admin (Super Admin)`
+        );
+
+        let role = "";
+        if (choice === "1") role = "field_staff";
+        else if (choice === "2") role = "admin_staff";
+        else if (choice === "3") role = "admin";
+        else if (choice === "4") role = "super_admin";
+        else return;
+
+        if (confirm(`Are you sure you want to grant ${role.toUpperCase()} access to ${name}?`)) {
+            await rtdb.ref(`users/${uid}/role`).set(role);
+            alert("Access Approved.");
+        }
+    }
+
+    async function deactivateUser(uid, name) {
+        if (confirm(`DANGER:\nAre you sure you want to block all access for ${name}?`)) {
+            await rtdb.ref(`users/${uid}/role`).set('deactivated');
+            alert(`${name} has been deactivated.`);
+        }
+    }
+
+    // --- MATERIAL ACTIONS ---
     function toggleArchive(cat, variety, currentStatus) {
         const newStatus = (currentStatus === 'archived') ? 'live' : 'archived';
         rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(newStatus);
@@ -129,6 +169,7 @@
         rtdb.ref(`registry/materials/${cat}/${variety}`).set({ brands: brands, status: 'live' });
     }
 
+    // --- MAP ---
     function initMap() {
         if (!adminMap) {
             adminMap = L.map('adminMap').setView([20.5937, 78.9629], 5);
@@ -151,10 +192,12 @@
         });
     }
 
+    // --- DATA SYNC ---
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid).once('value', snap => {
-                if (snap.val()?.role !== 'admin') window.location.href = "index.html";
+                const role = snap.val()?.role;
+                if (!['admin', 'super_admin', 'admin_staff'].includes(role)) window.location.href = "index.html";
                 else startSync();
             });
         } else window.location.href = "index.html";
@@ -162,18 +205,38 @@
 
     function startSync() {
         rtdb.ref('surveys').on('value', s => document.getElementById('stat-surveys').innerText = s.numChildren() || 0);
+        
+        // UPGRADED RBAC SYNC: Show user details, access level, and manage buttons
         rtdb.ref('users').on('value', s => {
             document.getElementById('stat-users').innerText = s.numChildren() || 0;
             const body = document.getElementById('userTableBody'); body.innerHTML = "";
             s.forEach(u => {
                 const data = u.val();
-                body.innerHTML += `<tr><td class="text-white font-bold">${data.name || 'User'}</td><td>${data.role}</td><td><button onclick="rtdb.ref('users/${u.key}/role').set('admin')" class="text-orange-500 font-bold text-xs uppercase">Approve</button></td></tr>`;
+                const uid = u.key;
+                body.innerHTML += `
+                    <tr class="border-b border-slate-800">
+                        <td class="py-4 px-4">
+                            <div class="font-bold text-white">${data.name || 'User'}</div>
+                            <div class="text-[10px] text-slate-500">${data.email}</div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="bg-slate-800 text-[10px] px-2 py-1 rounded-md font-bold text-orange-400 uppercase">
+                                ${data.role}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 flex gap-2">
+                            <button onclick="manageAccess('${uid}', '${data.name}')" class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-bold px-3 py-2 rounded-lg transition">
+                                MANAGE ACCESS
+                            </button>
+                            <button onclick="deactivateUser('${uid}', '${data.name}')" class="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-bold px-3 py-2 rounded-lg transition">
+                                DEACTIVATE
+                            </button>
+                        </td>
+                    </tr>`;
             });
         });
 
-        rtdb.ref('registry/materials').on('value', snap => {
-            renderRegistry(snap);
-        });
+        rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
     function renderRegistry(snap) {
