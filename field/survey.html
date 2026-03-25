@@ -133,7 +133,7 @@
             box-shadow: 0 0 25px var(--accent); 
         }
 
-        /* True Multi-Tab Chip Grid */
+        /* PRECISION MULTI-TAB GRID (Variety Fix) */
         .tab-grid { 
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -168,7 +168,7 @@
             box-shadow: 0 15px 25px rgba(255,122,0,0.3); 
         }
 
-        /* Logistics Dashboard UI */
+        /* Logistics Dashboard UI (6-Vehicle System) */
         .fleet-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -202,7 +202,7 @@
         
         .circle-btn:active { transform: scale(0.8); }
 
-        /* Evidence Capture Module */
+        /* Evidence Capture Module with Meta-Stamps */
         .photo-slot { 
             aspect-ratio: 1; 
             background: #f1f5f9; 
@@ -235,7 +235,7 @@
             border-top: 1px solid rgba(255,255,255,0.2); 
         }
 
-        /* Sticky Intelligence Action Bar */
+        /* Executive Action Bar */
         .action-bar { 
             position: fixed; 
             bottom: 0; 
@@ -272,8 +272,6 @@
             color: white; 
             box-shadow: 0 18px 40px rgba(16,185,129,0.35); 
         }
-        
-        .btn:active { transform: scale(0.94); }
     </style>
 </head>
 <body>
@@ -281,9 +279,9 @@
 <nav class="bg-white p-9 flex justify-between items-center rounded-b-[60px] border-b mb-16 shadow-sm">
     <div>
         <h1 class="text-3xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[12px] font-bold text-slate-400 uppercase tracking-[4px] mt-1.5">Intelligence Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
+        <p class="text-[12px] font-bold text-slate-400 uppercase tracking-[4px] mt-1.5">Terminal Agent: <span class="text-orange-500" id="staffTag">FS-AUTH...</span></p>
     </div>
-    <button onclick="auth.signOut()" class="text-red-500 text-[13px] font-black uppercase tracking-widest bg-red-50 px-8 py-4 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm">Logout</button>
+    <button onclick="auth.signOut()" class="text-red-500 text-[13px] font-black uppercase tracking-widest bg-red-50 px-8 py-4 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all">Logout</button>
 </nav>
 
 <div class="max-w-md mx-auto px-9">
@@ -304,37 +302,37 @@
         <input id="firmName" placeholder="Enter Full Registered Firm Name" class="mt-12">
         
         <div class="mt-16 pt-12 border-t border-slate-100">
-            <p class="text-[13px] font-black text-orange-500 uppercase mb-8 tracking-widest">Primary Owner Hub</p>
+            <p class="text-[13px] font-black text-orange-500 uppercase mb-8">Primary Owner Hub</p>
             <input id="ownerName" placeholder="Owner Legal Name">
             <div class="grid grid-cols-2 gap-8 mt-2">
                 <div>
                     <label>Direct Phone</label>
-                    <input id="ownerPhone" type="tel" placeholder="+91 Mobile" oninput="Validation.phone(this, 'ownerWa')">
+                    <input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')">
                 </div>
                 <div>
                     <div class="flex items-center gap-3">
                         <label>Sync WA</label>
                         <input type="checkbox" id="syncOwner" class="w-5 h-5 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
                     </div>
-                    <input id="ownerWa" type="tel" placeholder="+91 WhatsApp">
+                    <input id="ownerWa" type="tel" placeholder="+91">
                 </div>
             </div>
         </div>
 
         <div class="mt-16 pt-12 border-t border-slate-100">
-            <p class="text-[13px] font-black text-blue-500 uppercase mb-8 tracking-widest">Operational Manager</p>
+            <p class="text-[13px] font-black text-blue-500 uppercase mb-8">Operational Manager</p>
             <input id="mgrName" placeholder="Manager Name">
             <div class="grid grid-cols-2 gap-8 mt-2">
                 <div>
                     <label>Manager Phone</label>
-                    <input id="mgrPhone" type="tel" placeholder="+91 Mobile" oninput="Validation.phone(this, 'mgrWa')">
+                    <input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')">
                 </div>
                 <div>
                     <div class="flex items-center gap-3">
                         <label>Sync WA</label>
                         <input type="checkbox" id="syncMgr" class="w-5 h-5 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
                     </div>
-                    <input id="mgrWa" type="tel" placeholder="+91 WhatsApp">
+                    <input id="mgrWa" type="tel" placeholder="+91">
                 </div>
             </div>
         </div>
@@ -347,9 +345,9 @@
         <textarea id="address" class="h-40 text-[14px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Physical address will populate upon GPS lock..." readonly></textarea>
         
         <div class="mt-14">
-            <label>Field Evidence Grid (Max 10 with Meta-Stamps)</label>
+            <label>Field Evidence Matrix (Max 10 with Meta-Stamps)</label>
             <div class="grid grid-cols-4 gap-6 mt-8" id="photoGrid">
-                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-200 hover:text-slate-400 transition-all">+</button>
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl">+</button>
             </div>
             <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
         </div>
@@ -357,8 +355,7 @@
 
     <div class="card">
         <span class="section-label">04. Material Intelligence (Admin Synced)</span>
-        <div id="matSelector" class="space-y-6">
-            </div>
+        <div id="matSelector" class="space-y-6"></div>
 
         <div id="varietyPanel" class="mt-16 hidden bg-slate-50 p-14 rounded-[50px] border border-slate-200 shadow-inner">
             <label class="section-label" style="color:#64748b">Step 2: Select Variety Tabs</label>
@@ -373,19 +370,18 @@
         </div>
 
         <label class="section-label mt-16" style="color:#64748b">Step 4: Market Price Quote (₹)</label>
-        <input type="number" id="price" placeholder="Enter standard rate per standard unit" oninput="Survey.updateState('price', this.value)">
+        <input type="number" id="price" placeholder="Rate per unit" oninput="Survey.updateState('price', this.value)">
     </div>
 
     <div class="card">
         <span class="section-label">05. Transportation Fleet Capacity</span>
-        <div id="fleetGrid" class="grid grid-cols-2 gap-10">
-            </div>
+        <div id="fleetGrid" class="grid grid-cols-2 gap-10"></div>
     </div>
 </div>
 
 <div class="action-bar">
     <button onclick="Draft.save()" class="btn btn-slate">💾 Save Draft</button>
-    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Cloud Sync</button>
+    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Submit Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -395,8 +391,8 @@
 
 <script>
     /**
-     * REGIONAL SMART ID GENERATOR
-     * Implements explicit Rajasthan-Udaipur Logic
+     * REGIONAL SMART ID ENGINE
+     * Implements Rajasthan-Udaipur Logic based on supplier telemetry
      */
     function generateSmartID(supplierType, activeMaterial, currentCount) {
         const state = "RJ", dist = "UDR";
@@ -411,8 +407,7 @@
         else if (matSearch.includes("stone")) matCode = "O";
         else if (matSearch.includes("brick")) matCode = "B";
 
-        const serial = String(currentCount + 1).padStart(3, '0');
-        return `${state}-${dist}-${typeCode}${matCode}-${serial}`;
+        return `${state}-${dist}-${typeCode}${matCode}-${String(currentCount + 1).padStart(3, '0')}`;
     }
 
     const firebaseConfig = {
@@ -429,17 +424,9 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
-    // Terminal Global State Management
     window.Survey = {
         state: { 
-            location: null, 
-            mat: null, 
-            varieties: [], 
-            brands: [], 
-            fleet: {}, 
-            photos: [], 
-            price: null, 
-            trackingId: "" 
+            location: null, mat: null, varieties: [], brands: [], fleet: {}, photos: [], price: null, trackingId: "" 
         },
         
         updateState(key, val) { 
@@ -448,50 +435,28 @@
         },
 
         async refreshID() {
-            try {
-                const sType = document.getElementById('supplierType').value;
-                const snap = await rtdb.ref('surveys').once('value');
-                const totalCount = snap.numChildren();
-                
-                const smartId = generateSmartID(sType, this.state.mat || "Mixed", totalCount);
-                document.getElementById('trackId').innerText = smartId;
-                this.state.trackingId = smartId;
-            } catch (error) {
-                console.error("ID Generation Fault", error);
-            }
+            const sType = document.getElementById('supplierType').value;
+            const snap = await rtdb.ref('surveys').once('value');
+            const smartId = generateSmartID(sType, this.state.mat || "Mixed", snap.numChildren());
+            document.getElementById('trackId').innerText = smartId;
+            this.state.trackingId = smartId;
         },
 
         async sync() {
             const firm = document.getElementById('firmName').value;
             if (!this.state.location || !firm) {
-                return alert("❌ Node Fault: Firm Name and GPS Geotag are mandatory for submission.");
+                return alert("❌ Node Fault: Firm Name and GPS Geotag are mandatory.");
             }
-            
             const btn = document.getElementById('sBtn');
-            btn.innerText = "UPLOADING...";
-            btn.disabled = true;
-
+            btn.innerText = "TRANSMITTING...";
+            
             const payload = { 
-                ...this.state, 
-                firm: firm,
-                ownerName: document.getElementById('ownerName').value,
-                ownerPhone: document.getElementById('ownerPhone').value,
-                mgrName: document.getElementById('mgrName').value,
-                mgrPhone: document.getElementById('mgrPhone').value,
-                agent: auth.currentUser.email, 
-                timestamp: Date.now() 
+                ...this.state, firm, agent: auth.currentUser.email, timestamp: Date.now() 
             };
 
-            try {
-                await rtdb.ref('surveys').push(payload);
-                alert("✅ Sync Success: Node Synchronized to Singapore Cloud.");
-                localStorage.removeItem('ns_v25_draft');
-                location.reload();
-            } catch (e) {
-                alert("Transmission Fault: " + e.message);
-                btn.innerText = "🚀 Submit Sync";
-                btn.disabled = false;
-            }
+            await rtdb.ref('surveys').push(payload);
+            alert("✅ Node Synchronized.");
+            location.reload();
         }
     };
 
@@ -501,20 +466,15 @@
             if (val.length > 10) val = val.slice(-10);
             if (val.length === 10) { 
                 input.value = "+91 " + val; 
-                // Auto-Sync Switch: Update WhatsApp field if toggle is checked
-                const isOwnerField = (input.id === 'ownerPhone');
-                const toggle = document.getElementById(isOwnerField ? 'syncOwner' : 'syncMgr');
-                if (toggle.checked) {
-                    document.getElementById(waId).value = "+91 " + val;
-                }
+                const syncToggle = document.getElementById(input.id === 'ownerPhone' ? 'syncOwner' : 'syncMgr');
+                if (syncToggle.checked) document.getElementById(waId).value = "+91 " + val;
             }
         },
         syncWA(phoneId, waId, isChecked) {
             const phone = document.getElementById(phoneId);
             const wa = document.getElementById(waId);
             if (isChecked && phone.value.length >= 10) { 
-                wa.value = phone.value; 
-                wa.readOnly = true; 
+                wa.value = phone.value; wa.readOnly = true; 
             } else { 
                 wa.readOnly = false; 
             }
@@ -522,8 +482,7 @@
     };
 
     window.Geo = {
-        map: null,
-        marker: null,
+        map: null, marker: null,
         init() {
             this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
@@ -532,59 +491,39 @@
             navigator.geolocation.getCurrentPosition(async p => {
                 const { latitude, longitude } = p.coords;
                 Survey.state.location = { lat: latitude, lng: longitude };
-                
                 this.map.setView([latitude, longitude], 16);
                 if (this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                
-                // Nominatim Reverse Geocoding Module
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    document.getElementById('address').value = data.display_name || "Spatial Lock Verified";
-                } catch (e) {
-                    document.getElementById('address').value = `Verified: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                }
-            }, (err) => {
-                alert("GPS Protocol Error: Access denied or signal unavailable.");
-            }, { enableHighAccuracy: true });
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                const data = await res.json();
+                document.getElementById('address').value = data.display_name || "GPS Lock Verified";
+            }, null, { enableHighAccuracy: true });
         }
     };
 
     window.Evidence = {
         handle(input) {
-            if (!Survey.state.location) return alert("📍 Evidence Fault: GPS lock mandatory for fraud protection stamps.");
-            if (Survey.state.photos.length >= 10) return alert("Storage Exhausted: Max 10 photos per node.");
-            
-            const file = input.files[0];
+            if (!Survey.state.location) return alert("📍 Active GPS required for meta-stamps.");
             const reader = new FileReader();
             reader.onload = e => {
-                // Fraud Prevention: Hard-stamp time and location into preview object
-                const photoObj = { 
+                Survey.state.photos.push({ 
                     src: e.target.result, 
                     time: new Date().toLocaleString(), 
-                    lat: Survey.state.location.lat.toFixed(5),
-                    lng: Survey.state.location.lng.toFixed(5)
-                };
-                Survey.state.photos.push(photoObj);
+                    lat: Survey.state.location.lat.toFixed(5) 
+                });
                 this.render();
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(input.files[0]);
         },
         render() {
             const grid = document.getElementById('photoGrid');
             const addBtn = grid.firstElementChild;
-            grid.innerHTML = ""; 
-            grid.appendChild(addBtn);
-            
+            grid.innerHTML = ""; grid.appendChild(addBtn);
             Survey.state.photos.forEach(p => {
                 grid.innerHTML += `
                     <div class="photo-slot">
                         <img src="${p.src}" class="photo-img">
-                        <div class="stamp-overlay">
-                            ${p.time}<br>
-                            GPS: ${p.lat}, ${p.lng}
-                        </div>
+                        <div class="stamp-overlay">${p.time}<br>LAT: ${p.lat}</div>
                     </div>`;
             });
         }
@@ -592,40 +531,30 @@
 
     /**
      * MATERIAL MULTI-TAB SYNC ENGINE
-     * Implements Dual-Grid chip architecture for Varieties and Brands
+     * Renders Varieties and Brands as individual Grid Tabs
      */
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
             const cont = document.getElementById('matSelector');
             cont.innerHTML = "";
             window.registryData = snap.val() || {};
-            
             Object.keys(window.registryData).forEach(cat => {
-                // Archive Check: Filter out retired categories
                 if (window.registryData[cat].status === 'archived') return;
-                
                 cont.innerHTML += `
                     <div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')">
                         <span class="text-[12px] font-black uppercase tracking-[3px]">${cat}</span>
                         <div class="glow-dot"></div>
                     </div>`;
             });
-            Survey.refreshID();
         });
     }
 
     window.selectMat = function(m) {
         document.querySelectorAll('.mat-item').forEach(r => r.classList.remove('active'));
         document.getElementById('mat-'+m).classList.add('active');
+        Survey.state.mat = m; Survey.state.varieties = []; Survey.state.brands = [];
         
-        Survey.state.mat = m; 
-        Survey.state.varieties = []; 
-        Survey.state.brands = []; 
-        Survey.refreshID();
-
-        // UI Reset Protocols
-        const vg = document.getElementById('varietyGrid'); 
-        vg.innerHTML = "";
+        const vg = document.getElementById('varietyGrid'); vg.innerHTML = "";
         document.getElementById('varietyPanel').classList.remove('hidden');
         document.getElementById('brandSection').classList.add('hidden');
 
@@ -635,27 +564,19 @@
                 // Tab Logic: Explicitly render each Variety as an Individual chip/tab
                 if (vKey !== 'status' && typeof cd[vKey] === 'object') {
                     vg.innerHTML += `
-                        <div class="chip" data-variety-id="${vKey}" onclick="toggleVariety('${vKey}', this)">
+                        <div class="chip" onclick="toggleVariety('${vKey}', this)">
                             ${vKey}
                         </div>`;
                 }
             });
         }
-        document.getElementById('varietyPanel').scrollIntoView({ behavior: 'smooth' });
     };
 
     window.toggleVariety = function(v, el) {
-        // Toggle Local State for independent tabs
         el.classList.toggle('active');
-        
         const idx = Survey.state.varieties.indexOf(v);
-        if (idx > -1) {
-            Survey.state.varieties.splice(idx, 1);
-        } else {
-            Survey.state.varieties.push(v);
-        }
+        if (idx > -1) { Survey.state.varieties.splice(idx, 1); } else { Survey.state.varieties.push(v); }
         
-        // Dynamic Brand Aggregation Logic
         const bg = document.getElementById('brandGrid');
         const section = document.getElementById('brandSection');
         bg.innerHTML = "";
@@ -663,13 +584,10 @@
         if (Survey.state.varieties.length > 0) {
             section.classList.remove('hidden');
             const uniqueBrands = new Set();
-            
-            // Map every active variety chip to its respective brand registry
-            Survey.state.varieties.forEach(varKey => {
-                const brands = window.registryData[Survey.state.mat][varKey]?.brands || [];
+            Survey.state.varieties.forEach(vKey => {
+                const brands = window.registryData[Survey.state.mat][vKey]?.brands || [];
                 brands.forEach(b => uniqueBrands.add(b));
             });
-            
             uniqueBrands.forEach(b => {
                 const isActive = Survey.state.brands.includes(b) ? 'active' : '';
                 bg.innerHTML += `
@@ -677,19 +595,13 @@
                         ${b}
                     </div>`;
             });
-        } else {
-            section.classList.add('hidden');
-        }
+        } else { section.classList.add('hidden'); }
     };
 
     window.toggleBrand = function(b, el) {
         el.classList.toggle('active');
         const idx = Survey.state.brands.indexOf(b);
-        if (idx > -1) {
-            Survey.state.brands.splice(idx, 1);
-        } else {
-            Survey.state.brands.push(b);
-        }
+        if (idx > -1) { Survey.state.brands.splice(idx, 1); } else { Survey.state.brands.push(b); }
     };
 
     window.fleetStep = function(t, v) {
@@ -698,20 +610,11 @@
         document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t];
     };
 
-    window.Draft = { 
-        save() { 
-            Survey.state.firmName = document.getElementById('firmName').value;
-            localStorage.setItem('ns_v25_draft', JSON.stringify(Survey.state)); 
-            alert("💾 Draft Protocol Secured: Local Cache Updated."); 
-        } 
-    };
+    window.Draft = { save() { localStorage.setItem('ns_v27_draft', JSON.stringify(Survey.state)); alert("💾 Draft Secured."); } };
 
-    // Global Initializer
+    // Terminal Initializer: Deploys 6 Vehicle Types
     window.onload = () => {
-        Geo.init(); 
-        syncRegistry();
-        
-        // Full Fleet Deployment: 6 Vehicle Types
+        Geo.init(); syncRegistry();
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         const fGrid = document.getElementById('fleetGrid');
         fGrid.innerHTML = fTypes.map(t => `
@@ -725,11 +628,8 @@
             </div>`).join('');
             
         auth.onAuthStateChanged(u => {
-            if (!u) {
-                location.href = "../index.html";
-            } else {
-                document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-8).toUpperCase();
-            }
+            if (!u) location.href = "../index.html";
+            else document.getElementById('staffTag').innerText = "FS-" + u.uid.slice(-8).toUpperCase();
         });
     };
 </script>
