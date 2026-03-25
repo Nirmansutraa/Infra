@@ -3,43 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Command Center</title>
+    <title>Infra V2 | Enterprise Command Center</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --accent: #ff7a00; --bg-deep: #020617; --sidebar: #0f172a; --card-glass: rgba(30, 41, 59, 0.5); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-deep); color: #f8fafc; overflow: hidden; }
+        :root { 
+            --accent: #ff7a00; 
+            --bg-deep: #020617; 
+            --sidebar: #0f172a; 
+            --card-glass: rgba(30, 41, 59, 0.45); 
+        }
         
-        /* Modernized Command Sidebar */
-        .sidebar { width: 280px; height: 100vh; background: var(--sidebar); border-right: 1px solid #1e293b; position: fixed; z-index: 100; transition: 0.3s; }
-        .main-content { margin-left: 280px; height: 100vh; overflow-y: auto; padding: 50px; background: radial-gradient(circle at top right, #0f172a, #020617); }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-deep); 
+            color: #f8fafc; 
+            overflow: hidden; 
+        }
         
-        /* High-End Glassmorphism Card System */
-        .glass-card { background: var(--card-glass); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .glass-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        /* Modernized Fixed Command Sidebar Architecture */
+        .sidebar { 
+            width: 280px; 
+            height: 100vh; 
+            background: var(--sidebar); 
+            border-right: 1px solid #1e293b; 
+            position: fixed; 
+            z-index: 100; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
         
-        .nav-link { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-radius: 14px; color: #94a3b8; width: 100%; transition: 0.2s; text-align: left; font-weight: 600; font-size: 14px; }
-        .nav-link.active { background: var(--accent); color: white; box-shadow: 0 10px 20px rgba(255, 122, 0, 0.25); }
-        .nav-link:hover:not(.active) { background: rgba(255,255,255,0.03); color: white; }
+        .main-content { 
+            margin-left: 280px; 
+            height: 100vh; 
+            overflow-y: auto; 
+            padding: 50px; 
+            background: radial-gradient(circle at top right, #0f172a, #020617); 
+        }
+        
+        /* High-End Glassmorphism Card Logic */
+        .glass-card { 
+            background: var(--card-glass); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.06); 
+            border-radius: 24px; 
+            transition: 0.4s ease; 
+        }
+        
+        .glass-card:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-5px); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+        }
+        
+        .nav-link { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 15px 22px; 
+            border-radius: 16px; 
+            color: #94a3b8; 
+            width: 100%; 
+            transition: 0.3s; 
+            text-align: left; 
+            font-weight: 600; 
+            font-size: 14px; 
+        }
+        
+        .nav-link.active { 
+            background: var(--accent); 
+            color: white; 
+            box-shadow: 0 12px 24px rgba(255, 122, 0, 0.3); 
+        }
 
-        .tab-panel { display: none; animation: fadeIn 0.4s ease; }
+        .tab-panel { display: none; animation: slideIn 0.5s ease; }
         .tab-panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        #adminMap { height: 650px; border-radius: 24px; border: 1px solid #334155; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        #adminMap { 
+            height: 680px; 
+            border-radius: 28px; 
+            border: 1px solid #334155; 
+            width: 100%; 
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6); 
+        }
         
-        /* Executive Table Data Grid */
-        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        td { padding: 20px; background: rgba(30, 41, 59, 0.3); border-top: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
-        td:first-child { border-radius: 16px 0 0 16px; border-left: 1px solid rgba(255,255,255,0.03); }
-        td:last-child { border-radius: 0 16px 16px 0; border-right: 1px solid rgba(255,255,255,0.03); }
-        th { padding: 0 20px 10px; text-transform: uppercase; font-size: 11px; font-weight: 900; color: #64748b; text-align: left; letter-spacing: 1px; }
+        /* High-Performance Table Grid Modules */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+        td { padding: 22px; background: rgba(30, 41, 59, 0.25); border-top: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
+        td:first-child { border-radius: 18px 0 0 18px; border-left: 1px solid rgba(255,255,255,0.02); }
+        td:last-child { border-radius: 0 18px 18px 0; border-right: 1px solid rgba(255,255,255,0.02); }
+        th { padding: 0 22px 12px; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; text-align: left; letter-spacing: 2px; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
@@ -47,63 +105,56 @@
 <body class="flex">
 
 <nav class="sidebar p-8 flex flex-col">
-    <div class="mb-12 px-2">
+    <div class="mb-14 px-2 text-center">
         <h1 class="text-3xl font-black text-white italic tracking-tighter">INFRA<span class="text-orange-500">V2</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px] mt-1">Command Dashboard</p>
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[5px] mt-1.5">Command Terminal</p>
     </div>
     
     <div class="space-y-3 flex-1">
-        <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 Analytics & Network</button>
+        <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 System Analytics</button>
         <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Site Explorer</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Live Trace Map</button>
-        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Admin RBAC Matrix</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Admin Access Matrix</button>
     </div>
 
-    <div class="mt-auto pt-8 border-t border-slate-800">
-        <p class="text-[10px] text-slate-500 font-bold mb-4 uppercase tracking-widest">Active Operator</p>
-        <div id="operatorId" class="text-xs font-bold text-orange-400 mb-6 truncate">AUTHENTICATING...</div>
-        <button onclick="logout()" class="w-full py-4 rounded-xl bg-red-500/10 text-red-500 text-[11px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">🔒 Secure Logout</button>
+    <div class="mt-auto pt-10 border-t border-slate-800">
+        <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase tracking-widest">Active Admin</p>
+        <div id="operatorId" class="text-xs font-bold text-orange-400 mb-8 truncate tracking-wide">AUTHENTICATING...</div>
+        <button onclick="logout()" class="w-full py-5 rounded-2xl bg-red-500/10 text-red-500 text-[11px] font-black uppercase hover:bg-red-500 transition-all shadow-sm">🔒 Secure Logout</button>
     </div>
 </nav>
 
 <main class="main-content w-full">
     <section id="tab-dash" class="tab-panel active">
-        <div class="flex justify-between items-end mb-10">
+        <div class="flex justify-between items-end mb-12">
             <div>
-                <h2 class="text-4xl font-black tracking-tighter">Intelligence Overview</h2>
-                <p class="text-slate-400 mt-2">Real-time network telemetry for Udaipur District</p>
+                <h2 class="text-5xl font-black tracking-tighter text-white">Network Overview</h2>
+                <p class="text-slate-400 mt-3 text-lg">Real-time Telemetry</p>
             </div>
-            <div id="syncClock" class="text-emerald-500 font-mono text-sm font-bold">● SYSTEM LIVE</div>
+            <div class="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <span class="text-emerald-500 font-mono text-xs font-black uppercase tracking-widest">● Database Connected</span>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="glass-card p-10 border-l-4 border-orange-500">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Nodes Logged</p>
-                <h3 id="stat-surveys" class="text-5xl font-black mt-4">0</h3>
-            </div>
-            <div class="glass-card p-10 border-l-4 border-blue-500">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Field Agents Active</p>
-                <h3 id="stat-users" class="text-5xl font-black mt-4">0</h3>
-            </div>
-            <div class="glass-card p-10 border-l-4 border-emerald-500">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Verified Captures</p>
-                <h3 id="stat-sites" class="text-5xl font-black mt-4">0</h3>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="glass-card p-12 border-l-8 border-orange-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Total Site Nodes</p><h3 id="stat-surveys" class="text-6xl font-black mt-5">0</h3></div>
+            <div class="glass-card p-12 border-l-8 border-blue-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Active Agents</p><h3 id="stat-users" class="text-6xl font-black mt-5">0</h3></div>
+            <div class="glass-card p-12 border-l-8 border-emerald-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Verified Site proofs</p><h3 id="stat-sites" class="text-6xl font-black mt-5">0</h3></div>
         </div>
     </section>
 
     <section id="tab-explorer" class="tab-panel">
-        <h2 class="text-4xl font-black tracking-tighter mb-10">Network Node Explorer</h2>
-        <div class="glass-card p-8 overflow-x-auto">
+        <h2 class="text-5xl font-black tracking-tighter mb-12">Site Intelligence Explorer</h2>
+        <div class="glass-card p-10 overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr>
                         <th>Identity & Regional ID</th>
-                        <th>Material Intelligence</th>
-                        <th>Logistics Fleet</th>
+                        <th>Material Intel</th>
+                        <th>Fleet Intelligence</th>
                         <th>Capture Agent</th>
                         <th>Timestamp</th>
-                        <th>Spatial View</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="explorerTableBody">
@@ -113,25 +164,18 @@
     </section>
 
     <section id="tab-map" class="tab-panel">
-        <h2 class="text-4xl font-black tracking-tighter mb-10">Live Site Tracing</h2>
-        <div class="glass-card p-3 shadow-2xl">
+        <h2 class="text-5xl font-black tracking-tighter mb-12 text-white">Live Node Tracing</h2>
+        <div class="glass-card p-4 shadow-2xl">
             <div id="adminMap"></div>
         </div>
     </section>
 
     <section id="tab-rbac" class="tab-panel">
-        <h2 class="text-4xl font-black tracking-tighter mb-10">Access Control Matrix</h2>
-        <div class="glass-card p-8 overflow-x-auto">
+        <h2 class="text-5xl font-black tracking-tighter mb-12">Access Protocol Matrix</h2>
+        <div class="glass-card p-10 overflow-x-auto">
             <table class="w-full">
-                <thead>
-                    <tr>
-                        <th>Operator Identity</th>
-                        <th>Current Access Clearance</th>
-                        <th>Clearance Modification</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    </tbody>
+                <thead><tr><th>Operator Identity</th><th>Access Clearance</th><th>Modification Protocol</th></tr></thead>
+                <tbody id="userTableBody"></tbody>
             </table>
         </div>
     </section>
@@ -144,16 +188,13 @@
 
 <script>
     /**
-     * CORE INFRA COMMAND ENGINE (v38.0)
-     * Restored to full 610+ expanded logic state
+     * PRECISION COMMAND ENGINE (v41.0)
+     * Restored to full expanded logic state
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
-        storageBucket: "infradepo.firebasestorage.app",
-        messagingSenderId: "733942710671",
-        appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
 
@@ -162,23 +203,22 @@
     const auth = firebase.auth();
     let adminMap, markersLayer;
 
-    // UI State Management
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
         
-        // Leaflet Trigger: Resize map to prevent gray tile error
+        // Map Trigger: Force resize to prevent gray tile error
         if(id === 'map') {
             setTimeout(() => {
                 if(!adminMap) initMap();
                 else adminMap.invalidateSize();
-            }, 400);
+            }, 500);
         }
     }
 
-    // AUTHENTICATION & SECURITY GUARD
+    // AUTH GUARD & MASTER BYPASS PROTOCOL
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('operatorId').innerText = user.email;
@@ -188,12 +228,10 @@
             if (masters.includes(user.email)) {
                 startSync();
             } else {
-                // Secondary RBAC Tier Clearance check
                 rtdb.ref('users/' + user.uid).once('value', snap => {
                     const data = snap.val();
-                    const tiers = ['admin', 'super_admin', 'admin_staff'];
-                    if (!data || !tiers.includes(data.role)) {
-                        alert("UNAUTHORIZED CLEARANCE. TERMINATING SESSION.");
+                    if (!data || !['admin', 'super_admin'].includes(data.role)) {
+                        alert("Unauthorized Access Clearance.");
                         auth.signOut().then(() => { window.location.href = "../index.html"; });
                     } else {
                         startSync();
@@ -205,68 +243,74 @@
         }
     });
 
-    // DATA SYNCHRONIZATION ENGINE
+    /**
+     * DATA SYNC MODULE (FIXED: Recent Data Priority)
+     * Fetches current data first by applying explicit timestamp sorting
+     */
     function startSync() {
         // Site Intelligence listener
-        rtdb.ref('surveys').on('value', snap => {
+        rtdb.ref('surveys').orderByChild('timestamp').on('value', snap => {
             const count = snap.numChildren() || 0;
             document.getElementById('stat-surveys').innerText = count;
             document.getElementById('stat-sites').innerText = count;
             renderExplorer(snap);
         });
 
-        // Agent Identity listener
+        // User Identity listener
         rtdb.ref('users').on('value', snap => {
             document.getElementById('stat-users').innerText = snap.numChildren() || 0;
             renderRBAC(snap);
         });
     }
 
-    // EXPLORER RENDERER ENGINE
     function renderExplorer(snap) {
         const body = document.getElementById('explorerTableBody');
         body.innerHTML = "";
         
         const nodes = [];
-        snap.forEach(child => nodes.unshift({ id: child.key, ...child.val() }));
+        snap.forEach(child => { 
+            nodes.push({ id: child.key, ...child.val() }); 
+        });
+
+        /**
+         * CHRONOLOGICAL SORTING FIX
+         * Ensures Today's Data (March 25) appears at the absolute top
+         */
+        nodes.sort((a, b) => b.timestamp - a.timestamp); 
 
         nodes.forEach(n => {
-            const date = new Date(n.timestamp).toLocaleDateString();
+            const date = new Date(n.timestamp).toLocaleDateString('en-IN');
             const time = new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Fleet aggregation logic: tractor, truck, etc.
+            // Fleet Logic Aggregation
             const f = n.fleet || {};
-            const fleetData = Object.entries(f)
-                .filter(([_, qty]) => qty > 0)
-                .map(([type, qty]) => `<span class="bg-slate-700/50 px-2 py-1 rounded text-[9px] mr-1">${type}:${qty}</span>`)
+            const fleetStr = Object.entries(f)
+                .filter(([_, q]) => q > 0)
+                .map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`)
                 .join('') || '<span class="text-slate-600">None</span>';
 
             body.innerHTML += `
                 <tr>
                     <td>
                         <div class="font-black text-white text-base">${n.firm}</div>
-                        <div class="text-[9px] text-orange-500 font-bold uppercase tracking-widest mt-1">${n.trackingId || 'TRC-PENDING'}</div>
+                        <div class="text-[9px] text-orange-500 font-bold uppercase mt-1.5">${n.trackingId || 'N/A'}</div>
                     </td>
                     <td>
                         <span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span>
-                        <div class="text-[10px] text-slate-400 mt-1 truncate max-w-[150px]">
+                        <div class="text-[10px] text-slate-400 mt-1 uppercase font-bold truncate max-w-[180px]">
                             ${(n.brands || []).join(', ')}
                         </div>
                     </td>
-                    <td><div class="flex flex-wrap gap-1">${fleetData}</div></td>
+                    <td><div class="flex flex-wrap gap-1">${fleetStr}</div></td>
+                    <td><div class="text-[11px] font-bold text-slate-300">${n.agent_identity || n.agent || 'Remote Agent'}</div></td>
+                    <td><div class="text-[10px] font-black text-slate-400">${date}</div><div class="text-[9px] text-slate-600 font-bold">${time}</div></td>
                     <td>
-                        <div class="text-[11px] font-bold text-slate-300">${n.agent_identity || n.agent || 'Unknown'}</div>
-                        <div class="text-[9px] text-slate-500 uppercase">${(n.agent || '').split('@')[0]}</div>
-                    </td>
-                    <td><div class="text-[10px] font-bold text-slate-400">${date}</div><div class="text-[9px] text-slate-600">${time}</div></td>
-                    <td>
-                        <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-4 py-2 rounded-lg bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase hover:bg-orange-500 hover:text-white transition-all">Locate Trace</button>
+                        <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Track Node</button>
                     </td>
                 </tr>`;
         });
     }
 
-    // RBAC MATRIX RENDERER
     function renderRBAC(snap) {
         const body = document.getElementById('userTableBody');
         body.innerHTML = "";
@@ -276,28 +320,27 @@
             body.innerHTML += `
                 <tr>
                     <td>
-                        <div class="font-bold text-white">${d.name || 'Site Agent'}</div>
-                        <div class="text-[10px] text-slate-500">${d.email}</div>
+                        <div class="font-black text-white text-base">${d.name || 'Anonymous Agent'}</div>
+                        <div class="text-[10px] text-slate-500 font-bold mt-1">${d.email}</div>
                     </td>
                     <td>
-                        <span class="bg-slate-800 text-[10px] px-3 py-1.5 rounded-full font-black text-orange-400 uppercase tracking-widest">
-                            ${d.role || 'Guest'}
+                        <span class="bg-slate-800 text-[10px] px-4 py-2 rounded-full font-black text-orange-400 uppercase tracking-[2px] border border-slate-700">
+                            ${d.role || 'Field_Staff'}
                         </span>
                     </td>
                     <td>
-                        <button onclick="modifyAccessClearance('${u.key}', '${d.name || d.email}')" class="bg-orange-500 text-white text-[10px] font-black px-5 py-2.5 rounded-xl shadow-lg">GRANT Clearances</button>
+                        <button onclick="modifyClearance('${u.key}', '${d.name || d.email}')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3 rounded-2xl shadow-xl hover:bg-blue-500 transition-all">Elevate Clearance</button>
                     </td>
                 </tr>`;
         });
     }
 
-    // SPATIAL INTELLIGENCE HUB
+    // SPATIAL ANALYTICS (LAZY LOADING INTEGRATED)
     function initMap() {
         adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
         L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
         markersLayer = L.layerGroup().addTo(adminMap);
         
-        // Fetch marker positions with shallow query
         rtdb.ref('surveys').on('value', snap => {
             markersLayer.clearLayers();
             snap.forEach(child => {
@@ -306,27 +349,25 @@
                     const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
                     
                     /**
-                     * LAZY LOADING PERFORMANCE FIX
-                     * Download heavy images only when marker is clicked
+                     * LAZY LOADING performance fix to stop download spike
                      */
                     marker.on('click', () => {
                         const photos = (d.photos || []).map(p => `
-                            <div class="mt-3">
-                                <img src="${p.src}" class="w-full rounded-lg border border-slate-700">
-                                <div class="text-[8px] text-slate-500 mt-1 uppercase font-bold">${p.time} | LOC: ${p.lat}</div>
+                            <div class="mt-4 border-t border-slate-800 pt-4">
+                                <img src="${p.src}" class="w-full rounded-2xl shadow-xl border border-slate-700">
+                                <div class="text-[9px] text-slate-500 mt-2 font-black uppercase">${p.time}</div>
                             </div>`).join('');
 
                         marker.bindPopup(`
-                            <div class="w-64 p-2 bg-[#0f172a] text-white">
-                                <h4 class="text-orange-500 font-black text-lg leading-tight">${d.firm}</h4>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">ID: ${d.trackingId || 'N/A'}</p>
-                                <hr class="my-3 border-slate-700">
-                                <div class="text-[11px] font-bold">
-                                    <span class="text-slate-400">MATERIAL:</span> ${d.mat}<br>
-                                    <span class="text-slate-400">BRANDS:</span> ${(d.brands || []).join(', ')}
+                            <div class="w-72 p-3 bg-[#0f172a] text-white">
+                                <h4 class="text-orange-500 font-black text-xl italic">${d.firm}</h4>
+                                <hr class="my-4 border-slate-800">
+                                <div class="text-[12px] font-bold">
+                                    <p class="text-white uppercase tracking-wide">Category: ${d.mat}</p>
+                                    <p class="text-slate-400 uppercase mt-2">Agent: ${d.agent_identity || d.agent}</p>
                                 </div>
-                                <div class="max-h-64 overflow-y-auto mt-2">
-                                    ${photos}
+                                <div class="max-h-72 overflow-y-auto mt-4 pr-2">
+                                    ${photos || '<p class="text-slate-500 text-center py-4">No visual evidence</p>'}
                                 </div>
                             </div>`).openPopup();
                     });
@@ -336,22 +377,17 @@
     }
 
     function zoomToNode(lat, lng) {
-        if(!lat || !lng) return alert("Spatial metadata missing for node.");
+        if(!lat || !lng) return alert("Node spatial trace unavailable.");
         switchTab('map');
-        setTimeout(() => { adminMap.setView([lat, lng], 17); }, 600);
+        setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700);
     }
 
-    // RBAC MODIFICATION PROTOCOL
-    async function modifyAccessClearance(uid, identity) {
-        const level = prompt(`Define clearance for ${identity}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`);
+    async function modifyClearance(uid, identity) {
+        const lvl = prompt(`Set clearance level for ${identity}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`);
         let role = "";
-        if (level === "1") role = "field_staff";
-        else if (level === "2") role = "admin_staff";
-        else if (level === "3") role = "admin";
-        else if (level === "4") role = "super_admin";
-        else return;
-
-        if (confirm(`Confirm ${role.toUpperCase()} clearance for ${identity}?`)) {
+        if (lvl === "1") role = "field_staff"; else if (lvl === "2") role = "admin_staff";
+        else if (lvl === "3") role = "admin"; else if (lvl === "4") role = "super_admin"; else return;
+        if (confirm(`Confirm ${role.toUpperCase()} level for ${identity}?`)) {
             await rtdb.ref(`users/${uid}/role`).set(role);
             alert("CLEARANCE UPDATED.");
         }
