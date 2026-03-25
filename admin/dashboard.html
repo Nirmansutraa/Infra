@@ -97,6 +97,9 @@
         td:last-child { border-radius: 0 18px 18px 0; border-right: 1px solid rgba(255,255,255,0.02); }
         th { padding: 0 22px 12px; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; text-align: left; letter-spacing: 2px; }
 
+        input { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 12px; color: white; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--accent); }
+
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
@@ -113,12 +116,13 @@
     <div class="space-y-3 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 System Analytics</button>
         <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Site Explorer</button>
-        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Live Trace Map</button>
-        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Admin Access Matrix</button>
+        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Spatial Site Map</button>
+        <button onclick="switchTab('intel')" id="btn-intel" class="nav-link">⚒️ Material Registry</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Access Matrix</button>
     </div>
 
     <div class="mt-auto pt-10 border-t border-slate-800">
-        <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase tracking-widest">Active Admin</p>
+        <p class="text-[10px] text-slate-500 font-bold mb-3 uppercase tracking-widest">Master Operator</p>
         <div id="operatorId" class="text-xs font-bold text-orange-400 mb-8 truncate tracking-wide">AUTHENTICATING...</div>
         <button onclick="logout()" class="w-full py-5 rounded-2xl bg-red-500/10 text-red-500 text-[11px] font-black uppercase hover:bg-red-500 transition-all shadow-sm">🔒 Secure Logout</button>
     </div>
@@ -138,21 +142,21 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div class="glass-card p-12 border-l-8 border-orange-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Total Site Nodes</p><h3 id="stat-surveys" class="text-6xl font-black mt-5">0</h3></div>
-            <div class="glass-card p-12 border-l-8 border-blue-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Active Agents</p><h3 id="stat-users" class="text-6xl font-black mt-5">0</h3></div>
-            <div class="glass-card p-12 border-l-8 border-emerald-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Verified Site proofs</p><h3 id="stat-sites" class="text-6xl font-black mt-5">0</h3></div>
+            <div class="glass-card p-12 border-l-8 border-blue-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Authorized Agents</p><h3 id="stat-users" class="text-6xl font-black mt-5">0</h3></div>
+            <div class="glass-card p-12 border-l-8 border-emerald-500"><p class="text-[11px] font-black text-slate-400 uppercase tracking-[3px]">Active Varieties</p><h3 id="stat-varieties" class="text-6xl font-black mt-5">0</h3></div>
         </div>
     </section>
 
     <section id="tab-explorer" class="tab-panel">
-        <h2 class="text-5xl font-black tracking-tighter mb-12">Site Intelligence Explorer</h2>
+        <h2 class="text-5xl font-black tracking-tighter mb-12">Intelligence Grid</h2>
         <div class="glass-card p-10 overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr>
                         <th>Identity & Regional ID</th>
-                        <th>Material Intel</th>
+                        <th>Business Entity Details</th>
+                        <th>Material & Brands</th>
                         <th>Fleet Intelligence</th>
-                        <th>Capture Agent</th>
                         <th>Timestamp</th>
                         <th>Action</th>
                     </tr>
@@ -165,13 +169,22 @@
 
     <section id="tab-map" class="tab-panel">
         <h2 class="text-5xl font-black tracking-tighter mb-12 text-white">Live Node Tracing</h2>
-        <div class="glass-card p-4 shadow-2xl">
-            <div id="adminMap"></div>
+        <div class="glass-card p-4 shadow-2xl"><div id="adminMap"></div></div>
+    </section>
+
+    <section id="tab-intel" class="tab-panel">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-5xl font-black tracking-tighter">Material Registry</h2>
+                <input type="text" id="regSearch" placeholder="Filter registry data..." class="mt-4 text-xs w-72" onkeyup="filterRegistry()">
+            </div>
+            <button onclick="startWizard()" class="bg-orange-500 px-8 py-3 rounded-2xl font-black text-xs text-white shadow-xl hover:bg-orange-600 active:scale-95 transition-all">ADD MATERIAL PROTOCOL</button>
         </div>
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </section>
 
     <section id="tab-rbac" class="tab-panel">
-        <h2 class="text-5xl font-black tracking-tighter mb-12">Access Protocol Matrix</h2>
+        <h2 class="text-5xl font-black tracking-tighter mb-12">Access Matrix</h2>
         <div class="glass-card p-10 overflow-x-auto">
             <table class="w-full">
                 <thead><tr><th>Operator Identity</th><th>Access Clearance</th><th>Modification Protocol</th></tr></thead>
@@ -188,7 +201,7 @@
 
 <script>
     /**
-     * PRECISION COMMAND ENGINE (v41.0)
+     * PRECISION COMMAND ENGINE (v45.0)
      * Restored to full expanded logic state
      */
     const firebaseConfig = {
@@ -203,56 +216,54 @@
     const auth = firebase.auth();
     let adminMap, markersLayer;
 
+    /**
+     * INTERFACE MANAGEMENT
+     * Expanded Tab Switching logic with Map Invalidation
+     */
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        
-        // Map Trigger: Force resize to prevent gray tile error
         if(id === 'map') {
-            setTimeout(() => {
-                if(!adminMap) initMap();
-                else adminMap.invalidateSize();
+            setTimeout(() => { 
+                if(!adminMap) initMap(); 
+                else adminMap.invalidateSize(); 
             }, 500);
         }
     }
 
-    // AUTH GUARD & MASTER BYPASS PROTOCOL
+    /**
+     * AUTHENTICATION GATEKEEPER
+     * Master Admin bypass logic for Zero-Lockout
+     */
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('operatorId').innerText = user.email;
-            
-            // MASTER ADMIN BYPASS
             const masters = ['nirmansutraa@gmail.com', 'builderkart@gmail.com'];
             if (masters.includes(user.email)) {
                 startSync();
             } else {
                 rtdb.ref('users/' + user.uid).once('value', snap => {
                     const data = snap.val();
-                    if (!data || !['admin', 'super_admin'].includes(data.role)) {
-                        alert("Unauthorized Access Clearance.");
+                    const roles = ['admin', 'super_admin', 'admin_staff'];
+                    if (!data || !roles.includes(data.role)) {
+                        alert("Unauthorized Access Clearance."); 
                         auth.signOut().then(() => { window.location.href = "../index.html"; });
-                    } else {
-                        startSync();
-                    }
+                    } else startSync();
                 });
             }
-        } else {
-            window.location.href = "../index.html";
-        }
+        } else window.location.href = "../index.html";
     });
 
     /**
-     * DATA SYNC MODULE (FIXED: Recent Data Priority)
-     * Fetches current data first by applying explicit timestamp sorting
+     * EXECUTIVE DATA SYNC ENGINE
+     * Implements Reverse-Chronological Sorting for Explorer
      */
     function startSync() {
         // Site Intelligence listener
         rtdb.ref('surveys').orderByChild('timestamp').on('value', snap => {
-            const count = snap.numChildren() || 0;
-            document.getElementById('stat-surveys').innerText = count;
-            document.getElementById('stat-sites').innerText = count;
+            document.getElementById('stat-surveys').innerText = snap.numChildren() || 0;
             renderExplorer(snap);
         });
 
@@ -261,81 +272,91 @@
             document.getElementById('stat-users').innerText = snap.numChildren() || 0;
             renderRBAC(snap);
         });
+
+        // Registry Sync Module
+        rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
+    /**
+     * EXPLORER RENDERER
+     * Maps Business Entity (Full Data) from survey.html
+     */
     function renderExplorer(snap) {
-        const body = document.getElementById('explorerTableBody');
-        body.innerHTML = "";
-        
+        const body = document.getElementById('explorerTableBody'); body.innerHTML = "";
         const nodes = [];
-        snap.forEach(child => { 
-            nodes.push({ id: child.key, ...child.val() }); 
-        });
-
-        /**
-         * CHRONOLOGICAL SORTING FIX
-         * Ensures Today's Data (March 25) appears at the absolute top
-         */
+        snap.forEach(child => { nodes.push({ id: child.key, ...child.val() }); });
         nodes.sort((a, b) => b.timestamp - a.timestamp); 
 
         nodes.forEach(n => {
             const date = new Date(n.timestamp).toLocaleDateString('en-IN');
             const time = new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Fleet Logic Aggregation
+            const entityData = `
+                <div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div>
+                <div class="text-[10px] text-slate-500">MGR: ${n.mgrName || 'N/A'}</div>
+                <div class="text-[10px] text-orange-500 font-bold mt-1">${n.ownerPhone || 'No Contact'}</div>
+            `;
+
             const f = n.fleet || {};
-            const fleetStr = Object.entries(f)
-                .filter(([_, q]) => q > 0)
-                .map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`)
-                .join('') || '<span class="text-slate-600">None</span>';
+            const fleetStr = Object.entries(f).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`).join('') || '<span class="text-slate-600">None</span>';
 
             body.innerHTML += `
                 <tr>
-                    <td>
-                        <div class="font-black text-white text-base">${n.firm}</div>
-                        <div class="text-[9px] text-orange-500 font-bold uppercase mt-1.5">${n.trackingId || 'N/A'}</div>
-                    </td>
-                    <td>
-                        <span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span>
-                        <div class="text-[10px] text-slate-400 mt-1 uppercase font-bold truncate max-w-[180px]">
-                            ${(n.brands || []).join(', ')}
-                        </div>
-                    </td>
+                    <td><div class="font-black text-white text-base">${n.firm}</div><div class="text-[9px] text-orange-500 font-bold uppercase mt-1">${n.trackingId || 'N/A'}</div></td>
+                    <td>${entityData}</td>
+                    <td><span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span><div class="text-[9px] text-slate-400 mt-1 uppercase font-bold truncate max-w-[150px]">${(n.brands || []).join(', ')}</div></td>
                     <td><div class="flex flex-wrap gap-1">${fleetStr}</div></td>
-                    <td><div class="text-[11px] font-bold text-slate-300">${n.agent_identity || n.agent || 'Remote Agent'}</div></td>
                     <td><div class="text-[10px] font-black text-slate-400">${date}</div><div class="text-[9px] text-slate-600 font-bold">${time}</div></td>
-                    <td>
-                        <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Track Node</button>
-                    </td>
+                    <td><button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Trace</button></td>
                 </tr>`;
         });
     }
 
+    /**
+     * REGISTRY RENDERER
+     * Restored Material/Brand management module
+     */
+    function renderRegistry(snap) {
+        const list = document.getElementById('registryList'); list.innerHTML = "";
+        let count = 0;
+        snap.forEach(cat => {
+            cat.forEach(vn => {
+                count++; const d = vn.val();
+                const bList = d.brands || [];
+                list.innerHTML += `
+                    <div class="glass-card p-6 border-t-4 border-orange-500 group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-orange-500 font-black text-[10px] uppercase tracking-widest">${cat.key}</p>
+                                <h4 class="text-2xl font-black text-white">${vn.key}</h4>
+                            </div>
+                            <button onclick="editBrands('${cat.key}', '${vn.key}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})" class="bg-blue-500/10 text-blue-500 p-2 rounded-lg text-[9px] font-black uppercase hover:bg-blue-500 transition-all">Edit Brands</button>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            ${bList.map(b => `<span class="bg-slate-800 text-[10px] px-3 py-1.5 rounded-full border border-slate-700 font-bold">${b}</span>`).join('')}
+                        </div>
+                    </div>`;
+            });
+        });
+        document.getElementById('stat-varieties').innerText = count;
+    }
+
+    /**
+     * RBAC RENDERER
+     * Access level modification logic
+     */
     function renderRBAC(snap) {
-        const body = document.getElementById('userTableBody');
-        body.innerHTML = "";
-        
+        const body = document.getElementById('userTableBody'); body.innerHTML = "";
         snap.forEach(u => {
             const d = u.val();
-            body.innerHTML += `
-                <tr>
-                    <td>
-                        <div class="font-black text-white text-base">${d.name || 'Anonymous Agent'}</div>
-                        <div class="text-[10px] text-slate-500 font-bold mt-1">${d.email}</div>
-                    </td>
-                    <td>
-                        <span class="bg-slate-800 text-[10px] px-4 py-2 rounded-full font-black text-orange-400 uppercase tracking-[2px] border border-slate-700">
-                            ${d.role || 'Field_Staff'}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="modifyClearance('${u.key}', '${d.name || d.email}')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3 rounded-2xl shadow-xl hover:bg-blue-500 transition-all">Elevate Clearance</button>
-                    </td>
-                </tr>`;
+            body.innerHTML += `<tr><td><div class="font-black text-white text-base">${d.name || 'Agent'}</div><div class="text-[10px] text-slate-500 font-bold mt-1">${d.email}</div></td><td><span class="bg-slate-800 text-[10px] px-4 py-2 rounded-full font-black text-orange-400 uppercase tracking-[2px] border border-slate-700">${d.role || 'Field_Staff'}</span></td><td><button onclick="modifyClearance('${u.key}', '${d.name || d.email}')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3 rounded-2xl shadow-xl hover:bg-blue-500 transition-all">Elevate</button></td></tr>`;
         });
     }
 
-    // SPATIAL ANALYTICS (LAZY LOADING INTEGRATED)
+    /**
+     * SPATIAL TRACE MAP
+     * Implements Lazy Loading for heavy image strings
+     */
     function initMap() {
         adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
         L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
@@ -347,50 +368,48 @@
                 const d = child.val();
                 if (d.location) {
                     const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
-                    
-                    /**
-                     * LAZY LOADING performance fix to stop download spike
-                     */
                     marker.on('click', () => {
-                        const photos = (d.photos || []).map(p => `
-                            <div class="mt-4 border-t border-slate-800 pt-4">
-                                <img src="${p.src}" class="w-full rounded-2xl shadow-xl border border-slate-700">
-                                <div class="text-[9px] text-slate-500 mt-2 font-black uppercase">${p.time}</div>
-                            </div>`).join('');
-
-                        marker.bindPopup(`
-                            <div class="w-72 p-3 bg-[#0f172a] text-white">
-                                <h4 class="text-orange-500 font-black text-xl italic">${d.firm}</h4>
-                                <hr class="my-4 border-slate-800">
-                                <div class="text-[12px] font-bold">
-                                    <p class="text-white uppercase tracking-wide">Category: ${d.mat}</p>
-                                    <p class="text-slate-400 uppercase mt-2">Agent: ${d.agent_identity || d.agent}</p>
-                                </div>
-                                <div class="max-h-72 overflow-y-auto mt-4 pr-2">
-                                    ${photos || '<p class="text-slate-500 text-center py-4">No visual evidence</p>'}
-                                </div>
-                            </div>`).openPopup();
+                        const photos = (d.photos || []).map(p => `<div class="mt-4"><img src="${p.src}" class="w-full rounded-2xl shadow-xl border border-slate-700"><div class="text-[9px] text-slate-500 mt-2 font-black uppercase">${p.time}</div></div>`).join('');
+                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="text-[12px] font-bold"><p class="text-slate-400">Loc: ${d.address || 'GPS Verified'}</p><p class="text-white mt-2 uppercase">Category: ${d.mat}</p></div><div class="max-h-72 overflow-y-auto mt-4 pr-2">${photos || '<p class="text-slate-500 text-center py-4">No visual evidence</p>'}</div></div>`).openPopup();
                     });
                 }
             });
         });
     }
 
-    function zoomToNode(lat, lng) {
-        if(!lat || !lng) return alert("Node spatial trace unavailable.");
-        switchTab('map');
-        setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700);
+    /**
+     * UTILITY MODULES
+     * Expanded Wizard, Archive, and Filter logic
+     */
+    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No GPS."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
+    
+    function startWizard() { 
+        const cat = prompt("Material Category?"); 
+        const v = prompt("Variety Label?"); 
+        const b = prompt("Brands (comma separated)").split(',').map(i => i.trim()); 
+        if(cat && v) rtdb.ref(`registry/materials/${cat}/${v}`).set({ brands: b, status: 'live' }); 
+    }
+    
+    function editBrands(cat, variety, currentBrands) { 
+        const newBrands = prompt(`Update Brands for ${variety}:`, currentBrands.join(', ')); 
+        if (newBrands) { 
+            const brandArray = newBrands.split(',').map(b => b.trim()); 
+            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray); 
+        } 
     }
 
-    async function modifyClearance(uid, identity) {
-        const lvl = prompt(`Set clearance level for ${identity}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`);
-        let role = "";
-        if (lvl === "1") role = "field_staff"; else if (lvl === "2") role = "admin_staff";
-        else if (lvl === "3") role = "admin"; else if (lvl === "4") role = "super_admin"; else return;
-        if (confirm(`Confirm ${role.toUpperCase()} level for ${identity}?`)) {
-            await rtdb.ref(`users/${uid}/role`).set(role);
-            alert("CLEARANCE UPDATED.");
-        }
+    async function modifyClearance(uid, identity) { 
+        const authLvl = prompt(`Clearance for ${identity}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`); 
+        let role = ""; if (authLvl === "1") role = "field_staff"; else if (authLvl === "2") role = "admin_staff"; 
+        else if (authLvl === "3") role = "admin"; else if (authLvl === "4") role = "super_admin"; else return; 
+        if (confirm(`Authorize ${role.toUpperCase()} level for ${identity}?`)) { 
+            await rtdb.ref(`users/${uid}/role`).set(role); alert("CLEARANCE UPDATED."); 
+        } 
+    }
+    
+    function filterRegistry() { 
+        const s = document.getElementById('regSearch').value.toLowerCase(); 
+        document.querySelectorAll('#registryList > div').forEach(card => { card.style.display = card.innerText.toLowerCase().includes(s) ? 'block' : 'none'; }); 
     }
 
     function logout() { auth.signOut(); }
