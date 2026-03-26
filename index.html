@@ -20,7 +20,7 @@
             color: #f8fafc; 
         }
         
-        /* Gold Standard Glassmorphism Container */
+        /* Gold Standard Glassmorphism */
         .login-card { 
             background: rgba(30, 41, 59, 0.45); 
             backdrop-filter: blur(16px); 
@@ -53,7 +53,7 @@
         }
         .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
-        /* Public Registration Styling */
+        /* REGISTRATION LINK */
         .reg-container {
             margin-top: 45px;
             padding-top: 30px;
@@ -102,7 +102,7 @@
     </div>
 
     <div class="reg-container">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">Business Partnership?</p>
+        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
         <a href="registration.html" class="btn-reg">
             ➜ New Supplier Registration
         </a>
@@ -117,8 +117,8 @@
 
 <script>
     /**
-     * SECURITY GATEWAY CORE (v15.0)
-     * Matches InfraBV01R01 Gold Standard
+     * GATEWAY LOGIC (v16.0)
+     * Derived from InfraBV01 Gold Standard
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -133,6 +133,7 @@
 
     function showStatus(msg, type) {
         const box = document.getElementById('statusBox');
+        if(!box) return;
         box.innerText = msg;
         box.style.display = 'block';
         box.className = `status-box ${type === 'err' ? 'bg-red-500/20 text-red-500' : 'bg-orange-500/20 text-orange-500 animate-pulse'}`;
@@ -141,53 +142,58 @@
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            showStatus("Checking Authorization...", "warn");
+            showStatus("Verifying Authorization...", "warn");
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
             
-            const snapshot = await rtdb.ref('users/' + user.uid).once('value');
-            const userData = snapshot.val();
+            // Sync user data
+            await rtdb.ref('users/' + user.uid).update({
+                email: user.email,
+                name: user.displayName,
+                lastLogin: Date.now()
+            });
 
-            if (userData) {
-                const role = userData.role;
-                /**
-                 * RESTORED SUBFOLDER REDIRECTION
-                 * Correctly points to folders: /admin/ and /field/
-                 */
-                if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
-                    window.location.href = 'admin/dashboard.html';
-                } else if (role === 'field_staff') {
-                    window.location.href = 'field/survey.html';
-                } else {
-                    showStatus(`Access Denied: Role is ${role.toUpperCase()}`, "err");
-                    await auth.signOut();
-                }
-            } else {
-                // New Staff Registration Request
-                await rtdb.ref('users/' + user.uid).set({ 
-                    name: user.displayName, 
-                    email: user.email, 
-                    role: 'pending',
-                    registeredAt: Date.now() 
-                });
-                showStatus("Registration Sent. Contact Admin.", "warn");
-                await auth.signOut();
-            }
+            // Handle immediate redirection logic
+            const snap = await rtdb.ref('users/' + user.uid + '/role').once('value');
+            handleRedirection(snap.val());
         } catch (error) {
             showStatus(error.message, "err");
         }
     }
 
     /**
-     * PERSISTENT SESSION AUTO-ROUTER
+     * CENTRAL REDIRECTION PROTOCOL
+     */
+    function handleRedirection(role) {
+        if (!role) {
+            showStatus("Access Pending Approval.", "warn");
+            setTimeout(() => auth.signOut(), 3000);
+            return;
+        }
+
+        if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
+            showStatus("Redirecting to Command Terminal...", "warn");
+            setTimeout(() => window.location.href = 'admin/dashboard.html', 1500);
+        } else if (role === 'field_staff') {
+            showStatus("Redirecting to Field Survey Terminal...", "warn");
+            setTimeout(() => window.location.href = 'field/survey.html', 1500);
+        } else {
+            showStatus("Unauthorized Access Role.", "err");
+            auth.signOut();
+        }
+    }
+
+    /**
+     * PERSISTENT SESSION TRACKER
+     * Only triggers if a user is already authenticated.
      */
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
                 const role = snap.val();
                 if (role) {
-                    if (role.includes('admin')) window.location.href = "admin/dashboard.html";
-                    else if (role === 'field_staff') window.location.href = "field/survey.html";
+                    showStatus("Session Active. Preparing Terminal...", "warn");
+                    handleRedirection(role);
                 }
             });
         }
