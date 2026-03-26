@@ -448,7 +448,23 @@
     function logout() { auth.signOut(); }
 </script>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<script>
+    /**
+     * PWA SERVICE WORKER REGISTRATION
+     * Modular, non-breaking enhancement for offline support
+     */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('InfraDepot PWA ServiceWorker registered');
+                })
+                .catch((error) => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        });
+    }
+</script>
 
 </body>
 </html>
