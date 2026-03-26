@@ -20,7 +20,6 @@
             color: #f8fafc; 
         }
         
-        /* Gold Standard Glassmorphism */
         .login-card { 
             background: rgba(30, 41, 59, 0.45); 
             backdrop-filter: blur(16px); 
@@ -53,7 +52,6 @@
         }
         .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
-        /* REGISTRATION LINK */
         .reg-container {
             margin-top: 45px;
             padding-top: 30px;
@@ -103,7 +101,7 @@
 
     <div class="reg-container">
         <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <a href="registration.html" class="btn-reg">
+        <a href="registration.html" onclick="sessionStorage.setItem('bypass_redirect', 'true')" class="btn-reg">
             ➜ New Supplier Registration
         </a>
     </div>
@@ -116,10 +114,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
-    /**
-     * GATEWAY LOGIC (v16.0)
-     * Derived from InfraBV01 Gold Standard
-     */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -140,20 +134,19 @@
     }
 
     async function loginWithGoogle() {
+        sessionStorage.removeItem('bypass_redirect');
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
             showStatus("Verifying Authorization...", "warn");
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
             
-            // Sync user data
             await rtdb.ref('users/' + user.uid).update({
                 email: user.email,
                 name: user.displayName,
                 lastLogin: Date.now()
             });
 
-            // Handle immediate redirection logic
             const snap = await rtdb.ref('users/' + user.uid + '/role').once('value');
             handleRedirection(snap.val());
         } catch (error) {
@@ -161,9 +154,6 @@
         }
     }
 
-    /**
-     * CENTRAL REDIRECTION PROTOCOL
-     */
     function handleRedirection(role) {
         if (!role) {
             showStatus("Access Pending Approval.", "warn");
@@ -173,10 +163,10 @@
 
         if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
             showStatus("Redirecting to Command Terminal...", "warn");
-            setTimeout(() => window.location.href = 'admin/dashboard.html', 1500);
+            setTimeout(() => window.location.href = 'admin/dashboard.html', 1200);
         } else if (role === 'field_staff') {
             showStatus("Redirecting to Field Survey Terminal...", "warn");
-            setTimeout(() => window.location.href = 'field/survey.html', 1500);
+            setTimeout(() => window.location.href = 'field/survey.html', 1200);
         } else {
             showStatus("Unauthorized Access Role.", "err");
             auth.signOut();
@@ -184,11 +174,11 @@
     }
 
     /**
-     * PERSISTENT SESSION TRACKER
-     * Only triggers if a user is already authenticated.
+     * UPDATED PERSISTENT SESSION TRACKER
+     * Only auto-redirects if the user hasn't clicked "Registration"
      */
     auth.onAuthStateChanged(user => {
-        if (user) {
+        if (user && !sessionStorage.getItem('bypass_redirect')) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
                 const role = snap.val();
                 if (role) {
