@@ -2,56 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nirmansutra | Security Gateway</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #020617; /* Matches dashboard theme */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            color: #f8fafc;
+        body { 
+            background-color: #020617; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #f8fafc; 
         }
-
-        /* Gold Standard Glassmorphism */
-        .login-card {
-            background: rgba(30, 41, 59, 0.45);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 32px;
-            padding: 60px;
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
+        
+        /* Gold Standard Glassmorphism Container */
+        .login-card { 
+            background: rgba(30, 41, 59, 0.45); 
+            backdrop-filter: blur(16px); 
+            padding: 60px; 
+            border-radius: 32px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); 
+            width: 100%; 
+            max-width: 450px; 
+            border: 1px solid rgba(255, 255, 255, 0.06); 
+            text-align: center; 
         }
-
-        .btn-google {
-            width: 100%;
-            background: white;
-            color: #0f172a;
-            font-weight: 800;
-            padding: 18px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
+        
+        .btn-google { 
+            background: white; 
+            color: #0f172a; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            border-radius: 20px; 
+            font-weight: 800; 
+            width: 100%; 
+            padding: 18px; 
+            font-size: 14px; 
+            text-transform: uppercase; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
         }
-        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); background: #f8fafc; }
+        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
 
-        /* REGISTRATION LINK STYLING */
+        /* Public Registration Styling */
         .reg-container {
             margin-top: 45px;
             padding-top: 30px;
@@ -93,14 +95,14 @@
     </div>
     
     <div id="authSection">
-        <button onclick="login()" class="btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6" alt="Google">
+        <button onclick="loginWithGoogle()" id="loginBtn" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
             Staff Secure Login
         </button>
     </div>
 
     <div class="reg-container">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">Joining the Global Network?</p>
+        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">Business Partnership?</p>
         <a href="registration.html" class="btn-reg">
             ➜ New Supplier Registration
         </a>
@@ -115,8 +117,8 @@
 
 <script>
     /**
-     * GATEWAY LOGIC (v12.0)
-     * Strictly manages redirection for internal staff and public registration.
+     * SECURITY GATEWAY CORE (v15.0)
+     * Matches InfraBV01R01 Gold Standard
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -124,7 +126,7 @@
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
-
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const rtdb = firebase.database();
@@ -136,45 +138,56 @@
         box.className = `status-box ${type === 'err' ? 'bg-red-500/20 text-red-500' : 'bg-orange-500/20 text-orange-500 animate-pulse'}`;
     }
 
-    function login() {
+    async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        showStatus("Opening Auth Proxy...", "warn");
-        
-        auth.signInWithPopup(provider).then(async (result) => {
+        try {
+            showStatus("Checking Authorization...", "warn");
+            const result = await auth.signInWithPopup(provider);
             const user = result.user;
-            showStatus("Verifying Permissions...", "warn");
             
-            // Sync user details with the Security Matrix
-            await rtdb.ref('users/' + user.uid).update({
-                email: user.email,
-                name: user.displayName,
-                lastLogin: Date.now()
-            });
+            const snapshot = await rtdb.ref('users/' + user.uid).once('value');
+            const userData = snapshot.val();
 
-            // Redirect based on role protocol
-            rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
-                const role = snap.val();
+            if (userData) {
+                const role = userData.role;
+                /**
+                 * RESTORED SUBFOLDER REDIRECTION
+                 * Correctly points to folders: /admin/ and /field/
+                 */
                 if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
-                    window.location.href = "dashboard.html";
+                    window.location.href = 'admin/dashboard.html';
                 } else if (role === 'field_staff') {
-                    window.location.href = "survey.html";
+                    window.location.href = 'field/survey.html';
                 } else {
-                    showStatus("Registration Pending Approval.", "warn");
-                    setTimeout(() => auth.signOut(), 3000);
+                    showStatus(`Access Denied: Role is ${role.toUpperCase()}`, "err");
+                    await auth.signOut();
                 }
-            });
-        }).catch(error => {
+            } else {
+                // New Staff Registration Request
+                await rtdb.ref('users/' + user.uid).set({ 
+                    name: user.displayName, 
+                    email: user.email, 
+                    role: 'pending',
+                    registeredAt: Date.now() 
+                });
+                showStatus("Registration Sent. Contact Admin.", "warn");
+                await auth.signOut();
+            }
+        } catch (error) {
             showStatus(error.message, "err");
-        });
+        }
     }
 
-    // Persistent Session Checker
+    /**
+     * PERSISTENT SESSION AUTO-ROUTER
+     */
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
                 const role = snap.val();
                 if (role) {
-                    window.location.href = role.includes('admin') ? "dashboard.html" : "survey.html";
+                    if (role.includes('admin')) window.location.href = "admin/dashboard.html";
+                    else if (role === 'field_staff') window.location.href = "field/survey.html";
                 }
             });
         }
