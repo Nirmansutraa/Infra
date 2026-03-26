@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Precision command Center</title>
+    <title>Infra V2 | Precision Command Center</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -82,7 +82,7 @@
         .tab-panel.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INDIVIDUAL INTERACTIVE TAB SYSTEM */
+        /* INDIVIDUAL TAB ARCHITECTURE: FIXED CLUMPING */
         .interactive-tab { 
             padding: 12px 20px; 
             border-radius: 14px; 
@@ -223,7 +223,7 @@
 
 <script>
     /**
-     * PRECISION COMMAND ENGINE (v56.0)
+     * PRECISION COMMAND ENGINE (v58.0)
      * Full restoration of expanded logic for Individual Variety & Brand Tabs
      */
     const firebaseConfig = {
@@ -238,21 +238,12 @@
     const auth = firebase.auth();
     let adminMap, markersLayer;
 
-    /**
-     * INTERFACE MANAGEMENT
-     * Expanded Tab Switching logic with Map Invalidation
-     */
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'map') {
-            setTimeout(() => { 
-                if(!adminMap) initMap(); 
-                else adminMap.invalidateSize(); 
-            }, 500);
-        }
+        if(id === 'map') setTimeout(() => { if(!adminMap) initMap(); else adminMap.invalidateSize(); }, 500);
     }
 
     /**
@@ -284,21 +275,18 @@
      * Implements Reverse-Chronological Sorting for Explorer
      */
     function startSync() {
-        // Site Intelligence listener
         rtdb.ref('surveys').orderByChild('timestamp').on('value', snap => {
             const statEl = document.getElementById('stat-surveys');
             if (statEl) statEl.innerText = snap.numChildren() || 0;
             renderExplorer(snap);
         });
 
-        // User Identity listener
         rtdb.ref('users').on('value', snap => {
             const statEl = document.getElementById('stat-users');
             if (statEl) statEl.innerText = snap.numChildren() || 0;
             renderRBAC(snap);
         });
 
-        // Registry Sync Module
         rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
