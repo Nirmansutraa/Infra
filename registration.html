@@ -26,10 +26,10 @@
 </head>
 <body>
 
-<div id="googleGate" class="auth-gate">
+<div id="googleGate" class="auth-gate hidden">
     <div class="gate-card shadow-2xl">
         <h1 class="text-white text-3xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Verification Protocol</p>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Supplier Identity Verification</p>
         <button onclick="AuthManager.login()" class="btn-action btn-google flex items-center justify-center gap-4">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             Verify Google ID
@@ -39,24 +39,21 @@
 
 <div id="emailGate" class="auth-gate hidden">
     <div class="gate-card">
-        <p class="text-emerald-500 text-[10px] font-black uppercase tracking-[4px] mb-4">● Identity Locked</p>
-        <h2 class="text-white text-2xl font-black mb-4">6-Digit Code</h2>
-        <p class="text-slate-400 text-xs mb-8">Enter the OTP from your Gmail to unlock the form.</p>
+        <p class="text-emerald-500 text-[10px] font-black uppercase tracking-[4px] mb-4">● Identity Verified</p>
+        <h2 class="text-white text-2xl font-black mb-4">Step 2: OTP Security</h2>
+        <p class="text-slate-400 text-xs mb-8">Enter the 6-digit code sent to your Gmail.</p>
         <input type="number" id="regOtp" placeholder="000000">
-        <button onclick="AuthManager.verifyOTP()" class="btn-action btn-primary">Authorize Form Access</button>
+        <button onclick="AuthManager.verifyOTP()" class="btn-action btn-primary">Unlock Registration Form</button>
         <div id="authStatus" class="text-orange-400 text-[10px] font-bold uppercase mt-6"></div>
     </div>
 </div>
 
 <div class="max-w-2xl mx-auto px-8 py-10">
-    <div class="mb-10">
-        <h1 class="text-3xl font-black italic tracking-tighter uppercase">Supplier<span class="text-orange-500">Onboarding</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">Terminal: Official Registry</p>
-    </div>
+    <h1 class="text-3xl font-black italic tracking-tighter uppercase mb-10">Supplier<span class="text-orange-500">Onboarding</span></h1>
 
     <div id="mainForm" class="step-inactive">
         <div class="card">
-            <span class="section-label">01. Identity Matrix</span>
+            <span class="section-label">01. Entity Identity</span>
             <select id="supplierType"><option value="Retailer">Retailer (R)</option><option value="Wholesaler">Wholesaler (W)</option></select>
             <input id="firmName" placeholder="Full Registered Firm Name">
         </div>
@@ -64,15 +61,15 @@
         <div class="card">
             <span class="section-label">02. Spatial Lock</span>
             <div id="map"></div>
-            <button onclick="GeoEngine.capture()" class="btn-action btn-primary">📍 Verify Location</button>
+            <button onclick="GeoEngine.capture()" class="btn-action btn-primary">📍 Verify GPS Location</button>
             <textarea id="address" class="w-full mt-4 bg-transparent border-none text-slate-500 text-sm italic" readonly placeholder="Address Syncing..."></textarea>
         </div>
 
         <div class="card">
-            <span class="section-label">03. Verified Contact</span>
+            <span class="section-label">03. Verified Contact (Maps to Grid)</span>
             <input id="ownerName" placeholder="Owner Legal Name">
             <input id="ownerEmail" readonly class="bg-slate-100 opacity-60 mt-4">
-            <input id="regPhone" placeholder="WhatsApp Phone Number" class="mt-4">
+            <input id="regPhone" placeholder="WhatsApp Number (+91...)" class="mt-4">
         </div>
 
         <button onclick="RegistrationEngine.submit()" id="submitBtn" class="btn-action btn-primary bg-emerald-600 shadow-xl">🚀 Finalize Registration</button>
@@ -86,7 +83,7 @@
 
 <script>
     /**
-     * REGISTRATION REPAIR v8.0
+     * REGISTRATION CORE v9.0 (Absolute Repair)
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -100,24 +97,28 @@
 
     window.AuthManager = {
         userData: null,
-        testOtp: "123456", // HARD-WIRED FOR YOUR TEST
+        testOtp: "123456", // Test code
         async login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithRedirect(provider); } catch(e) { alert(e.message); }
+            try { 
+                // Redirect is safer for COOP errors
+                await auth.signInWithRedirect(provider); 
+            } catch(e) { alert(e.message); }
         },
         advance(user) {
             this.userData = user;
+            // HARD-HIDE Login and Show OTP
             document.getElementById('googleGate').classList.add('hidden');
             document.getElementById('emailGate').classList.remove('hidden');
             document.getElementById('ownerEmail').value = user.email;
-            document.getElementById('authStatus').innerText = "TEST CODE: 123456 (Check Email in Production)";
+            document.getElementById('authStatus').innerText = "TEST CODE: 123456";
         },
         verifyOTP() {
             if(document.getElementById('regOtp').value === this.testOtp) {
                 document.getElementById('emailGate').classList.add('hidden');
                 document.getElementById('mainForm').classList.remove('step-inactive');
                 GeoEngine.init();
-            } else { alert("Verification Failed."); }
+            } else { alert("Code Incorrect."); }
         }
     };
 
@@ -131,7 +132,6 @@
         capture() {
             navigator.geolocation.getCurrentPosition(async p => {
                 const { latitude, longitude } = p.coords;
-                this.coords = { lat: latitude, lng: longitude };
                 this.map.setView([latitude, longitude], 16);
                 if (this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
@@ -145,7 +145,7 @@
     window.RegistrationEngine = {
         async submit() {
             const firm = document.getElementById('firmName').value;
-            if(!firm || !GeoEngine.marker) return alert("Incomplete Data.");
+            if(!firm || !GeoEngine.marker) return alert("Firm & GPS Pin Required.");
             const payload = {
                 firm: firm, type: document.getElementById('supplierType').value,
                 ownerName: document.getElementById('ownerName').value,
@@ -158,15 +158,19 @@
                 await rtdb.ref('supplier_onboarding').push(payload);
                 alert("REGISTRATION SUCCESS.");
                 auth.signOut().then(() => { window.location.href = "index.html"; });
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Sync Fault: " + e.message); }
         }
     };
 
-    // THE BRIDGE: Run this immediately
+    /**
+     * THE ABSOLUTE GATEKEEPER: Catch the loop here
+     */
     auth.onAuthStateChanged(user => {
         if(user) {
+            console.log("InfraBV01: User Session Detected. Advancing to Step 2.");
             AuthManager.advance(user);
         } else {
+            console.log("InfraBV01: No Session. Showing Login Gate.");
             document.getElementById('googleGate').classList.remove('hidden');
         }
     });
