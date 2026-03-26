@@ -10,25 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --bg: #f8fafc; --card: #ffffff; --accent: #ff7a00; --primary: #0f172a; --text-dim: #64748b; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 100px; -webkit-font-smoothing: antialiased; }
-        
-        .card { background: var(--card); border-radius: 35px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: 0.4s ease; }
+        :root { --bg: #f8fafc; --card: #ffffff; --accent: #ff7a00; --primary: #0f172a; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 100px; }
+        .card { background: var(--card); border-radius: 35px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; }
-        
-        /* Gold Standard Auth Gates */
         .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #334155; }
-        
-        input, select { width: 100%; background: #f1f5f9; border: 1px solid transparent; padding: 18px 24px; border-radius: 18px; font-size: 15px; font-weight: 600; margin-top: 12px; outline: none; transition: 0.3s ease; }
+        input, select { width: 100%; background: #f1f5f9; border: 1px solid transparent; padding: 18px 24px; border-radius: 18px; font-size: 15px; font-weight: 600; margin-top: 12px; outline: none; }
         .btn-action { width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-top: 20px; }
-        
-        .btn-google { background: white; color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn-google { background: white; color: var(--primary); }
         .btn-primary { background: var(--accent); color: white; }
-        
         .step-inactive { opacity: 0.3; pointer-events: none; }
         #map { height: 300px; border-radius: 25px; margin-bottom: 20px; }
-        .status-msg { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 15px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -36,8 +29,8 @@
 <div id="googleGate" class="auth-gate">
     <div class="gate-card shadow-2xl">
         <h1 class="text-white text-3xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Step 1: Primary Identity</p>
-        <button onclick="AuthBridge.login()" id="gBtn" class="btn-action btn-google flex items-center justify-center gap-4">
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Verification Protocol</p>
+        <button onclick="AuthManager.login()" class="btn-action btn-google flex items-center justify-center gap-4">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             Verify Google ID
         </button>
@@ -46,40 +39,40 @@
 
 <div id="emailGate" class="auth-gate hidden">
     <div class="gate-card">
-        <p class="text-emerald-500 text-[10px] font-black uppercase tracking-[4px] mb-4">● Step 2: Email Security</p>
-        <h2 class="text-white text-2xl font-black mb-4">Verification Code</h2>
-        <p class="text-slate-400 text-xs mb-8">Secure 6-digit OTP sent to your Gmail.</p>
-        <input type="number" id="regOtp" placeholder="Enter OTP">
-        <button onclick="AuthBridge.verifyOTP()" class="btn-action btn-primary">Unlock Form</button>
-        <div id="authStatus" class="status-msg text-orange-500"></div>
+        <p class="text-emerald-500 text-[10px] font-black uppercase tracking-[4px] mb-4">● Identity Locked</p>
+        <h2 class="text-white text-2xl font-black mb-4">6-Digit Code</h2>
+        <p class="text-slate-400 text-xs mb-8">Enter the OTP from your Gmail to unlock the form.</p>
+        <input type="number" id="regOtp" placeholder="000000">
+        <button onclick="AuthManager.verifyOTP()" class="btn-action btn-primary">Authorize Form Access</button>
+        <div id="authStatus" class="text-orange-400 text-[10px] font-bold uppercase mt-6"></div>
     </div>
 </div>
 
 <div class="max-w-2xl mx-auto px-8 py-10">
     <div class="mb-10">
         <h1 class="text-3xl font-black italic tracking-tighter uppercase">Supplier<span class="text-orange-500">Onboarding</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">Terminal: Official Registration</p>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">Terminal: Official Registry</p>
     </div>
 
     <div id="mainForm" class="step-inactive">
         <div class="card">
-            <span class="section-label">01. Entity Details</span>
+            <span class="section-label">01. Identity Matrix</span>
             <select id="supplierType"><option value="Retailer">Retailer (R)</option><option value="Wholesaler">Wholesaler (W)</option></select>
             <input id="firmName" placeholder="Full Registered Firm Name">
         </div>
 
         <div class="card">
-            <span class="section-label">02. Spatial Identification</span>
+            <span class="section-label">02. Spatial Lock</span>
             <div id="map"></div>
             <button onclick="GeoEngine.capture()" class="btn-action btn-primary">📍 Verify Location</button>
-            <textarea id="address" class="w-full mt-4 bg-transparent border-none text-slate-500 text-sm italic" readonly placeholder="Synchronizing..."></textarea>
+            <textarea id="address" class="w-full mt-4 bg-transparent border-none text-slate-500 text-sm italic" readonly placeholder="Address Syncing..."></textarea>
         </div>
 
         <div class="card">
-            <span class="section-label">03. Verified Contact (Auto-Mapped)</span>
+            <span class="section-label">03. Verified Contact</span>
             <input id="ownerName" placeholder="Owner Legal Name">
             <input id="ownerEmail" readonly class="bg-slate-100 opacity-60 mt-4">
-            <input id="regPhone" placeholder="Primary WhatsApp Number" class="mt-4">
+            <input id="regPhone" placeholder="WhatsApp Phone Number" class="mt-4">
         </div>
 
         <button onclick="RegistrationEngine.submit()" id="submitBtn" class="btn-action btn-primary bg-emerald-600 shadow-xl">🚀 Finalize Registration</button>
@@ -93,7 +86,7 @@
 
 <script>
     /**
-     * REGISTRATION CORE v7.0 (Loop Fix)
+     * REGISTRATION REPAIR v8.0
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -105,46 +98,31 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database(), auth = firebase.auth();
 
-    window.AuthBridge = {
+    window.AuthManager = {
         userData: null,
-        otp: null,
+        testOtp: "123456", // HARD-WIRED FOR YOUR TEST
         async login() {
-            document.getElementById('gBtn').innerText = "CONNECTING...";
             const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                // FIXED: Use Redirect to ensure browser focus returns correctly
-                await auth.signInWithRedirect(provider);
-            } catch(e) { alert("Security Block: " + e.message); }
+            try { await auth.signInWithRedirect(provider); } catch(e) { alert(e.message); }
         },
-        async handleResult() {
-            try {
-                const result = await auth.getRedirectResult();
-                if (result.user) this.advanceTo2FA(result.user);
-            } catch(e) { console.error("Identity Bridge Fault", e); }
-        },
-        advanceTo2FA(user) {
+        advance(user) {
             this.userData = user;
             document.getElementById('googleGate').classList.add('hidden');
             document.getElementById('emailGate').classList.remove('hidden');
             document.getElementById('ownerEmail').value = user.email;
-            
-            // GENERATE TEST OTP (Check Console F12)
-            this.otp = Math.floor(100000 + Math.random() * 900000).toString();
-            console.log("NIRMANSUTRA 2FA OTP:", this.otp);
-            document.getElementById('authStatus').innerText = "OTP SENT TO " + user.email.toUpperCase();
+            document.getElementById('authStatus').innerText = "TEST CODE: 123456 (Check Email in Production)";
         },
         verifyOTP() {
-            const input = document.getElementById('regOtp').value;
-            if(input === this.otp) {
+            if(document.getElementById('regOtp').value === this.testOtp) {
                 document.getElementById('emailGate').classList.add('hidden');
                 document.getElementById('mainForm').classList.remove('step-inactive');
                 GeoEngine.init();
-            } else { alert("Invalid Security Token."); }
+            } else { alert("Verification Failed."); }
         }
     };
 
     window.GeoEngine = {
-        map: null, marker: null, coords: null,
+        map: null, marker: null,
         init() {
             if(this.map) return;
             this.map = L.map('map', { zoomControl: false }).setView([24.58, 73.71], 5);
@@ -167,32 +145,31 @@
     window.RegistrationEngine = {
         async submit() {
             const firm = document.getElementById('firmName').value;
-            if(!firm || !GeoEngine.coords) return alert("Firm & GPS required.");
-            document.getElementById('submitBtn').innerText = "SYNCING NODE...";
+            if(!firm || !GeoEngine.marker) return alert("Incomplete Data.");
             const payload = {
                 firm: firm, type: document.getElementById('supplierType').value,
                 ownerName: document.getElementById('ownerName').value,
-                email: AuthBridge.userData.email, phone: document.getElementById('regPhone').value,
-                location: GeoEngine.coords, address: document.getElementById('address').value,
+                email: AuthManager.userData.email, phone: document.getElementById('regPhone').value,
+                location: { lat: GeoEngine.marker.getLatLng().lat, lng: GeoEngine.marker.getLatLng().lng },
+                address: document.getElementById('address').value,
                 status: 'pending_review', timestamp: Date.now()
             };
             try {
                 await rtdb.ref('supplier_onboarding').push(payload);
-                alert("REGISTRATION SUCCESS: Identity Verified. We will email your data link shortly.");
-                auth.signOut().then(() => location.href = "../index.html");
-            } catch(e) { alert("Sync Fault: " + e.message); }
+                alert("REGISTRATION SUCCESS.");
+                auth.signOut().then(() => { window.location.href = "index.html"; });
+            } catch(e) { alert(e.message); }
         }
     };
 
-    window.onload = () => {
-        AuthBridge.handleResult();
-        // PERSISTENCE CHECK: If user returns from redirect, catch them
-        auth.onAuthStateChanged(user => {
-            if(user && !AuthBridge.userData) AuthBridge.advanceTo2FA(user);
-        });
-    };
+    // THE BRIDGE: Run this immediately
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            AuthManager.advance(user);
+        } else {
+            document.getElementById('googleGate').classList.remove('hidden');
+        }
+    });
 </script>
-
-<br><br><br><br>
 </body>
 </html>
