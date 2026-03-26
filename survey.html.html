@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nirmansutra | Global Field Intelligence</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root { 
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --accent: #ff7a00; 
+            --primary: #0f172a; 
+            --text-dim: #64748b; 
+        }
+        
+        body { 
+            background: var(--bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--primary); 
+            padding-bottom: 200px; 
+            -webkit-font-smoothing: antialiased; 
+        }
+        
+        /* Modernized Responsive Card System */
+        .card { 
+            background: var(--card); 
+            border-radius: 30px; 
+            padding: 35px; 
+            margin-bottom: 25px; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+            transition: 0.3s ease; 
+        }
+        
+        .card:focus-within { 
+            border-color: var(--accent); 
+            box-shadow: 0 15px 35px -5px rgba(255, 122, 0, 0.1); 
+        }
+
+        .section-label { 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin-bottom: 20px; 
+            display: block; 
+        }
+
+        /* Digital Identity Box */
+        .id-box { 
+            background: var(--primary); 
+            color: #10b981; 
+            text-align: center; 
+            padding: 45px; 
+            border-radius: 25px; 
+            font-size: clamp(24px, 6vw, 34px); 
+            font-weight: 800; 
+            font-family: monospace; 
+            letter-spacing: 5px; 
+            border: 1px solid #1e293b; 
+            box-shadow: inset 0 10px 30px rgba(0,0,0,0.4);
+            text-shadow: 0 0 15px rgba(16,185,129,0.5);
+        }
+
+        /* Mobile-First Inputs */
+        input, select, textarea { 
+            width: 100%; 
+            background: #f1f5f9; 
+            border: 1px solid transparent; 
+            padding: 18px 22px; 
+            border-radius: 18px; 
+            font-size: 16px; 
+            font-weight: 600;
+            margin-top: 12px; 
+            outline: none; 
+            transition: 0.3s ease; 
+            -webkit-appearance: none; 
+        }
+        
+        input:focus { 
+            border-color: var(--accent); 
+            background: #fff; 
+            box-shadow: 0 0 0 8px rgba(255, 122, 0, 0.05);
+        }
+        
+        label { 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: var(--text-dim); 
+            text-transform: uppercase; 
+            margin-top: 25px; 
+            display: block; 
+            padding-left: 8px; 
+        }
+
+        /* Material Item Selectors */
+        .mat-item { 
+            background: var(--primary); 
+            color: white; 
+            padding: 24px 35px; 
+            border-radius: 24px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            transition: 0.3s ease; 
+        }
+        
+        .mat-item.active { 
+            border-color: var(--accent); 
+            transform: scale(1.02); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        }
+        
+        .glow-dot { 
+            width: 14px; 
+            height: 14px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.15); 
+            transition: 0.4s; 
+        }
+        
+        .mat-item.active .glow-dot { 
+            background: var(--accent); 
+            box-shadow: 0 0 15px var(--accent); 
+        }
+
+        /* Multi-Tab Brand Layout */
+        .tab-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px; 
+            margin-top: 25px; 
+        }
+        
+        .chip { 
+            background: #f1f5f9; 
+            border: 1px solid transparent; 
+            padding: 18px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 800; 
+            color: #475569; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            text-align: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+            line-height: 1.4;
+        }
+        
+        .chip.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent); 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 20px rgba(255,122,0,0.2); 
+        }
+
+        /* 6-VEHICLE LOGISTICS MATRIX */
+        .fleet-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+        
+        .fleet-unit { 
+            background: #f8fafc; 
+            padding: 22px; 
+            border-radius: 24px; 
+            border: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .circle-btn { 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 14px; 
+            background: var(--primary); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s;
+            font-size: 20px;
+        }
+        
+        .circle-btn:active { transform: scale(0.85); }
+
+        /* PHOTO EVIDENCE WITH STAMPS */
+        .photo-slot { 
+            aspect-ratio: 1; 
+            background: #f1f5f9; 
+            border-radius: 20px; 
+            border: 2px dashed #cbd5e1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .photo-img { width: 100%; height: 100%; object-fit: cover; }
+        .stamp-overlay { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.8); 
+            color: white; 
+            font-size: 8px; 
+            padding: 10px; 
+            font-weight: 800; 
+            line-height: 1.6; 
+        }
+
+        /* PERSISTENT ACTION BAR */
+        .action-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(255,255,255,0.92); 
+            backdrop-filter: blur(30px); 
+            padding: 25px 35px; 
+            display: flex; 
+            gap: 20px; 
+            border-top: 1px solid #e2e8f0; 
+            z-index: 1000; 
+        }
+        
+        .btn { 
+            flex: 1; 
+            padding: 24px; 
+            border-radius: 22px; 
+            font-weight: 900; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            transition: 0.4s ease; 
+        }
+        
+        .btn-slate { background: #64748b; color: white; }
+        .btn-green { background: #10b981; color: white; box-shadow: 0 12px 25px rgba(16,185,129,0.25); }
+    </style>
+</head>
+<body>
+
+<nav class="bg-white p-8 flex justify-between items-center rounded-b-[45px] border-b mb-10 shadow-sm">
+    <div>
+        <h1 class="text-2xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1" id="agentIdentity">AUTHENTICATING...</p>
+    </div>
+    <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all">Logout</button>
+</nav>
+
+<div class="max-w-2xl mx-auto px-8">
+    <div class="card">
+        <span class="section-label">01. Session Tracking Identity</span>
+        <div id="trackId" class="id-box">RJ-UDR-ID---</div>
+    </div>
+
+    <div class="card">
+        <span class="section-label">02. Entity & Contact Matrix</span>
+        <select id="supplierType" onchange="Survey.refreshID()">
+            <option value="Retailer">Retailer (R)</option>
+            <option value="Wholesaler">Wholesaler (W)</option>
+        </select>
+        <input id="firmName" placeholder="Full Registered Firm Name" class="mt-8">
+        
+        <div class="mt-10 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-orange-500 uppercase mb-5 tracking-widest">Primary Owner Hub</p>
+            <input id="ownerName" placeholder="Owner Legal Name">
+            <div class="grid grid-cols-2 gap-6 mt-2">
+                <div>
+                    <label>Phone</label>
+                    <input id="ownerPhone" type="tel" oninput="Validation.phone(this, 'ownerWa')">
+                </div>
+                <div>
+                    <div class="flex items-center gap-3">
+                        <label>Sync WA</label>
+                        <input type="checkbox" id="syncOwner" class="w-6 h-6 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
+                    </div>
+                    <input id="ownerWa" type="tel">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-blue-500 uppercase mb-5 tracking-widest">Operational Manager</p>
+            <input id="mgrName" placeholder="Manager Name">
+            <div class="grid grid-cols-2 gap-6 mt-2">
+                <div>
+                    <label>Phone</label>
+                    <input id="mgrPhone" type="tel" oninput="Validation.phone(this, 'mgrWa')">
+                </div>
+                <div>
+                    <div class="flex items-center gap-3">
+                        <label>Sync WA</label>
+                        <input type="checkbox" id="syncMgr" class="w-6 h-6 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
+                    </div>
+                    <input id="mgrWa" type="tel">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="section-label">03. GPS proofing & spatial data</span>
+        <div id="map" class="h-80 rounded-[40px] mb-8 border border-slate-200 shadow-inner"></div>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[2px] mb-8 active:scale-95 transition-transform shadow-xl">📍 Capture Verified Location</button>
+        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address..." readonly></textarea>
+        
+        <div class="mt-14">
+            <label>Field Evidence Grid (Max 10 with Meta-Stamps)</label>
+            <div class="grid grid-cols-5 gap-4 mt-8" id="photoGrid">
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-100 transition-all">+</button>
+            </div>
+            <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="section-label">04. Material Intelligence (Admin Sync)</span>
+        <div id="matSelector" class="grid grid-cols-2 gap-5"></div>
+
+        <div id="brandSection" class="mt-14 hidden bg-slate-50 p-12 rounded-[45px] border border-slate-200 shadow-inner">
+            <label class="section-label" style="color:#64748b">Step 2: Select Brand Intelligence</label>
+            <div id="brandGrid" class="tab-grid"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="section-label">05. Transportation Fleet Capacity</span>
+        <div id="fleetGrid" class="fleet-grid"></div>
+    </div>
+</div>
+
+<div class="action-bar">
+    <button onclick="Draft.save()" class="btn btn-slate">💾 Save Draft</button>
+    <button onclick="Survey.sync()" id="sBtn" class="btn btn-green">🚀 Submit Sync</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    /**
+     * REGIONAL SMART ID ENGINE
+     * Implements Udaipur logic based on telemetry
+     */
+    function generateSmartID(supplierType, activeMaterial, currentCount) {
+        const state = "RJ", dist = "UDR";
+        const typeCode = (supplierType === "Wholesaler") ? "W" : "R";
+        let matCode = "X";
+        let matSearch = (activeMaterial || "").toLowerCase();
+        if (matSearch.includes("cement")) matCode = "C";
+        else if (matSearch.includes("steel") || matSearch.includes("tmt")) matCode = "T";
+        else if (matSearch.includes("sand")) matCode = "S";
+        return `${state}-${dist}-${typeCode}${matCode}-${String(currentCount + 1).padStart(3, '0')}`;
+    }
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+        authDomain: "infradepo.firebaseapp.com",
+        projectId: "infradepo",
+        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const rtdb = firebase.database();
+    const auth = firebase.auth();
+
+    window.Survey = {
+        state: { location: null, mat: null, brands: [], fleet: {}, photos: [], trackingId: "" },
+        updateState(key, val) { this.state[key] = val; this.refreshID(); },
+        async refreshID() {
+            try {
+                const snap = await rtdb.ref('surveys').once('value');
+                const smartId = generateSmartID(document.getElementById('supplierType').value, this.state.mat || "Mixed", snap.numChildren());
+                const trackEl = document.getElementById('trackId');
+                if (trackEl) { trackEl.innerText = smartId; this.state.trackingId = smartId; }
+            } catch (e) { console.error("ID Logic Crash", e); }
+        },
+        async sync() {
+            const firm = document.getElementById('firmName').value;
+            if (!this.state.location || !firm) return alert("❌ Node protocols incomplete: Firm & GPS required.");
+            const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
+            try {
+                // Identity Integration: Link Gmail email and Identity
+                const user = auth.currentUser;
+                const payload = { 
+                    ...this.state, 
+                    firm: firm, 
+                    agent: user.email,
+                    agent_identity: user.displayName || "FS-AGENT",
+                    ownerName: document.getElementById('ownerName').value,
+                    mgrName: document.getElementById('mgrName').value,
+                    ownerPhone: document.getElementById('ownerPhone').value,
+                    timestamp: Date.now() 
+                };
+                await rtdb.ref('surveys').push(payload);
+                alert("✅ Sync Success: Node Synchronized.");
+                location.reload();
+            } catch (e) { alert("❌ Sync Fault: " + e.message); btn.innerText = "🚀 Submit Sync"; }
+        }
+    };
+
+    window.Validation = {
+        // Restored WhatsApp autofill logic
+        phone(input, waId) {
+            let val = input.value.trim().replace(/\D/g, '');
+            if (val.length > 10) val = val.slice(-10);
+            if (val.length === 10) {
+                input.value = "+91 " + val;
+                const toggleId = (input.id === 'ownerPhone') ? 'syncOwner' : 'syncMgr';
+                if (document.getElementById(toggleId).checked) document.getElementById(waId).value = "+91 " + val;
+            }
+        },
+        syncWA(phoneId, waId, isChecked) {
+            const phone = document.getElementById(phoneId);
+            const wa = document.getElementById(waId);
+            if (isChecked && phone.value.length >= 10) { wa.value = phone.value; wa.readOnly = true; } else { wa.readOnly = false; }
+        }
+    };
+
+    window.Geo = {
+        map: null, marker: null,
+        init() {
+            this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        },
+        capture() {
+            navigator.geolocation.getCurrentPosition(async p => {
+                const { latitude, longitude } = p.coords;
+                Survey.state.location = { lat: latitude, lng: longitude };
+                this.map.setView([latitude, longitude], 16);
+                if (this.marker) this.map.removeLayer(this.marker);
+                this.marker = L.marker([latitude, longitude]).addTo(this.map);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                const data = await res.json();
+                document.getElementById('address').value = data.display_name || "Spatial lock verified";
+                Survey.refreshID();
+            }, null, { enableHighAccuracy: true });
+        }
+    };
+
+    /**
+     * PRECISION PHOTO COMPRESSOR (STRICT 512KB LIMIT)
+     */
+    window.Evidence = {
+        handle(input) {
+            if (Survey.state.photos.length >= 10) return alert("Storage quota full: Max 10 Photos.");
+            if (!Survey.state.location) return alert("📍 GPS lock required for meta-stamping.");
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height;
+                    if (width > 1000) { height *= 1000 / width; width = 1000; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    let quality = 0.7; let base64 = canvas.toDataURL('image/jpeg', quality);
+                    // Recursive force logic for 512 KB limit
+                    while (Math.round((base64.length * 3) / 4) > 524288 && quality > 0.1) {
+                        quality -= 0.1; base64 = canvas.toDataURL('image/jpeg', quality);
+                    }
+                    Survey.state.photos.push({ src: base64, time: new Date().toLocaleString(), lat: Survey.state.location.lat.toFixed(4) });
+                    this.render();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        render() {
+            const grid = document.getElementById('photoGrid'); const btn = grid.firstElementChild;
+            grid.innerHTML = ""; grid.appendChild(btn);
+            Survey.state.photos.forEach(p => {
+                grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="photo-img"><div class="stamp-overlay">${p.time}<br>GPS: ${p.lat}</div></div>`;
+            });
+        }
+    };
+
+    /**
+     * MATERIAL ENGINE
+     * Aggregates Brands directly while bypassing varieties
+     */
+    function syncRegistry() {
+        rtdb.ref('registry/materials').on('value', snap => {
+            const cont = document.getElementById('matSelector'); cont.innerHTML = "";
+            window.registryData = snap.val() || {};
+            Object.keys(window.registryData).forEach(cat => {
+                if (window.registryData[cat].status === 'archived') return;
+                cont.innerHTML += `<div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')"><span class="text-[12px] font-black uppercase tracking-[2px]">${cat}</span><div class="glow-dot"></div></div>`;
+            });
+        });
+    }
+
+    window.selectMat = function(m) {
+        document.querySelectorAll('.mat-item').forEach(r => r.classList.remove('active'));
+        document.getElementById('mat-'+m).classList.add('active');
+        Survey.state.mat = m; Survey.state.brands = []; Survey.refreshID();
+        const bg = document.getElementById('brandGrid'); bg.innerHTML = "";
+        document.getElementById('brandSection').classList.remove('hidden');
+        const catData = window.registryData[m]; const uniqueBrands = new Set();
+        if (catData) { Object.keys(catData).forEach(vKey => { if (vKey !== 'status' && catData[vKey].brands) catData[vKey].brands.forEach(b => uniqueBrands.add(b)); }); }
+        uniqueBrands.forEach(b => { bg.innerHTML += `<div class="chip" onclick="toggleBrandSelection('${b}', this)">${b}</div>`; });
+        document.getElementById('brandSection').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.toggleBrandSelection = function(b, el) { el.classList.toggle('active'); const idx = Survey.state.brands.indexOf(b); idx > -1 ? Survey.state.brands.splice(idx, 1) : Survey.state.brands.push(b); };
+    window.fleetStep = function(t, v) { if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0; Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; };
+    window.Draft = { save() { try { localStorage.setItem('ns_v46_draft', JSON.stringify(Survey.state)); alert("💾 Draft Secured."); } catch(e) { alert("❌ Local Storage Full."); } }};
+
+    window.onload = () => {
+        Geo.init(); syncRegistry();
+        const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
+        const fGrid = document.getElementById('fleetGrid');
+        fGrid.innerHTML = fTypes.map(t => `<div class="fleet-unit"><span class="text-[10px] font-black text-slate-500 uppercase">${t}</span><div class="flex items-center gap-5"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join('');
+        auth.onAuthStateChanged(u => {
+            if (!u) location.href = "../index.html";
+            else document.getElementById('agentIdentity').innerText = "AGENT: " + (u.displayName || u.email).toUpperCase();
+        });
+    };
+</script>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+</body>
+</html>
