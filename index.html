@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nirmansutra | Security Gateway</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -15,7 +17,10 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            color: #f8fafc;
         }
+
+        /* Gold Standard Glassmorphism */
         .login-card {
             background: rgba(30, 41, 59, 0.45);
             backdrop-filter: blur(16px);
@@ -26,20 +31,82 @@
             width: 100%;
             max-width: 450px;
         }
+
+        .btn-google {
+            width: 100%;
+            background: white;
+            color: #0f172a;
+            font-weight: 800;
+            padding: 18px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); background: #f8fafc; }
+
+        /* REGISTRATION LINK STYLING */
+        .reg-container {
+            margin-top: 45px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .btn-reg {
+            display: inline-block;
+            color: #ff7a00;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-reg:hover { color: white; letter-spacing: 4px; }
+
+        .status-box { 
+            margin-top: 25px; 
+            padding: 14px; 
+            border-radius: 16px; 
+            font-size: 10px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            display: none; 
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-card shadow-2xl">
-    <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
-        NIRMAN<span class="text-orange-500">SUTRA</span>
-    </h1>
-    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px] mb-12">Access Control System</p>
+<div class="login-card shadow-2xl mx-4">
+    <div class="mb-12">
+        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
+            NIRMAN<span class="text-orange-500">SUTRA</span>
+        </h1>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Executive Access Control</p>
+    </div>
+    
+    <div id="authSection">
+        <button onclick="login()" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6" alt="Google">
+            Staff Secure Login
+        </button>
+    </div>
 
-    <button onclick="login()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-lg">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa-apple/1x/google.png" class="w-6 h-6" alt="Google">
-        SIGN IN WITH GOOGLE
-    </button>
+    <div class="reg-container">
+        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">Joining the Global Network?</p>
+        <a href="registration.html" class="btn-reg">
+            ➜ New Supplier Registration
+        </a>
+    </div>
+
+    <div id="statusBox" class="status-box"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -47,6 +114,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
+    /**
+     * GATEWAY LOGIC (v12.0)
+     * Strictly manages redirection for internal staff and public registration.
+     */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -58,42 +129,59 @@
     const auth = firebase.auth();
     const rtdb = firebase.database();
 
+    function showStatus(msg, type) {
+        const box = document.getElementById('statusBox');
+        box.innerText = msg;
+        box.style.display = 'block';
+        box.className = `status-box ${type === 'err' ? 'bg-red-500/20 text-red-500' : 'bg-orange-500/20 text-orange-500 animate-pulse'}`;
+    }
+
     function login() {
         const provider = new firebase.auth.GoogleAuthProvider();
+        showStatus("Opening Auth Proxy...", "warn");
+        
         auth.signInWithPopup(provider).then(async (result) => {
             const user = result.user;
+            showStatus("Verifying Permissions...", "warn");
             
-            // Register user in the Security Matrix if they don't exist
+            // Sync user details with the Security Matrix
             await rtdb.ref('users/' + user.uid).update({
                 email: user.email,
                 name: user.displayName,
                 lastLogin: Date.now()
             });
 
-            // Check role and redirect
+            // Redirect based on role protocol
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
                 const role = snap.val();
-                if (role === 'admin' || role === 'super_admin') {
+                if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
                     window.location.href = "dashboard.html";
-                } else {
+                } else if (role === 'field_staff') {
                     window.location.href = "survey.html";
+                } else {
+                    showStatus("Registration Pending Approval.", "warn");
+                    setTimeout(() => auth.signOut(), 3000);
                 }
             });
         }).catch(error => {
-            console.error("Auth Error:", error);
-            alert("Access Denied: Please use a registered Nirmansutra account.");
+            showStatus(error.message, "err");
         });
     }
 
-    // Auto-redirect if already logged in
+    // Persistent Session Checker
     auth.onAuthStateChanged(user => {
         if (user) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
-                if (snap.val()) window.location.href = snap.val().includes('admin') ? "dashboard.html" : "survey.html";
+                const role = snap.val();
+                if (role) {
+                    window.location.href = role.includes('admin') ? "dashboard.html" : "survey.html";
+                }
             });
         }
     });
 </script>
+
+<br><br><br><br><br>
 
 </body>
 </html>
