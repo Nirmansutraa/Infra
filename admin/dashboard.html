@@ -52,11 +52,8 @@
             transition: 0.4s ease; 
         }
         
-        .glass-card:hover { 
-            border-color: var(--accent); 
-            transform: translateY(-5px); 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
-        }
+        .glass-card.archived { opacity: 0.3; filter: grayscale(1); border-style: dashed; }
+        .glass-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         
         .nav-link { 
             display: flex; 
@@ -82,13 +79,7 @@
         .tab-panel.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        #adminMap { 
-            height: 680px; 
-            border-radius: 28px; 
-            border: 1px solid #334155; 
-            width: 100%; 
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6); 
-        }
+        #adminMap { height: 680px; border-radius: 28px; border: 1px solid #334155; width: 100%; box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6); }
         
         /* High-Performance Table Grid Modules */
         table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
@@ -116,7 +107,7 @@
     <div class="space-y-3 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 System Analytics</button>
         <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Site Explorer</button>
-        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Spatial Site Map</button>
+        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Live Spatial Map</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link">⚒️ Material Registry</button>
         <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Access Matrix</button>
     </div>
@@ -148,7 +139,7 @@
     </section>
 
     <section id="tab-explorer" class="tab-panel">
-        <h2 class="text-5xl font-black tracking-tighter mb-12">Intelligence Grid</h2>
+        <h2 class="text-5xl font-black tracking-tighter mb-12">Site Intelligence Explorer</h2>
         <div class="glass-card p-10 overflow-x-auto">
             <table class="w-full">
                 <thead>
@@ -161,8 +152,7 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="explorerTableBody">
-                    </tbody>
+                <tbody id="explorerTableBody"></tbody>
             </table>
         </div>
     </section>
@@ -175,12 +165,13 @@
     <section id="tab-intel" class="tab-panel">
         <div class="flex justify-between items-center mb-10">
             <div>
-                <h2 class="text-5xl font-black tracking-tighter">Material Registry</h2>
+                <h2 class="text-5xl font-black tracking-tighter">Registry Management</h2>
                 <input type="text" id="regSearch" placeholder="Filter registry data..." class="mt-4 text-xs w-72" onkeyup="filterRegistry()">
             </div>
             <button onclick="startWizard()" class="bg-orange-500 px-8 py-3 rounded-2xl font-black text-xs text-white shadow-xl hover:bg-orange-600 active:scale-95 transition-all">ADD MATERIAL PROTOCOL</button>
         </div>
-        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <div id="registryList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
     </section>
 
     <section id="tab-rbac" class="tab-panel">
@@ -201,8 +192,8 @@
 
 <script>
     /**
-     * PRECISION COMMAND ENGINE (v45.0)
-     * Restored to full expanded logic state
+     * PRECISION COMMAND ENGINE (v49.0)
+     * Full Registry Editor Suite: Add, Edit, Delete
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -233,23 +224,17 @@
         }
     }
 
-    /**
-     * AUTHENTICATION GATEKEEPER
-     * Master Admin bypass logic for Zero-Lockout
-     */
+    // AUTH GUARD & MASTER BYPASS
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('operatorId').innerText = user.email;
             const masters = ['nirmansutraa@gmail.com', 'builderkart@gmail.com'];
-            if (masters.includes(user.email)) {
-                startSync();
-            } else {
+            if (masters.includes(user.email)) startSync();
+            else {
                 rtdb.ref('users/' + user.uid).once('value', snap => {
                     const data = snap.val();
-                    const roles = ['admin', 'super_admin', 'admin_staff'];
-                    if (!data || !roles.includes(data.role)) {
-                        alert("Unauthorized Access Clearance."); 
-                        auth.signOut().then(() => { window.location.href = "../index.html"; });
+                    if (!data || !['admin', 'super_admin'].includes(data.role)) {
+                        alert("Unauthorized Clearance."); auth.signOut().then(() => { window.location.href = "../index.html"; });
                     } else startSync();
                 });
             }
@@ -257,8 +242,7 @@
     });
 
     /**
-     * EXECUTIVE DATA SYNC ENGINE
-     * Implements Reverse-Chronological Sorting for Explorer
+     * DATA SYNC MODULE (FIXED: Recent Data & Registry Restore)
      */
     function startSync() {
         // Site Intelligence listener
@@ -277,10 +261,6 @@
         rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
-    /**
-     * EXPLORER RENDERER
-     * Maps Business Entity (Full Data) from survey.html
-     */
     function renderExplorer(snap) {
         const body = document.getElementById('explorerTableBody'); body.innerHTML = "";
         const nodes = [];
@@ -290,21 +270,15 @@
         nodes.forEach(n => {
             const date = new Date(n.timestamp).toLocaleDateString('en-IN');
             const time = new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const entityData = `
-                <div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div>
-                <div class="text-[10px] text-slate-500">MGR: ${n.mgrName || 'N/A'}</div>
-                <div class="text-[10px] text-orange-500 font-bold mt-1">${n.ownerPhone || 'No Contact'}</div>
-            `;
-
+            const entityData = `<div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div><div class="text-[10px] text-slate-500">MGR: ${n.mgrName || 'N/A'}</div>`;
             const f = n.fleet || {};
-            const fleetStr = Object.entries(f).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`).join('') || '<span class="text-slate-600">None</span>';
+            const fleetStr = Object.entries(f).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`).join('') || 'None';
 
             body.innerHTML += `
                 <tr>
                     <td><div class="font-black text-white text-base">${n.firm}</div><div class="text-[9px] text-orange-500 font-bold uppercase mt-1">${n.trackingId || 'N/A'}</div></td>
                     <td>${entityData}</td>
-                    <td><span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span><div class="text-[9px] text-slate-400 mt-1 uppercase font-bold truncate max-w-[150px]">${(n.brands || []).join(', ')}</div></td>
+                    <td><span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span><br><div class="text-[9px] text-slate-400 font-bold mt-1 uppercase">${(n.brands || []).join(', ')}</div></td>
                     <td><div class="flex flex-wrap gap-1">${fleetStr}</div></td>
                     <td><div class="text-[10px] font-black text-slate-400">${date}</div><div class="text-[9px] text-slate-600 font-bold">${time}</div></td>
                     <td><button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Trace</button></td>
@@ -313,8 +287,8 @@
     }
 
     /**
-     * REGISTRY RENDERER
-     * Restored Material/Brand management module
+     * GLOBAL REGISTRY EDITOR ENGINE
+     * Implementation: Full CRUD control for Category, Variety, and Brands.
      */
     function renderRegistry(snap) {
         const list = document.getElementById('registryList'); list.innerHTML = "";
@@ -323,17 +297,22 @@
             cat.forEach(vn => {
                 count++; const d = vn.val();
                 const bList = d.brands || [];
+                const status = d.status || 'live';
                 list.innerHTML += `
-                    <div class="glass-card p-6 border-t-4 border-orange-500 group">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-orange-500 font-black text-[10px] uppercase tracking-widest">${cat.key}</p>
-                                <h4 class="text-2xl font-black text-white">${vn.key}</h4>
-                            </div>
-                            <button onclick="editBrands('${cat.key}', '${vn.key}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})" class="bg-blue-500/10 text-blue-500 p-2 rounded-lg text-[9px] font-black uppercase hover:bg-blue-500 transition-all">Edit Brands</button>
+                    <div class="glass-card p-6 border-t-4 border-orange-500 group relative ${status === 'archived' ? 'archived' : ''}">
+                        <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <button onclick="toggleArchive('${cat.key}', '${vn.key}', '${status}')" class="text-orange-500 text-[9px] font-black uppercase">${status === 'archived' ? 'UNARCHIVE' : 'ARCHIVE'}</button>
+                            <button onclick="deleteMaterialNode('${cat.key}', '${vn.key}')" class="text-red-500 text-[9px] font-black uppercase">DELETE</button>
                         </div>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            ${bList.map(b => `<span class="bg-slate-800 text-[10px] px-3 py-1.5 rounded-full border border-slate-700 font-bold">${b}</span>`).join('')}
+
+                        <div class="mb-4">
+                            <p class="text-orange-500 font-black text-[10px] uppercase cursor-pointer hover:underline" onclick="editCategoryName('${cat.key}')">${cat.key}</p>
+                            <h4 class="text-2xl font-black text-white cursor-pointer hover:underline" onclick="editVarietyName('${cat.key}', '${vn.key}')">${vn.key}</h4>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-800">
+                            ${bList.map(b => `<span class="bg-slate-800/80 text-[10px] px-3 py-1.5 rounded-full border border-slate-700 font-bold">${b}</span>`).join('')}
+                            <button onclick="editBrands('${cat.key}', '${vn.key}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})" class="text-[9px] font-black text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-full">+ EDIT BRANDS</button>
                         </div>
                     </div>`;
             });
@@ -341,27 +320,59 @@
         document.getElementById('stat-varieties').innerText = count;
     }
 
-    /**
-     * RBAC RENDERER
-     * Access level modification logic
-     */
-    function renderRBAC(snap) {
-        const body = document.getElementById('userTableBody'); body.innerHTML = "";
-        snap.forEach(u => {
-            const d = u.val();
-            body.innerHTML += `<tr><td><div class="font-black text-white text-base">${d.name || 'Agent'}</div><div class="text-[10px] text-slate-500 font-bold mt-1">${d.email}</div></td><td><span class="bg-slate-800 text-[10px] px-4 py-2 rounded-full font-black text-orange-400 uppercase tracking-[2px] border border-slate-700">${d.role || 'Field_Staff'}</span></td><td><button onclick="modifyClearance('${u.key}', '${d.name || d.email}')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3 rounded-2xl shadow-xl hover:bg-blue-500 transition-all">Elevate</button></td></tr>`;
-        });
+    // REGISTRY CRUD LOGIC
+    function editCategoryName(oldName) {
+        const newName = prompt("Enter New Category Name (Global Rebranding):", oldName);
+        if(newName && newName !== oldName) {
+            rtdb.ref(`registry/materials/${oldName}`).once('value', snap => {
+                rtdb.ref(`registry/materials/${newName}`).set(snap.val());
+                rtdb.ref(`registry/materials/${oldName}`).remove();
+                alert("CATEGORY REBRANDED GLOBALLY.");
+            });
+        }
     }
 
-    /**
-     * SPATIAL TRACE MAP
-     * Implements Lazy Loading for heavy image strings
-     */
+    function editVarietyName(cat, oldVar) {
+        const newVar = prompt(`Update Variety Label for ${cat}:`, oldVar);
+        if(newVar && newVar !== oldVar) {
+            rtdb.ref(`registry/materials/${cat}/${oldVar}`).once('value', snap => {
+                rtdb.ref(`registry/materials/${cat}/${newVar}`).set(snap.val());
+                rtdb.ref(`registry/materials/${cat}/${oldVar}`).remove();
+                alert("VARIETY LABEL UPDATED.");
+            });
+        }
+    }
+
+    function editBrands(cat, variety, currentBrands) {
+        const input = prompt(`Modify Brand Intelligence for ${variety}:`, currentBrands.join(', '));
+        if (input) {
+            const brandArray = input.split(',').map(b => b.trim()).filter(b => b !== "");
+            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray);
+        }
+    }
+
+    function deleteMaterialNode(cat, variety) {
+        if(confirm(`WARNING: This will permanently wipe ${variety} from the system. Terminal synchronization for this node will break. Proceed?`)) {
+            rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
+        }
+    }
+
+    function toggleArchive(cat, variety, status) {
+        rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(status === 'archived' ? 'live' : 'archived');
+    }
+
+    function startWizard() {
+        const c = prompt("Material Category ID?");
+        const v = prompt("Variety Name?");
+        const b = prompt("Initial Brand Mapping (comma separated)").split(',').map(i => i.trim());
+        if(c && v) rtdb.ref(`registry/materials/${c}/${v}`).set({ brands: b, status: 'live' });
+    }
+
+    // SPATIAL MODULE (LAZY LOADING INTEGRATED)
     function initMap() {
         adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
         L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
         markersLayer = L.layerGroup().addTo(adminMap);
-        
         rtdb.ref('surveys').on('value', snap => {
             markersLayer.clearLayers();
             snap.forEach(child => {
@@ -369,49 +380,40 @@
                 if (d.location) {
                     const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
                     marker.on('click', () => {
-                        const photos = (d.photos || []).map(p => `<div class="mt-4"><img src="${p.src}" class="w-full rounded-2xl shadow-xl border border-slate-700"><div class="text-[9px] text-slate-500 mt-2 font-black uppercase">${p.time}</div></div>`).join('');
-                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="text-[12px] font-bold"><p class="text-slate-400">Loc: ${d.address || 'GPS Verified'}</p><p class="text-white mt-2 uppercase">Category: ${d.mat}</p></div><div class="max-h-72 overflow-y-auto mt-4 pr-2">${photos || '<p class="text-slate-500 text-center py-4">No visual evidence</p>'}</div></div>`).openPopup();
+                        const photos = (d.photos || []).map(p => `<img src="${p.src}" class="w-full rounded-2xl mb-4 border border-slate-700 shadow-xl"><div class="text-[9px] text-slate-500 uppercase">${p.time}</div>`).join('');
+                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic tracking-tighter">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="max-h-72 overflow-y-auto">${photos || 'No Visual Evidence'}</div></div>`).openPopup();
                     });
                 }
             });
         });
     }
 
-    /**
-     * UTILITY MODULES
-     * Expanded Wizard, Archive, and Filter logic
-     */
-    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No GPS."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
-    
-    function startWizard() { 
-        const cat = prompt("Material Category?"); 
-        const v = prompt("Variety Label?"); 
-        const b = prompt("Brands (comma separated)").split(',').map(i => i.trim()); 
-        if(cat && v) rtdb.ref(`registry/materials/${cat}/${v}`).set({ brands: b, status: 'live' }); 
-    }
-    
-    function editBrands(cat, variety, currentBrands) { 
-        const newBrands = prompt(`Update Brands for ${variety}:`, currentBrands.join(', ')); 
-        if (newBrands) { 
-            const brandArray = newBrands.split(',').map(b => b.trim()); 
-            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(brandArray); 
-        } 
+    function renderRBAC(snap) {
+        const body = document.getElementById('userTableBody'); body.innerHTML = "";
+        snap.forEach(u => {
+            const d = u.val();
+            body.innerHTML += `<tr><td><div class="font-bold text-white">${d.name || 'User'}</div><div class="text-[10px] text-slate-500">${d.email}</div></td><td><span class="bg-slate-800 text-[10px] px-3 py-1.5 rounded-full font-black text-orange-400 uppercase tracking-widest border border-slate-700">${d.role}</span></td><td><button onclick="modifyClearance('${u.key}', '${d.name || d.email}')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3 rounded-2xl shadow-xl hover:bg-blue-500 transition-all">ELEVATE Access</button></td></tr>`;
+        });
     }
 
-    async function modifyClearance(uid, identity) { 
-        const authLvl = prompt(`Clearance for ${identity}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`); 
-        let role = ""; if (authLvl === "1") role = "field_staff"; else if (authLvl === "2") role = "admin_staff"; 
-        else if (authLvl === "3") role = "admin"; else if (authLvl === "4") role = "super_admin"; else return; 
-        if (confirm(`Authorize ${role.toUpperCase()} level for ${identity}?`)) { 
-            await rtdb.ref(`users/${uid}/role`).set(role); alert("CLEARANCE UPDATED."); 
-        } 
+    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("GPS Error."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
+    
+    async function modifyClearance(uid, iden) { 
+        const lvl = prompt(`Define Access Clearance for ${iden}:\n1. field_staff\n2. admin_staff\n3. admin\n4. super_admin`); 
+        let role = ""; 
+        if (lvl === "1") role = "field_staff"; else if (lvl === "2") role = "admin_staff"; 
+        else if (lvl === "3") role = "admin"; else if (lvl === "4") role = "super_admin"; else return; 
+        if (confirm(`Authorize ${role.toUpperCase()} level for ${iden}?`)) {
+            await rtdb.ref(`users/${uid}/role`).set(role);
+            alert("ACCESS PROTOCOL UPDATED.");
+        }
     }
     
     function filterRegistry() { 
         const s = document.getElementById('regSearch').value.toLowerCase(); 
         document.querySelectorAll('#registryList > div').forEach(card => { card.style.display = card.innerText.toLowerCase().includes(s) ? 'block' : 'none'; }); 
     }
-
+    
     function logout() { auth.signOut(); }
 </script>
 
