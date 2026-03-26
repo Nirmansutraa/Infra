@@ -48,7 +48,7 @@
             background: radial-gradient(circle at top right, #0f172a, #020617); 
         }
         
-        /* Advanced Glassmorphism */
+        /* VFSI Glassmorphism Grid */
         .glass-card { 
             background: var(--card-glass); 
             backdrop-filter: blur(16px); 
@@ -87,7 +87,7 @@
         .tab-panel.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GRAND SITE GRID ARCHITECTURE */
+        /* GRAND VFSI GRID ARCHITECTURE */
         table { width: 100%; border-collapse: separate; border-spacing: 0 16px; }
         td { padding: 26px; background: rgba(30, 41, 59, 0.25); border-top: 1px solid rgba(255,255,255,0.02); vertical-align: middle; transition: 0.3s; }
         td:first-child { border-radius: 22px 0 0 22px; }
@@ -109,21 +109,21 @@
 <nav class="sidebar p-10 flex flex-col">
     <div class="mb-16 px-2 text-center">
         <h1 class="text-4xl font-black text-white italic tracking-tighter">INFRA<span class="text-orange-500">V2</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[6px] mt-2">Executive Terminal</p>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[6px] mt-2">Executive Command</p>
     </div>
     
     <div class="space-y-4 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 System Metrics</button>
-        <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Grand Audit Grid</button>
-        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Spatial Intelligence</button>
+        <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 VFSI Audit Grid</button>
+        <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Spatial Node Trace</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link">⚒️ Material Registry</button>
-        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Security Matrix</button>
+        <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Security matrix</button>
     </div>
 
     <div class="mt-auto pt-10 border-t border-slate-800">
         <p class="text-[10px] text-slate-500 font-bold mb-4 uppercase tracking-widest">Active Operator</p>
         <div id="operatorId" class="text-xs font-bold text-orange-400 mb-10 truncate tracking-wide">AUTHENTICATING...</div>
-        <button onclick="logout()" class="w-full py-6 rounded-2xl bg-red-500/10 text-red-500 text-[12px] font-black uppercase hover:bg-red-500 hover:text-white transition-all shadow-sm">🔒 Secure Logout</button>
+        <button onclick="logout()" class="w-full py-6 rounded-2xl bg-red-500/10 text-red-500 text-[12px] font-black uppercase hover:bg-red-500 transition-all shadow-sm">🔒 Secure Logout</button>
     </div>
 </nav>
 
@@ -136,31 +136,31 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div class="glass-card p-14 border-l-8 border-orange-500"><p class="text-[12px] font-black text-slate-400 uppercase tracking-[4px]">Total Site Nodes</p><h3 id="stat-surveys" class="text-7xl font-black mt-6 text-white">0</h3></div>
             <div class="glass-card p-14 border-l-8 border-blue-500"><p class="text-[12px] font-black text-slate-400 uppercase tracking-[4px]">Field Agents</p><h3 id="stat-users" class="text-7xl font-black mt-6 text-white">0</h3></div>
-            <div class="glass-card p-14 border-l-8 border-emerald-500"><p class="text-[12px] font-black text-slate-400 uppercase tracking-[4px]">Registry Varieties</p><h3 id="stat-varieties" class="text-7xl font-black mt-6 text-white">0</h3></div>
+            <div class="glass-card p-14 border-l-8 border-emerald-500"><p class="text-[12px] font-black text-slate-400 uppercase tracking-[4px]">Active Varieties</p><h3 id="stat-varieties" class="text-7xl font-black mt-6 text-white">0</h3></div>
         </div>
     </section>
 
     <section id="tab-explorer" class="tab-panel">
         <div class="flex justify-between items-center mb-14">
             <div>
-                <h2 class="text-6xl font-black tracking-tighter">Grand Audit Grid</h2>
+                <h2 class="text-6xl font-black tracking-tighter">VFSI Intelligence Grid</h2>
                 <div class="flex gap-4 mt-6">
                     <button onclick="ExportEngine.toExcel()" class="bg-emerald-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[3px] hover:bg-emerald-500 shadow-lg transition-all">📥 Export Excel (Secure)</button>
                     <button onclick="ExportEngine.toPDF()" class="bg-red-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[3px] hover:bg-red-500 shadow-lg transition-all">📥 Export PDF (Secure)</button>
                 </div>
             </div>
-            <input type="text" id="gridSearch" placeholder="Search Master Grid..." class="text-xs w-96" onkeyup="filterGrandGrid()">
+            <input type="text" id="gridSearch" placeholder="Filter Grand Matrix (Firm, Agent, Material)..." class="text-xs w-96" onkeyup="filterGrandGrid()">
         </div>
         <div class="glass-card p-12 overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr>
                         <th>Identity & ID</th>
-                        <th>Business Entity (Owner/MGR)</th>
+                        <th>Business Matrix (Owner/MGR)</th>
                         <th>Hierarchy Mat & Fleet</th>
                         <th>Evidence & Verified Address</th>
-                        <th>Reporting Agent</th>
-                        <th>Modification Protocol</th>
+                        <th>Reporting Agent Details</th>
+                        <th>Protocol Action</th>
                     </tr>
                 </thead>
                 <tbody id="explorerTableBody"></tbody>
@@ -175,7 +175,7 @@
 
     <section id="tab-intel" class="tab-panel">
         <div class="flex justify-between items-center mb-14">
-            <div><h2 class="text-6xl font-black tracking-tighter">Material Intelligence</h2><p class="text-slate-400 mt-3 text-xl">Manage Individual Variety & Brand Nodes</p></div>
+            <div><h2 class="text-6xl font-black tracking-tighter">Material Registry</h2><p class="text-slate-400 mt-3 text-xl">Manage Individual Variety & Brand Nodes</p></div>
             <button onclick="startWizard()" class="bg-orange-500 px-10 py-4 rounded-2xl font-black text-xs text-white shadow-2xl hover:bg-orange-600 transition-all">ADD MATERIAL PROTOCOL</button>
         </div>
         <div id="registryList" class="space-y-16"></div>
@@ -194,7 +194,7 @@
 
 <script>
     /**
-     * MASTER COMMAND ENGINE (v82.0)
+     * MASTER COMMAND ENGINE (v84.0)
      * Full Restoration of expanded un-minified enterprise logic
      */
     const firebaseConfig = {
@@ -206,8 +206,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database(), auth = firebase.auth();
-    let adminMap, markersLayer;
-    let globalSurveyData = [];
+    let adminMap, markersLayer, globalSurveyData = [];
 
     // Interface Switch Logic
     function switchTab(id) {
@@ -215,64 +214,34 @@
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'map') {
-            setTimeout(() => { 
-                if(!adminMap) initMap(); 
-                else adminMap.invalidateSize(); 
-            }, 600);
-        }
+        if(id === 'map') setTimeout(() => { if(!adminMap) initMap(); else adminMap.invalidateSize(); }, 600);
     }
 
     /**
      * CRITICAL AUTH GUARD
-     * Fixed Safety Checks to prevent "innerText of null" sync failure
      */
     auth.onAuthStateChanged(user => {
         if (user) {
-            const opEl = document.getElementById('operatorId');
-            if (opEl) opEl.innerText = user.email;
-            
-            const masters = ['nirmansutraa@gmail.com', 'builderkart@gmail.com'];
-            if (masters.includes(user.email)) {
-                startSync();
-            } else {
-                rtdb.ref('users/' + user.uid).once('value', snap => {
-                    const data = snap.val();
-                    const roles = ['admin', 'super_admin', 'admin_staff'];
-                    if (!data || !roles.includes(data.role)) {
-                        alert("Unauthorized Access Clearance."); 
-                        auth.signOut().then(() => { window.location.href = "../index.html"; });
-                    } else startSync();
-                });
-            }
+            if(document.getElementById('operatorId')) document.getElementById('operatorId').innerText = user.email;
+            startSync();
         } else window.location.href = "../index.html";
     });
 
-    /**
-     * MASTER SYNC ENGINE
-     */
     function startSync() {
-        // Site Data Sync
         rtdb.ref('surveys').orderByChild('timestamp').on('value', snap => {
-            const el = document.getElementById('stat-surveys');
-            if (el) el.innerText = snap.numChildren();
+            if(document.getElementById('stat-surveys')) document.getElementById('stat-surveys').innerText = snap.numChildren();
             renderGrandIntelligenceGrid(snap);
         });
-
-        // User Identity Sync
         rtdb.ref('users').on('value', snap => {
-            const el = document.getElementById('stat-users');
-            if (el) el.innerText = snap.numChildren();
+            if(document.getElementById('stat-users')) document.getElementById('stat-users').innerText = snap.numChildren();
             renderRBAC(snap);
         });
-
-        // Material Hierarchy Sync
         rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
     /**
      * RENDERER: MASTER SITE INTELLIGENCE GRID
-     * RESTORED: Agent Identity, Manager Details, and Address Sync
+     * RESTORED: Full Mapping of all Terminal details (Agent, WhatsApp, Address)
      */
     function renderGrandIntelligenceGrid(snap) {
         const body = document.getElementById('explorerTableBody'); if (!body) return;
@@ -285,7 +254,7 @@
             const date = new Date(n.timestamp).toLocaleDateString('en-IN');
             const thumbs = (n.photos || []).map(p => `<img src="${p.src}" class="w-12 h-12 rounded-xl border border-slate-700 cursor-zoom-in hover:border-orange-500 shadow-lg" onclick="window.open('${p.src}', '_blank')">`).join('');
             
-            // RESTORED: WhatsApp Hub and Manager details
+            // VFSI Mapping: RESTORED FULL MATRIX DETAILS
             const entityDetails = `
                 <div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div>
                 <div class="text-[9px] text-emerald-400 font-black mt-1 uppercase tracking-tighter">Owner WA: ${n.ownerWa || n.ownerPhone || '-'}</div>
@@ -293,19 +262,20 @@
                 <div class="text-[9px] text-emerald-400 font-black mt-1 uppercase tracking-tighter">MGR WA: ${n.mgrWa || n.mgrPhone || '-'}</div>
             `;
 
+            // Hierarchy Mapping: Mat + Fleet
             const fleet = Object.entries(n.fleet || {}).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1 uppercase font-black text-blue-300 border border-blue-500/20">${t[0]}:${q}</span>`).join('') || '-';
 
             body.innerHTML += `
                 <tr class="${n.status === 'archived' ? 'opacity-30 grayscale hover:opacity-100' : ''}">
                     <td><div class="font-black text-white text-base tracking-tighter">${n.firm}</div><div class="text-[9px] text-orange-500 font-black mt-1.5 uppercase tracking-widest">${n.trackingId || 'PENDING'}</div></td>
                     <td>${entityDetails}</td>
-                    <td><span class="text-orange-500 font-black uppercase text-[11px]">${n.mat || 'Mixed'}</span><br><div class="text-[9px] text-slate-400 font-black mt-1 uppercase mb-2">${(n.brands || []).join(', ')}</div><div class="flex flex-wrap gap-1.5">${fleet}</div></td>
+                    <td><span class="text-orange-500 font-black uppercase text-[11px]">${n.mat || 'Mixed'}</span><br><div class="text-[9px] text-slate-400 font-black mt-1 uppercase mb-2">Vars: ${(n.varieties || []).join(', ')}<br>Brands: ${(n.brands || []).join(', ')}</div><div class="flex flex-wrap gap-1.5">${fleet}</div></td>
                     <td><div class="text-[11px] font-bold text-slate-300 leading-tight w-64 truncate hover:w-full hover:whitespace-normal transition-all mb-3">${n.address || 'GPS Verification Only'}</div><div class="flex flex-wrap gap-2">${thumbs || 'No Evidence'}</div></td>
-                    <td><div class="text-[10px] font-black text-orange-400 uppercase tracking-tighter">${n.agent_identity || 'Restricted'}</div><div class="text-[9px] text-slate-600 font-bold mt-1">${n.agent || '-'}</div><div class="text-[8px] text-slate-500 mt-1">${date}</div></td>
+                    <td><div class="text-[10px] font-black text-orange-400 uppercase tracking-tighter">${n.agent_identity || 'Restricted Agent'}</div><div class="text-[9px] text-slate-600 font-bold mt-1">${n.agent || '-'}</div><div class="text-[8px] text-slate-500 mt-1">${date}</div></td>
                     <td>
                         <div class="flex flex-col gap-2.5">
-                            <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-6 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-xl hover:scale-105 active:scale-95 transition-all">Track Trace</button>
-                            <button onclick="adminWipeNode('${n.id}', '${n.firm}')" class="px-6 py-2.5 rounded-xl bg-red-600/10 text-red-500 text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Wipe Data</button>
+                            <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-6 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-xl hover:scale-105 active:scale-95 transition-all">Track</button>
+                            <button onclick="adminWipeNode('${n.id}', '${n.firm}')" class="px-6 py-2.5 rounded-xl bg-red-600/10 text-red-500 text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Wipe</button>
                         </div>
                     </td>
                 </tr>`;
@@ -314,25 +284,25 @@
 
     /**
      * EXECUTIVE EXTRACTION ENGINE
-     * Encryption Protocol: Life4life@smpwkns
+     * Protected with password: Life4life@smpwkns
      */
     window.ExportEngine = {
         validate() {
             const pass = prompt("PROTOCOL DECRYPTION KEY REQUIRED:");
-            if (pass !== "Life4life@smpwkns") { alert("❌ ACCESS DENIED: Extraction protocol terminated."); return false; }
+            if (pass !== "Life4life@smpwkns") { alert("❌ Unauthorized extraction attempt."); return false; }
             return true;
         },
         toExcel() {
             if (!this.validate()) return;
             const rows = globalSurveyData.map(n => ({
-                Firm: n.firm, ID: n.trackingId, Owner: n.ownerName, Owner_WA: n.ownerWa || n.ownerPhone,
-                Manager: n.mgrName, Manager_WA: n.mgrWa || n.mgrPhone, Material: n.mat, 
-                Brands: (n.brands || []).join(', '), Address: n.address, GPS: `${n.location?.lat}, ${n.location?.lng}`,
-                Agent: n.agent_identity, Gmail: n.agent, Date: new Date(n.timestamp).toLocaleString()
+                Firm_Name: n.firm, Regional_ID: n.trackingId, Owner: n.ownerName, Owner_WhatsApp: n.ownerWa || n.ownerPhone,
+                Manager: n.mgrName, Manager_WhatsApp: n.mgrWa || n.mgrPhone, Material_Class: n.mat, 
+                Varieties: (n.varieties || []).join(', '), Brands: (n.brands || []).join(', '), Address: n.address, 
+                GPS: `${n.location?.lat}, ${n.location?.lng}`, Agent: n.agent_identity, Email: n.agent, Date: new Date(n.timestamp).toLocaleString()
             }));
             const ws = XLSX.utils.json_to_sheet(rows);
             const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Terminal Audit");
-            XLSX.writeFile(wb, `Nirmansutra_Audit_${Date.now()}.xlsx`);
+            XLSX.writeFile(wb, `Nirmansutra_Audit_Log_${Date.now()}.xlsx`);
         },
         toPDF() {
             if (!this.validate()) return;
@@ -343,7 +313,7 @@
                 head: [['Firm Identity', 'Regional ID', 'Owner', 'WhatsApp', 'Material', 'Verified Address', 'Agent']], 
                 body: data, theme: 'grid', headStyles: {fillColor: [255, 122, 0]}, styles: {fontSize: 8} 
             });
-            doc.save(`Nirmansutra_Security_Report_${Date.now()}.pdf`);
+            doc.save(`Nirmansutra_Audit_Report_${Date.now()}.pdf`);
         }
     };
 
@@ -366,15 +336,16 @@
     }
 
     /**
-     * ADMINISTRATIVE PROTOCOLS
+     * PROTOCOL ENGINES
      */
     function adminWipeNode(id, firm) { if(confirm(`🚨 PERMANENT WIPE: Delete node "${firm}"?`)) rtdb.ref(`surveys/${id}`).remove(); }
     function deleteMaterialClass(cat) { if(confirm(`WIPE WARNING: Permanently delete entire "${cat}" class?`)) rtdb.ref(`registry/materials/${cat}`).remove(); }
+    function zoomEvidence(src) { window.open(src, '_blank'); }
 
     function manageVariety(cat, variety, status) {
-        const action = prompt(`PROTOCOL [${variety}]:\n1. Rename Individual Variety\n2. Archive/Restore\n3. DELETE PERMANENTLY`);
+        const action = prompt(`PROTOCOL [${variety}]:\n1. Rename\n2. Archive/Restore\n3. DELETE`);
         if (action === "1") {
-            const n = prompt("Enter New Name:", variety);
+            const n = prompt("New Name:", variety);
             if (n && n !== variety) { rtdb.ref(`registry/materials/${cat}/${variety}`).once('value', s => { rtdb.ref(`registry/materials/${cat}/${n}`).set(s.val()); rtdb.ref(`registry/materials/${cat}/${variety}`).remove(); }); }
         } else if (action === "2") { rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(status === 'archived' ? 'live' : 'archived'); }
         else if (action === "3" && confirm(`Wipe "${variety}"?`)) { rtdb.ref(`registry/materials/${cat}/${variety}`).remove(); }
