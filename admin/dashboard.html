@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Advanced command Terminal</title>
+    <title>Infra V2 | Precision command Center</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -24,7 +24,7 @@
             overflow: hidden; 
         }
         
-        /* Modernized Fixed Command Sidebar Architecture */
+        /* Modernized Sidebar Architecture */
         .sidebar { 
             width: 280px; 
             height: 100vh; 
@@ -92,7 +92,7 @@
         
         /* Interactive Material & Brand Tabs */
         .interactive-tab { 
-            padding: 10px 18px; 
+            padding: 12px 20px; 
             border-radius: 14px; 
             font-size: 11px; 
             font-weight: 800; 
@@ -102,28 +102,31 @@
             border: 1px solid rgba(255,255,255,0.08);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
         .variety-tab { 
-            background: rgba(255, 122, 0, 0.1); 
+            background: rgba(255, 122, 0, 0.08); 
             color: var(--accent); 
             border-color: rgba(255, 122, 0, 0.2); 
         }
-        .variety-tab:hover { background: var(--accent); color: white; }
+        .variety-tab:hover { background: var(--accent); color: white; border-color: var(--accent); }
         
         .brand-tab { 
-            background: rgba(30, 41, 59, 0.8); 
-            color: #cbd5e1; 
+            background: rgba(30, 41, 59, 0.7); 
+            color: #94a3b8; 
         }
         .brand-tab:hover { background: #1e293b; border-color: var(--accent); color: white; }
 
-        /* Performance Data Grid */
+        /* Performance Data Grid Architecture */
         table { width: 100%; border-collapse: separate; border-spacing: 0 14px; }
         td { padding: 24px; background: rgba(30, 41, 59, 0.25); border-top: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
         td:first-child { border-radius: 20px 0 0 20px; border-left: 1px solid rgba(255,255,255,0.02); }
         td:last-child { border-radius: 0 20px 20px 0; border-right: 1px solid rgba(255,255,255,0.02); }
         th { padding: 0 24px 12px; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; text-align: left; letter-spacing: 2px; }
+
+        input { background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 12px; color: white; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--accent); }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -183,7 +186,7 @@
                         <th>Material & Brands</th>
                         <th>Fleet Intelligence</th>
                         <th>Timestamp</th>
-                        <th>Action</th>
+                        <th>Action Protocol</th>
                     </tr>
                 </thead>
                 <tbody id="explorerTableBody"></tbody>
@@ -200,11 +203,11 @@
         <div class="flex justify-between items-center mb-10">
             <div>
                 <h2 class="text-5xl font-black tracking-tighter">Material Registry</h2>
-                <p class="text-slate-400 mt-2">Click any tab to Edit, Archive, or Wipe specific nodes</p>
+                <p class="text-slate-400 mt-2">Click any Variety (Orange) or Brand (Grey) for individual node protocol</p>
             </div>
             <button onclick="startWizard()" class="bg-orange-500 px-8 py-3 rounded-2xl font-black text-xs text-white shadow-xl hover:bg-orange-600 active:scale-95 transition-all">ADD MATERIAL PROTOCOL</button>
         </div>
-        <div id="registryList" class="space-y-10">
+        <div id="registryList" class="space-y-12">
             </div>
     </section>
 
@@ -226,7 +229,7 @@
 
 <script>
     /**
-     * MASTER COMMAND ENGINE (v51.0)
+     * MASTER COMMAND ENGINE (v53.0)
      * Restored to full expanded logic state
      */
     const firebaseConfig = {
@@ -241,25 +244,39 @@
     const auth = firebase.auth();
     let adminMap, markersLayer;
 
+    /**
+     * INTERFACE MANAGEMENT
+     * Expanded Tab Switching logic with Map Invalidation
+     */
     function switchTab(id) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('tab-' + id).classList.add('active');
         document.getElementById('btn-' + id).classList.add('active');
-        if(id === 'map') setTimeout(() => { if(!adminMap) initMap(); else adminMap.invalidateSize(); }, 500);
+        if(id === 'map') {
+            setTimeout(() => { 
+                if(!adminMap) initMap(); 
+                else adminMap.invalidateSize(); 
+            }, 500);
+        }
     }
 
-    // AUTH GUARD & MASTER BYPASS
+    /**
+     * AUTHENTICATION GATEKEEPER
+     * Master Admin bypass logic for Zero-Lockout
+     */
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('operatorId').innerText = user.email;
             const masters = ['nirmansutraa@gmail.com', 'builderkart@gmail.com'];
-            if (masters.includes(user.email)) startSync();
-            else {
+            if (masters.includes(user.email)) {
+                startSync();
+            } else {
                 rtdb.ref('users/' + user.uid).once('value', snap => {
                     const data = snap.val();
                     if (!data || !['admin', 'super_admin'].includes(data.role)) {
-                        alert("Unauthorized Access Clearance."); auth.signOut().then(() => { window.location.href = "../index.html"; });
+                        alert("Unauthorized Access Clearance."); 
+                        auth.signOut().then(() => { window.location.href = "../index.html"; });
                     } else startSync();
                 });
             }
@@ -267,7 +284,8 @@
     });
 
     /**
-     * DATA SYNC MODULE
+     * EXECUTIVE DATA SYNC ENGINE
+     * Implements Reverse-Chronological Sorting for Explorer
      */
     function startSync() {
         // Site Intelligence listener
@@ -286,6 +304,10 @@
         rtdb.ref('registry/materials').on('value', snap => renderRegistry(snap));
     }
 
+    /**
+     * EXPLORER RENDERER
+     * Maps Full Business Data
+     */
     function renderExplorer(snap) {
         const body = document.getElementById('explorerTableBody'); body.innerHTML = "";
         const nodes = [];
@@ -294,80 +316,86 @@
 
         nodes.forEach(n => {
             const date = new Date(n.timestamp).toLocaleDateString('en-IN');
-            const entityData = `<div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div><div class="text-[10px] text-slate-500">MGR: ${n.mgrName || 'N/A'}</div>`;
+            const entityData = `
+                <div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div>
+                <div class="text-[10px] text-slate-500">MGR: ${n.mgrName || 'N/A'}</div>
+                <div class="text-[10px] text-orange-500 font-bold mt-1">${n.ownerPhone || 'No Contact'}</div>
+            `;
+
             const f = n.fleet || {};
             const fleetStr = Object.entries(f).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1">${t}:${q}</span>`).join('') || 'None';
 
             body.innerHTML += `
                 <tr>
-                    <td><div class="font-black text-white text-base">${n.firm}</div><div class="text-[9px] text-orange-500 font-bold uppercase mt-1">${n.trackingId || 'N/A'}</div></td>
+                    <td><div class="font-black text-white text-base tracking-tighter">${n.firm}</div><div class="text-[9px] text-orange-500 font-bold uppercase mt-1.5">${n.trackingId || 'N/A'}</div></td>
                     <td>${entityData}</td>
                     <td><span class="text-orange-500 font-black">${n.mat || 'Mixed'}</span><br><div class="text-[9px] text-slate-400 font-bold mt-1 uppercase">${(n.brands || []).join(', ')}</div></td>
-                    <td><div class="flex flex-wrap gap-1">${fleetStr}</div></td>
+                    <td><div class="flex flex-wrap gap-1.5">${fleetStr}</div></td>
                     <td><div class="text-[10px] font-black text-slate-400">${date}</div></td>
-                    <td><button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Trace</button></td>
+                    <td><button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-5 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">Track Node</button></td>
                 </tr>`;
         });
     }
 
     /**
-     * ADVANCED GRANULAR REGISTRY RENDERER
-     * Varieties and Brands now rendered as individual interactive tabs
+     * GRANULAR TAB RENDERER
+     * Varieties and Brands now rendered as individual interactive elements
      */
     function renderRegistry(snap) {
         const list = document.getElementById('registryList'); list.innerHTML = "";
         let totalVars = 0;
 
         snap.forEach(cat => {
-            let catContainer = `
+            let catBlock = `
                 <div class="glass-card p-12 border-t-4 border-orange-500">
-                    <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-800">
+                    <div class="flex justify-between items-center mb-10 pb-4 border-b border-slate-800">
                         <div>
-                            <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px]">Material Class</p>
+                            <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px]">Class Identity</p>
                             <h4 class="text-4xl font-black text-white uppercase tracking-tighter mt-1">${cat.key}</h4>
                         </div>
                         <button onclick="editCategoryName('${cat.key}')" class="text-[10px] font-black text-slate-500 hover:text-orange-500 uppercase tracking-widest transition">Rename Class</button>
                     </div>
-                    <div class="space-y-10">`;
+                    <div class="space-y-12">`;
 
-            cat.forEach(vn => {
+            cat.forEach(varietyNode => {
                 totalVars++;
-                const data = vn.val();
-                const bList = data.brands || [];
+                const data = varietyNode.val();
+                const brands = data.brands || [];
                 const status = data.status || 'live';
 
-                catContainer += `
-                    <div class="p-8 bg-slate-900/30 rounded-[30px] border border-slate-800 hover:border-slate-700 transition-all ${status === 'archived' ? 'opacity-40 grayscale pointer-events-none' : ''}">
-                        <div class="flex items-center gap-6 mb-6">
-                            <div class="interactive-tab variety-tab" onclick="manageVariety('${cat.key}', '${vn.key}', '${status}')">
-                                <span>🛠️</span> Variety: ${vn.key}
+                catBlock += `
+                    <div class="p-8 bg-slate-900/30 rounded-[32px] border border-slate-800 hover:border-slate-700 transition ${status === 'archived' ? 'opacity-30 grayscale pointer-events-none' : ''}">
+                        <div class="flex items-center gap-6 mb-8">
+                            <div class="interactive-tab variety-tab" onclick="manageVariety('${cat.key}', '${varietyNode.key}', '${status}')">
+                                <span>🛠️</span> ${varietyNode.key}
                             </div>
-                            <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Click tab for Variety Protocol</p>
+                            <p class="text-[9px] font-black text-slate-600 uppercase tracking-[2px]">Individual Variety Control Protocol</p>
                         </div>
                         
                         <div class="flex flex-wrap gap-4 items-center">
-                            ${bList.map(b => `
-                                <div class="interactive-tab brand-tab" onclick="manageBrand('${cat.key}', '${vn.key}', '${b}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})">
+                            ${brands.map(b => `
+                                <div class="interactive-tab brand-tab" onclick="manageBrand('${cat.key}', '${varietyNode.key}', '${b}', ${JSON.stringify(brands).replace(/"/g, '&quot;')})">
                                     <span>🔖</span> ${b}
                                 </div>
                             `).join('')}
-                            <button onclick="addBrandToVariety('${cat.key}', '${vn.key}', ${JSON.stringify(bList).replace(/"/g, '&quot;')})" 
-                                    class="bg-orange-500/10 text-orange-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-orange-500 hover:text-white transition">+ Add Brand</button>
+                            <button onclick="addBrandToVariety('${cat.key}', '${varietyNode.key}', ${JSON.stringify(brands).replace(/"/g, '&quot;')})" 
+                                    class="bg-orange-500/10 text-orange-500 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase hover:bg-orange-500 hover:text-white transition">+ Add Brand</button>
                         </div>
                     </div>`;
             });
 
-            catContainer += `</div></div>`;
-            list.innerHTML += catContainer;
+            catBlock += `</div></div>`;
+            list.innerHTML += catBlock;
         });
         document.getElementById('stat-varieties').innerText = totalVars;
     }
 
     /**
-     * GRANULAR VARIETY MANAGEMENT
+     * INDIVIDUAL PROTOCOL ENGINES
+     * Granular control for each Variety and Brand Node
      */
     function manageVariety(cat, variety, status) {
-        const action = prompt(`PROTOCOL FOR [${variety}]:\n1. Rename Variety Label\n2. ${status === 'archived' ? 'Unarchive Node' : 'Archive Node (Hide from field)'}\n3. WIPE VARIETY PERMANENTLY`);
+        const action = prompt(`PROTOCOL FOR VARIETY [${variety}]:\n1. Rename Individual Variety\n2. ${status === 'archived' ? 'Restore Node' : 'Archive Node (Hide from Field)'}\n3. DELETE PERMANENTLY`);
         
         if (action === "1") {
             const newName = prompt("Enter New Variety Label:", variety);
@@ -380,17 +408,14 @@
         } else if (action === "2") {
             rtdb.ref(`registry/materials/${cat}/${variety}/status`).set(status === 'archived' ? 'live' : 'archived');
         } else if (action === "3") {
-            if (confirm(`ALERT: Wipe "${variety}" from ${cat}? This terminates field agent sync.`)) {
+            if (confirm(`CRITICAL: Permanently wipe variety "${variety}" from ${cat}?`)) {
                 rtdb.ref(`registry/materials/${cat}/${variety}`).remove();
             }
         }
     }
 
-    /**
-     * GRANULAR BRAND MANAGEMENT
-     */
     function manageBrand(cat, variety, brand, currentList) {
-        const action = prompt(`PROTOCOL FOR [${brand}]:\n1. Rename Brand\n2. REMOVE Brand from Mapping`);
+        const action = prompt(`PROTOCOL FOR BRAND [${brand}]:\n1. Rename Individual Brand\n2. REMOVE BRAND MAPPING`);
         
         if (action === "1") {
             const newName = prompt("Enter New Brand Name:", brand);
@@ -399,22 +424,37 @@
                 rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(newList);
             }
         } else if (action === "2") {
-            if (confirm(`Remove ${brand} from this variety?`)) {
+            if (confirm(`Remove mapping for ${brand} under ${variety}?`)) {
                 const newList = currentList.filter(b => b !== brand);
                 rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(newList);
             }
         }
     }
 
-    // UTILITY PROTOCOLS
-    function addBrandToVariety(cat, variety, currentList) {
-        const b = prompt(`New Brand to map under ${variety}:`);
-        if (b && !currentList.includes(b)) { 
-            currentList.push(b); 
-            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(currentList); 
-        }
+    /**
+     * SPATIAL MODULE (LAZY LOADING)
+     * Protects bandwidth by fetching images ONLY upon click
+     */
+    function initMap() {
+        adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
+        L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
+        markersLayer = L.layerGroup().addTo(adminMap);
+        rtdb.ref('surveys').on('value', snap => {
+            markersLayer.clearLayers();
+            snap.forEach(child => {
+                const d = child.val();
+                if (d.location) {
+                    const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
+                    marker.on('click', () => {
+                        const photos = (d.photos || []).map(p => `<img src="${p.src}" class="w-full rounded-2xl border border-slate-700 mt-4 shadow-xl">`).join('');
+                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic tracking-tighter">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="max-h-72 overflow-y-auto">${photos || 'No Visual Evidence'}</div></div>`).openPopup();
+                    });
+                }
+            });
+        });
     }
 
+    // UTILITY PROTOCOLS
     function editCategoryName(oldName) {
         const n = prompt("Enter Global Class Rename:", oldName);
         if (n && n !== oldName) {
@@ -425,33 +465,19 @@
         }
     }
 
-    function startWizard() {
-        const c = prompt("Material Class?"); 
-        const v = prompt("Variety Identity?"); 
-        const b = prompt("Associated Brands (comma separated)").split(',').map(i => i.trim());
-        if(c && v) rtdb.ref(`registry/materials/${c}/${v}`).set({ brands: b, status: 'live' });
+    function addBrandToVariety(cat, variety, currentList) {
+        const b = prompt(`New Brand to map under variety [${variety}]:`);
+        if (b && !currentList.includes(b)) { 
+            currentList.push(b); 
+            rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(currentList); 
+        }
     }
 
-    // SPATIAL INTEL
-    function initMap() {
-        adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
-        L.tileLayer('https://{s}.tile.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(adminMap);
-        markersLayer = L.layerGroup().addTo(adminMap);
-        
-        rtdb.ref('surveys').on('value', snap => {
-            markersLayer.clearLayers();
-            snap.forEach(child => {
-                const d = child.val();
-                if (d.location) {
-                    const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
-                    // SHALLOW SYNC PROTECTOR: Fetch images only upon click to stop 944MB usage spike
-                    marker.on('click', () => {
-                        const photos = (d.photos || []).map(p => `<img src="${p.src}" class="w-full rounded-2xl border border-slate-700 mt-4">`).join('');
-                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="max-h-72 overflow-y-auto">${photos || 'No Visual Evidence'}</div></div>`).openPopup();
-                    });
-                }
-            });
-        });
+    function startWizard() {
+        const c = prompt("Material Class?"); 
+        const v = prompt("Variety Label?"); 
+        const b = prompt("Initial Brands (comma separated)").split(',').map(i => i.trim());
+        if(c && v) rtdb.ref(`registry/materials/${c}/${v}`).set({ brands: b, status: 'live' });
     }
 
     function renderRBAC(snap) {
@@ -469,7 +495,8 @@
         if (confirm(`Authorize ${role.toUpperCase()} level for ${iden}?`)) await rtdb.ref(`users/${uid}/role`).set(role); 
     }
 
-    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No Spatial Data."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
+    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No Spatial Trace."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
+    function filterRegistry() { const s = document.getElementById('regSearch').value.toLowerCase(); document.querySelectorAll('#registryList > div').forEach(card => { card.style.display = card.innerText.toLowerCase().includes(s) ? 'block' : 'none'; }); }
     function logout() { auth.signOut(); }
 </script>
 
