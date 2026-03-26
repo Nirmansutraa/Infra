@@ -69,7 +69,6 @@
             letter-spacing: 3px;
             text-decoration: none;
             transition: 0.3s;
-            cursor: pointer;
         }
         .btn-reg:hover { color: white; letter-spacing: 4px; }
 
@@ -104,9 +103,9 @@
 
     <div class="reg-container">
         <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <div onclick="initiateRegistration()" class="btn-reg">
+        <a href="registration.html?mode=registration" class="btn-reg">
             ➜ New Supplier Registration
-        </div>
+        </a>
     </div>
 
     <div id="statusBox" class="status-box"></div>
@@ -118,8 +117,8 @@
 
 <script>
     /**
-     * GATEWAY LOGIC (v20.0)
-     * Matches InfraBV01 Gold Standard
+     * GATEWAY LOGIC (v22.0)
+     * Matches Gold Standard Server Structure
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -140,19 +139,7 @@
         box.className = `status-box ${type === 'err' ? 'bg-red-500/20 text-red-500' : 'bg-orange-500/20 text-orange-500 animate-pulse'}`;
     }
 
-    /**
-     * REGISTRATION BYPASS
-     * This clears the staff session before moving to registration to stop the redirect loop.
-     */
-    async function initiateRegistration() {
-        showStatus("Clearing Staff Session...", "warn");
-        await auth.signOut();
-        sessionStorage.setItem('reg_active', 'true');
-        window.location.href = "registration.html";
-    }
-
     async function loginWithGoogle() {
-        sessionStorage.removeItem('reg_active');
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
             showStatus("Verifying Authorization...", "warn");
@@ -179,31 +166,30 @@
             return;
         }
 
-        if (['admin', 'super_admin', 'admin_staff'].includes(role)) {
-            showStatus("Redirecting to Command Terminal...", "warn");
-            setTimeout(() => window.location.href = 'admin/dashboard.html', 1500);
-        } else if (role === 'field_staff') {
-            showStatus("Redirecting to Field Survey Terminal...", "warn");
-            setTimeout(() => window.location.href = 'field/survey.html', 1500);
-        } else {
-            showStatus("Unauthorized Access Role.", "err");
-            auth.signOut();
-        }
+        // FOLDER PREFIX LOGIC
+        const path = (['admin', 'super_admin', 'admin_staff'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
+        showStatus("Redirecting to Terminal...", "warn");
+        setTimeout(() => window.location.href = path, 1000);
     }
 
     /**
-     * PERSISTENT SESSION TRACKER
-     * Only auto-redirects if NOT in registration mode.
+     * MASTER REDIRECT BYPASS ENGINE
+     * Checks URL for '?mode=registration' to stop auto-redirection loop.
      */
     auth.onAuthStateChanged(user => {
-        if (user && !sessionStorage.getItem('reg_active')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isRegistrationMode = urlParams.get('mode') === 'registration';
+
+        if (user && !isRegistrationMode) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
                 const role = snap.val();
                 if (role) {
-                    showStatus("Session Active. Preparing Terminal...", "warn");
+                    showStatus("Session Active. Opening Terminal...", "warn");
                     handleRedirection(role);
                 }
             });
+        } else if (isRegistrationMode) {
+            console.log("InfraBV01: Redirect Bypass active for Registration.");
         }
     });
 </script>
