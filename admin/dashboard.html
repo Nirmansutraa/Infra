@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infra V2 | Grand Executive Command</title>
+    <title>Infra V2 | Grand Command Terminal</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -83,26 +83,6 @@
         .tab-panel.active { display: block; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INDIVIDUAL TAB INTERFACE */
-        .interactive-tab { 
-            padding: 14px 22px; 
-            border-radius: 16px; 
-            font-size: 11px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            cursor: pointer; 
-            transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.08);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .variety-tab { background: rgba(255, 122, 0, 0.1); color: var(--accent); border-color: rgba(255, 122, 0, 0.2); }
-        .variety-tab:hover { background: var(--accent); color: white; border-color: var(--accent); }
-        .brand-tab { background: rgba(30, 41, 59, 0.8); color: #94a3b8; }
-        .brand-tab:hover { background: #1e293b; border-color: var(--accent); color: white; }
-
         /* GRAND SITE GRID ARCHITECTURE */
         table { width: 100%; border-collapse: separate; border-spacing: 0 16px; }
         td { padding: 26px; background: rgba(30, 41, 59, 0.25); border-top: 1px solid rgba(255,255,255,0.02); vertical-align: middle; transition: 0.3s; }
@@ -110,6 +90,10 @@
         td:last-child { border-radius: 0 22px 22px 0; }
         tr:hover td { background: rgba(30, 41, 59, 0.4); border-color: var(--accent); }
         th { padding: 0 26px 12px; text-transform: uppercase; font-size: 10px; font-weight: 900; color: #64748b; text-align: left; letter-spacing: 3px; }
+
+        .interactive-tab { padding: 12px 18px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); display: inline-flex; align-items: center; gap: 8px; }
+        .variety-tab { background: rgba(255, 122, 0, 0.1); color: var(--accent); border-color: rgba(255, 122, 0, 0.2); }
+        .brand-tab { background: rgba(30, 41, 59, 0.8); color: #94a3b8; }
 
         input { background: #0f172a; border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; outline: none; transition: 0.2s; }
         ::-webkit-scrollbar { width: 6px; }
@@ -126,7 +110,7 @@
     
     <div class="space-y-4 flex-1">
         <button onclick="switchTab('dash')" id="btn-dash" class="nav-link active">📊 System Metrics</button>
-        <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Field Intelligence Grid</button>
+        <button onclick="switchTab('explorer')" id="btn-explorer" class="nav-link">📋 Field Intel Grid</button>
         <button onclick="switchTab('map')" id="btn-map" class="nav-link">📍 Spatial Node Trace</button>
         <button onclick="switchTab('intel')" id="btn-intel" class="nav-link">⚒️ Material Registry</button>
         <button onclick="switchTab('rbac')" id="btn-rbac" class="nav-link">🛡️ Security Matrix</button>
@@ -143,7 +127,7 @@
     <section id="tab-dash" class="tab-panel active">
         <div class="flex justify-between items-end mb-16">
             <div><h2 class="text-6xl font-black tracking-tighter text-white">Network Pulse</h2><p class="text-slate-400 mt-4 text-xl">Global Data Sync Status</p></div>
-            <div class="px-8 py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-full"><span class="text-emerald-500 font-mono text-xs font-black uppercase tracking-widest">● Database Live Connectivity</span></div>
+            <div class="px-8 py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-full"><span class="text-emerald-500 font-mono text-xs font-black uppercase tracking-widest">● Database Connectivity Active</span></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div class="glass-card p-14 border-l-8 border-orange-500"><p class="text-[12px] font-black text-slate-400 uppercase tracking-[4px]">Total Site Nodes</p><h3 id="stat-surveys" class="text-7xl font-black mt-6 text-white">0</h3></div>
@@ -154,18 +138,18 @@
 
     <section id="tab-explorer" class="tab-panel">
         <div class="flex justify-between items-center mb-14">
-            <div><h2 class="text-6xl font-black tracking-tighter">Intelligence Matrix</h2><p class="text-slate-400 mt-3 text-xl">Full field telemetry audit log</p></div>
-            <input type="text" id="gridSearch" placeholder="Filter Grand Grid..." class="text-xs w-96" onkeyup="filterGrandGrid()">
+            <div><h2 class="text-6xl font-black tracking-tighter">Grand Audit Grid</h2><p class="text-slate-400 mt-3 text-xl">Full field telemetry audit log</p></div>
+            <input type="text" id="gridSearch" placeholder="Search Master Grid..." class="text-xs w-96" onkeyup="filterGrandGrid()">
         </div>
         <div class="glass-card p-12 overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr>
-                        <th>Firm Identity & ID</th>
-                        <th>Business Entity Details</th>
+                        <th>Identity & ID</th>
+                        <th>Business Entity (Owner/MGR)</th>
                         <th>Hierarchy Mat & Fleet</th>
-                        <th>Evidence & Regional Address</th>
-                        <th>Timestamp</th>
+                        <th>Evidence & Verified Address</th>
+                        <th>Reporting Agent</th>
                         <th>Protocol Action</th>
                     </tr>
                 </thead>
@@ -175,7 +159,7 @@
     </section>
 
     <section id="tab-map" class="tab-panel">
-        <h2 class="text-6xl font-black tracking-tighter mb-14 text-white">Spatial Node Trace</h2>
+        <h2 class="text-6xl font-black tracking-tighter mb-14 text-white">Spatial Intelligence</h2>
         <div class="glass-card p-5 shadow-2xl"><div id="adminMap" style="height: 720px; border-radius: 25px;"></div></div>
     </section>
 
@@ -200,7 +184,7 @@
 
 <script>
     /**
-     * MASTER COMMAND ENGINE (v69.0)
+     * MASTER COMMAND ENGINE (v78.0)
      * Full Restoration of expanded un-minified enterprise logic
      */
     const firebaseConfig = {
@@ -277,7 +261,7 @@
 
     /**
      * RENDERER: MASTER SITE INTELLIGENCE GRID
-     * Displays Business Entity, Contact, Address, GPS, and Evidence
+     * RESTORED: Agent Identity, Manager Details, and geocoded Address
      */
     function renderGrandIntelligenceGrid(snap) {
         const body = document.getElementById('explorerTableBody'); if (!body) return;
@@ -288,28 +272,29 @@
         nodes.forEach(n => {
             const date = new Date(n.timestamp).toLocaleDateString('en-IN');
             const time = new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const thumbs = (n.photos || []).map(p => `<img src="${p.src}" class="w-12 h-12 rounded-xl border border-slate-700 cursor-zoom-in hover:border-orange-500 shadow-lg" onclick="zoomEvidence('${p.src}')">`).join('');
             
-            // Photo Zoom Implementation
-            const thumbs = (n.photos || []).map(p => `
-                <img src="${p.src}" class="w-12 h-12 rounded-xl border border-slate-700 cursor-zoom-in hover:border-orange-500 shadow-lg" onclick="zoomEvidence('${p.src}')">
-            `).join('');
+            // Entity Mapping: Owner and Manager
+            const entityDetails = `
+                <div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'} (${n.ownerPhone || '-'})</div>
+                <div class="text-[10px] text-orange-400 font-bold mt-1.5 uppercase">Manager: ${n.mgrName || 'No MGR'}</div>
+                <div class="text-[9px] text-slate-500 font-black italic mt-1">MGR Phone: ${n.mgrPhone || '-'}</div>
+            `;
 
-            // Fleet Telemetry Logic
-            const fleet = Object.entries(n.fleet || {}).filter(([_, q]) => q > 0).map(([t, q]) => `
-                <span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1 uppercase font-black text-blue-300 border border-blue-500/20">${t[0]}:${q}</span>
-            `).join('') || '-';
+            // Hierarchy Mapping: Mat + Fleet
+            const fleet = Object.entries(n.fleet || {}).filter(([_, q]) => q > 0).map(([t, q]) => `<span class="bg-blue-500/10 px-2 py-1 rounded text-[9px] mr-1 uppercase font-black text-blue-300 border border-blue-500/20">${t[0]}:${q}</span>`).join('') || '-';
 
             body.innerHTML += `
                 <tr class="${n.status === 'archived' ? 'opacity-30 grayscale hover:opacity-100' : ''}">
                     <td><div class="font-black text-white text-base tracking-tighter">${n.firm}</div><div class="text-[9px] text-orange-500 font-black mt-1.5 uppercase tracking-widest">${n.trackingId || 'PENDING'}</div></td>
-                    <td><div class="text-[11px] font-bold text-slate-300">Owner: ${n.ownerName || 'N/A'}</div><div class="text-[10px] text-slate-500 font-bold mt-1">${n.ownerPhone || 'No Contact'}</div></td>
+                    <td>${entityDetails}</td>
                     <td><span class="text-orange-500 font-black uppercase text-[11px]">${n.mat || 'Mixed'}</span><br><div class="text-[9px] text-slate-400 font-black mt-1 uppercase mb-2">${(n.brands || []).join(', ')}</div><div class="flex flex-wrap gap-1.5">${fleet}</div></td>
-                    <td><div class="text-[11px] font-bold text-slate-300 leading-tight w-64 truncate hover:w-full hover:whitespace-normal transition-all mb-3">${n.address || 'GPS Verification Only'}</div><div class="flex flex-wrap gap-2">${thumbs || 'No Proof'}</div></td>
-                    <td><div class="text-[10px] font-black text-slate-400">${date}</div><div class="text-[9px] text-slate-600 font-bold">${time}</div></td>
+                    <td><div class="text-[11px] font-bold text-slate-300 leading-tight w-64 truncate hover:w-full hover:whitespace-normal transition-all mb-3">${n.address || 'GPS Verification Only'}</div><div class="flex flex-wrap gap-2">${thumbs || 'No Evidence'}</div></td>
+                    <td><div class="text-[10px] font-black text-orange-400 uppercase tracking-tighter">${n.agent_identity || 'Restricted Agent'}</div><div class="text-[9px] text-slate-600 font-bold mt-1">${n.agent || '-'}</div><div class="text-[8px] text-slate-500 mt-1">${date} | ${time}</div></td>
                     <td>
                         <div class="flex flex-col gap-2.5">
-                            <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-6 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-xl hover:scale-105 active:scale-95 transition-all">Track Trace</button>
-                            <button onclick="adminWipeNode('${n.id}', '${n.firm}')" class="px-6 py-2.5 rounded-xl bg-red-600/10 text-red-500 text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Wipe Data</button>
+                            <button onclick="zoomToNode(${n.location?.lat}, ${n.location?.lng})" class="px-6 py-2.5 rounded-xl bg-orange-500 text-white text-[10px] font-black uppercase shadow-xl hover:scale-105 active:scale-95 transition-all">Track</button>
+                            <button onclick="adminWipeNode('${n.id}', '${n.firm}')" class="px-6 py-2.5 rounded-xl bg-red-600/10 text-red-500 text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">Wipe</button>
                         </div>
                     </td>
                 </tr>`;
@@ -318,7 +303,6 @@
 
     /**
      * RENDERER: INDIVIDUAL TAB REGISTRY
-     * Restored Variety & Brand Individual Protocols
      */
     function renderRegistry(snap) {
         const list = document.getElementById('registryList'); if (!list) return; list.innerHTML = "";
@@ -327,34 +311,23 @@
             let catBlock = `<div class="glass-card p-14 border-t-4 border-orange-500"><div class="flex justify-between items-center mb-12 pb-6 border-b border-slate-800"><div><p class="text-orange-500 font-black text-[11px] uppercase tracking-[5px]">Class Identity</p><h4 class="text-5xl font-black text-white uppercase tracking-tighter mt-2">${cat.key}</h4></div><div class="flex gap-4"><button onclick="editCategoryName('${cat.key}')" class="text-[10px] font-black text-slate-500 hover:text-orange-500 uppercase tracking-widest transition">Rename Class</button><button onclick="deleteMaterialClass('${cat.key}')" class="text-[10px] font-black text-red-500 hover:text-red-400 uppercase tracking-widest transition">Delete Class</button></div></div><div class="space-y-14">`;
             cat.forEach(vn => {
                 totalVars++; const data = vn.val(); const brands = data.brands || []; const status = data.status || 'live';
-                catBlock += `<div class="p-10 bg-slate-900/40 rounded-[35px] border border-slate-800 hover:border-slate-700 transition ${status === 'archived' ? 'opacity-30 pointer-events-none' : ''}"><div class="mb-10"><div class="interactive-tab variety-tab" onclick="manageVariety('${cat.key}', '${vn.key}', '${status}')">⚒️ Variety: ${vn.key}</div></div><div class="flex flex-wrap gap-5 items-center">${brands.map(b => `<div class="interactive-tab brand-tab" onclick="manageBrand('${cat.key}', '${vn.key}', '${b}', ${JSON.stringify(brands).replace(/"/g, '&quot;')})">🏷️ ${b}</div>`).join('')}<button onclick="addBrandToVariety('${cat.key}', '${vn.key}', ${JSON.stringify(brands).replace(/"/g, '&quot;')})" class="bg-orange-500/10 text-orange-500 px-6 py-3 rounded-2xl text-[11px] font-black uppercase hover:bg-orange-500 shadow-lg transition">+ Map Brand</button></div></div>`;
+                catBlock += `<div class="p-10 bg-slate-900/40 rounded-[35px] border border-slate-800 hover:border-slate-700 transition ${status === 'archived' ? 'opacity-30 pointer-events-none' : ''}"><div class="mb-10"><div class="interactive-tab variety-tab" onclick="manageVariety('${cat.key}', '${vn.key}', '${status}')">⚒️ Variety: ${vn.key}</div></div><div class="flex flex-wrap gap-5 items-center">${brands.map(b => `<div class="interactive-tab brand-tab" onclick="manageBrand('${cat.key}', '${vn.key}', '${b}', ${JSON.stringify(brands)})">🏷️ ${b}</div>`).join('')}<button onclick="addBrandToVariety('${cat.key}', '${vn.key}', ${JSON.stringify(brands)})" class="bg-orange-500/10 text-orange-500 px-6 py-3 rounded-2xl text-[11px] font-black uppercase hover:bg-orange-500 shadow-lg transition">+ Map Brand</button></div></div>`;
             });
             catBlock += `<div class="mt-10 pt-10 border-t border-slate-800 flex justify-center"><button onclick="addMultiVarietiesToClass('${cat.key}')" class="bg-orange-500/20 text-orange-500 px-12 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all">+ Add New Individual Variety Tabs to ${cat.key}</button></div></div></div>`;
             list.innerHTML += catBlock;
         });
-        const statVarEl = document.getElementById('stat-varieties');
-        if (statVarEl) statVarEl.innerText = totalVars;
+        if (document.getElementById('stat-varieties')) document.getElementById('stat-varieties').innerText = totalVars;
     }
 
     /**
      * PROTOCOL ENGINES
      */
-    function adminWipeNode(nodeId, firm) { 
-        if(confirm(`🚨 PERMANENT WIPE: Delete node "${firm}" and all related field telemetry? This cannot be undone.`)) {
-            rtdb.ref(`surveys/${nodeId}`).remove(); 
-        }
-    }
-    
-    function deleteMaterialClass(cat) { 
-        if(confirm(`WIPE WARNING: Permanently delete entire "${cat}" class and all its individual variety nodes?`)) {
-            rtdb.ref(`registry/materials/${cat}`).remove(); 
-        }
-    }
-
+    function adminWipeNode(id, firm) { if(confirm(`🚨 PERMANENT WIPE: Delete node "${firm}"?`)) rtdb.ref(`surveys/${id}`).remove(); }
+    function deleteMaterialClass(cat) { if(confirm(`WIPE WARNING: Permanently delete entire "${cat}" class and all its varieties?`)) rtdb.ref(`registry/materials/${cat}`).remove(); }
     function zoomEvidence(src) { window.open(src, '_blank'); }
 
     function manageVariety(cat, variety, status) {
-        const action = prompt(`PROTOCOL [${variety}]:\n1. Rename Individual Variety\n2. ${status === 'archived' ? 'Restore Node' : 'Archive Node (Hide from Field)'}\n3. DELETE NODE PERMANENTLY`);
+        const action = prompt(`PROTOCOL [${variety}]:\n1. Rename Individual Variety\n2. Archive/Restore\n3. DELETE PERMANENTLY`);
         if (action === "1") {
             const n = prompt("Enter New Name:", variety);
             if (n && n !== variety) { rtdb.ref(`registry/materials/${cat}/${variety}`).once('value', s => { rtdb.ref(`registry/materials/${cat}/${n}`).set(s.val()); rtdb.ref(`registry/materials/${cat}/${variety}`).remove(); }); }
@@ -363,7 +336,7 @@
     }
 
     function manageBrand(cat, variety, brand, currentList) {
-        const action = prompt(`BRAND [${brand}]:\n1. Rename Individual Brand\n2. REMOVE BRAND MAPPING`);
+        const action = prompt(`BRAND PROTOCOL [${brand}]:\n1. Rename Individual Brand\n2. REMOVE BRAND MAPPING`);
         if (action === "1") {
             const n = prompt("Enter New Name:", brand);
             if (n && n !== brand) { const newList = currentList.map(b => b === brand ? n : b); rtdb.ref(`registry/materials/${cat}/${variety}/brands`).set(newList); }
@@ -391,7 +364,7 @@
     }
 
     /**
-     * SPATIAL TRACE PERFORMANCE ENGINE
+     * SPATIAL PERFORMANCE MODULE
      */
     function initMap() {
         adminMap = L.map('adminMap', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 7);
@@ -405,7 +378,7 @@
                     const marker = L.marker([d.location.lat, d.location.lng]).addTo(markersLayer);
                     marker.on('click', () => {
                         const photos = (d.photos || []).map(p => `<img src="${p.src}" class="w-full rounded border border-slate-700 mt-4 shadow">`).join('');
-                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic tracking-tighter">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="max-h-72 overflow-y-auto">${photos || 'No Visual Intel'}</div></div>`).openPopup();
+                        marker.bindPopup(`<div class="w-72 p-3 bg-[#0f172a] text-white"><h4 class="text-orange-500 font-black text-xl italic tracking-tighter">${d.firm}</h4><hr class="my-4 border-slate-800"><div class="max-h-72 overflow-y-auto">${photos || 'No Visual Evidence'}</div></div>`).openPopup();
                     });
                 }
             });
@@ -423,7 +396,7 @@
         if (confirm(`Authorize ${role.toUpperCase()} level for ${iden}?`)) await rtdb.ref(`users/${uid}/role`).set(role); 
     }
 
-    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No GPS Trace."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
+    function zoomToNode(lat, lng) { if(!lat || !lng) return alert("No GPS lock."); switchTab('map'); setTimeout(() => { adminMap.setView([lat, lng], 17); }, 700); }
     function filterGrandGrid() { const s = document.getElementById('gridSearch').value.toLowerCase(); document.querySelectorAll('#explorerTableBody > tr').forEach(row => { row.style.display = row.innerText.toLowerCase().includes(s) ? 'table-row' : 'none'; }); }
     function logout() { auth.signOut(); }
 </script>
