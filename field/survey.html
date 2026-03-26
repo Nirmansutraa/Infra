@@ -265,7 +265,7 @@
                 <div><label>Phone</label><input id="ownerPhone" type="tel" oninput="Validation.phone(this, 'ownerWa')"></div>
                 <div>
                     <div class="flex items-center gap-3"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-6 h-6 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div>
-                    <input id="ownerWa" type="tel">
+                    <input id="ownerWa" type="tel" placeholder="WhatsApp">
                 </div>
             </div>
         </div>
@@ -277,7 +277,7 @@
                 <div><label>Phone</label><input id="mgrPhone" type="tel" oninput="Validation.phone(this, 'mgrWa')"></div>
                 <div>
                     <div class="flex items-center gap-3"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-6 h-6 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div>
-                    <input id="mgrWa" type="tel">
+                    <input id="mgrWa" type="tel" placeholder="WhatsApp">
                 </div>
             </div>
         </div>
@@ -331,8 +331,7 @@
 
 <script>
     /**
-     * CORE SYNC ENGINE (v74.0)
-     * Full restoration of un-minified enterprise modules.
+     * CORE SYNC ENGINE (v75.0) - ALIGNED WITH DASHBOARD v90.0
      */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -356,18 +355,32 @@
         },
         async sync() {
             const firm = document.getElementById('firmName').value;
+            const currentUser = auth.currentUser;
+            
             if(!this.state.location || !firm) return alert("❌ Node protocol incomplete: Firm & GPS required.");
+            if(!currentUser) return alert("❌ Auth required for transmission.");
+
             const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
+            
+            // PAYLOAD ALIGNMENT WITH DASHBOARD
             const payload = { 
                 ...this.state, 
                 firm: firm, 
-                ownerName: document.getElementById('ownerName').value,
-                ownerPhone: document.getElementById('ownerPhone').value,
-                mgrName: document.getElementById('mgrName').value,
-                mgrPhone: document.getElementById('mgrPhone').value,
+                ownerName: document.getElementById('ownerName').value || 'N/A',
+                ownerWa: document.getElementById('ownerWa').value || '-',
+                ownerPhone: document.getElementById('ownerPhone').value || '-',
+                mgrName: document.getElementById('mgrName').value || 'No MGR',
+                mgrWa: document.getElementById('mgrWa').value || '-',
+                mgrPhone: document.getElementById('mgrPhone').value || '-',
+                address: document.getElementById('address').value || 'GPS Verification Only',
+                supplierType: document.getElementById('supplierType').value,
+                agent: currentUser.email,
+                agent_identity: currentUser.email.split('@')[0].toUpperCase(),
+                agent_uid: currentUser.uid.substring(0,8),
                 timestamp: Date.now(),
                 status: 'live'
             };
+
             try {
                 await rtdb.ref('surveys').push(payload);
                 alert("✅ SYNC SUCCESS: Terminal integrated into Command Matrix.");
@@ -376,9 +389,6 @@
         }
     };
 
-    /**
-     * RESTORED: WHATSAPP SYNC MODULE
-     */
     window.Validation = {
         phone(input, waId) {
             let val = input.value.trim().replace(/\D/g, '');
@@ -396,22 +406,16 @@
         }
     };
 
-    /**
-     * RESTORED: LOCAL DRAFT MODULE
-     */
     window.Draft = {
         save() {
             try {
                 const draft = { ...Survey.state, firm: document.getElementById('firmName').value };
-                localStorage.setItem('ns_field_draft_v74', JSON.stringify(draft));
+                localStorage.setItem('ns_field_draft_v75', JSON.stringify(draft));
                 alert("💾 DRAFT SECURED: State saved to local terminal storage.");
             } catch(e) { alert("❌ Terminal Storage Full."); }
         }
     };
 
-    /**
-     * GPS & SPATIAL ENGINE
-     */
     window.Geo = {
         map: null, marker: null,
         init() {
@@ -433,9 +437,6 @@
         }
     };
 
-    /**
-     * PRECISION PHOTO COMPACTOR (512KB Limit Enforcement)
-     */
     window.Evidence = {
         handle(input) {
             if(!Survey.state.location) return alert("📍 Verify Spatial Lock first for Meta-Stamping.");
@@ -462,9 +463,6 @@
         }
     };
 
-    /**
-     * RECURSIVE REGISTRY ENGINE
-     */
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
             const cont = document.getElementById('matSelector'); if(!cont) return; cont.innerHTML = "";
