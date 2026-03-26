@@ -26,15 +26,15 @@
             -webkit-font-smoothing: antialiased; 
         }
         
-        /* Modernized Liquid Card System */
+        /* Modernized Responsive Card System */
         .card { 
             background: var(--card); 
-            border-radius: 28px; 
+            border-radius: 30px; 
             padding: 35px; 
             margin-bottom: 25px; 
             border: 1px solid #e2e8f0; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: 0.3s ease; 
         }
         
         .card:focus-within { 
@@ -52,23 +52,23 @@
             display: block; 
         }
 
-        /* High-Contrast Digital Identity Box */
+        /* Digital Identity Box */
         .id-box { 
             background: var(--primary); 
             color: #10b981; 
             text-align: center; 
-            padding: 40px; 
-            border-radius: 24px; 
-            font-size: clamp(24px, 6vw, 32px); 
+            padding: 45px; 
+            border-radius: 25px; 
+            font-size: clamp(24px, 6vw, 34px); 
             font-weight: 800; 
             font-family: monospace; 
             letter-spacing: 5px; 
-            border: 2px solid #1e293b; 
+            border: 1px solid #1e293b; 
             box-shadow: inset 0 10px 30px rgba(0,0,0,0.4);
             text-shadow: 0 0 15px rgba(16,185,129,0.5);
         }
 
-        /* Standardized Form Input Grid */
+        /* Mobile-First Inputs */
         input, select, textarea { 
             width: 100%; 
             background: #f1f5f9; 
@@ -83,7 +83,7 @@
             -webkit-appearance: none; 
         }
         
-        input:focus, select:focus { 
+        input:focus { 
             border-color: var(--accent); 
             background: #fff; 
             box-shadow: 0 0 0 8px rgba(255, 122, 0, 0.05);
@@ -99,7 +99,7 @@
             padding-left: 8px; 
         }
 
-        /* Intelligence Selection Bars */
+        /* Material Item Selectors */
         .mat-item { 
             background: var(--primary); 
             color: white; 
@@ -133,11 +133,11 @@
             box-shadow: 0 0 15px var(--accent); 
         }
 
-        /* LIQUID MULTI-TAB GRID ARCHITECTURE */
+        /* Multi-Tab Brand Layout */
         .tab-grid { 
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px; 
             margin-top: 25px; 
         }
         
@@ -167,7 +167,7 @@
             box-shadow: 0 12px 20px rgba(255,122,0,0.2); 
         }
 
-        /* 6-VEHICLE LOGISTICS DASHBOARD */
+        /* 6-VEHICLE LOGISTICS MATRIX */
         .fleet-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -201,7 +201,7 @@
         
         .circle-btn:active { transform: scale(0.85); }
 
-        /* PHOTO EVIDENCE WITH STAMPED METADATA */
+        /* PHOTO EVIDENCE WITH STAMPS */
         .photo-slot { 
             aspect-ratio: 1; 
             background: #f1f5f9; 
@@ -214,12 +214,7 @@
             overflow: hidden; 
         }
         
-        .photo-img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
-        
+        .photo-img { width: 100%; height: 100%; object-fit: cover; }
         .stamp-overlay { 
             position: absolute; 
             bottom: 0; 
@@ -231,7 +226,6 @@
             padding: 10px; 
             font-weight: 800; 
             line-height: 1.6; 
-            border-top: 1px solid rgba(255,255,255,0.2); 
         }
 
         /* PERSISTENT ACTION BAR */
@@ -260,27 +254,18 @@
             transition: 0.4s ease; 
         }
         
-        .btn-slate { 
-            background: #64748b; 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(100,116,139,0.15);
-        }
-        
-        .btn-green { 
-            background: #10b981; 
-            color: white; 
-            box-shadow: 0 12px 25px rgba(16,185,129,0.25); 
-        }
+        .btn-slate { background: #64748b; color: white; }
+        .btn-green { background: #10b981; color: white; box-shadow: 0 12px 25px rgba(16,185,129,0.25); }
     </style>
 </head>
 <body>
 
 <nav class="bg-white p-8 flex justify-between items-center rounded-b-[45px] border-b mb-10 shadow-sm">
     <div>
-        <h1 class="text-2xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1" id="agentTag">IDENTIFYING...</p>
+        <h1 class="text-2xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1" id="agentIdentity">AUTHENTICATING...</p>
     </div>
-    <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm">Logout</button>
+    <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all">Logout</button>
 </nav>
 
 <div class="max-w-2xl mx-auto px-8">
@@ -291,47 +276,44 @@
 
     <div class="card">
         <span class="section-label">02. Entity & Contact Matrix</span>
-        
-        <label>Supplier Intelligence Category</label>
         <select id="supplierType" onchange="Survey.refreshID()">
             <option value="Retailer">Retailer (R)</option>
             <option value="Wholesaler">Wholesaler (W)</option>
         </select>
-
         <input id="firmName" placeholder="Full Registered Firm Name" class="mt-8">
         
-        <div class="mt-8 pt-8 border-t border-slate-100">
-            <p class="text-[12px] font-black text-orange-500 uppercase mb-4 tracking-widest">Primary Owner Hub</p>
+        <div class="mt-10 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-orange-500 uppercase mb-5 tracking-widest">Primary Owner Hub</p>
             <input id="ownerName" placeholder="Owner Legal Name">
             <div class="grid grid-cols-2 gap-6 mt-2">
                 <div>
-                    <label>Direct Phone</label>
-                    <input id="ownerPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'ownerWa')">
+                    <label>Phone</label>
+                    <input id="ownerPhone" type="tel" oninput="Validation.phone(this, 'ownerWa')">
                 </div>
                 <div>
                     <div class="flex items-center gap-3">
                         <label>Sync WA</label>
-                        <input type="checkbox" id="syncOwner" class="w-5 h-5 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
+                        <input type="checkbox" id="syncOwner" class="w-6 h-6 accent-orange-500" onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)">
                     </div>
-                    <input id="ownerWa" type="tel" placeholder="+91 WA">
+                    <input id="ownerWa" type="tel">
                 </div>
             </div>
         </div>
 
-        <div class="mt-8 pt-8 border-t border-slate-100">
-            <p class="text-[12px] font-black text-blue-500 uppercase mb-4 tracking-widest">Operational Manager</p>
+        <div class="mt-10 pt-10 border-t border-slate-100">
+            <p class="text-[12px] font-black text-blue-500 uppercase mb-5 tracking-widest">Operational Manager</p>
             <input id="mgrName" placeholder="Manager Name">
             <div class="grid grid-cols-2 gap-6 mt-2">
                 <div>
-                    <label>Manager Phone</label>
-                    <input id="mgrPhone" type="tel" placeholder="+91" oninput="Validation.phone(this, 'mgrWa')">
+                    <label>Phone</label>
+                    <input id="mgrPhone" type="tel" oninput="Validation.phone(this, 'mgrWa')">
                 </div>
                 <div>
                     <div class="flex items-center gap-3">
                         <label>Sync WA</label>
-                        <input type="checkbox" id="syncMgr" class="w-5 h-5 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
+                        <input type="checkbox" id="syncMgr" class="w-6 h-6 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)">
                     </div>
-                    <input id="mgrWa" type="tel" placeholder="+91 WA">
+                    <input id="mgrWa" type="tel">
                 </div>
             </div>
         </div>
@@ -340,34 +322,31 @@
     <div class="card">
         <span class="section-label">03. GPS proofing & spatial data</span>
         <div id="map" class="h-80 rounded-[40px] mb-8 border border-slate-200 shadow-inner"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-7 rounded-2xl font-black text-[15px] uppercase tracking-[2px] mb-8 active:scale-95 transition-transform shadow-xl">📍 Capture Verified Location</button>
-        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address will populate upon GPS lock..." readonly></textarea>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[2px] mb-8 active:scale-95 transition-transform shadow-xl">📍 Capture Verified Location</button>
+        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address..." readonly></textarea>
         
         <div class="mt-14">
             <label>Field Evidence Grid (Max 10 with Meta-Stamps)</label>
             <div class="grid grid-cols-5 gap-4 mt-8" id="photoGrid">
-                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-100 hover:text-slate-400 transition-all">+</button>
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-100 transition-all">+</button>
             </div>
             <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
         </div>
     </div>
 
     <div class="card">
-        <span class="section-label">04. Material Intelligence (Admin Synced)</span>
-        <div id="matSelector" class="grid grid-cols-2 gap-5">
-            </div>
+        <span class="section-label">04. Material Intelligence (Admin Sync)</span>
+        <div id="matSelector" class="grid grid-cols-2 gap-5"></div>
 
-        <div id="brandSection" class="mt-14 hidden bg-slate-50 p-10 rounded-[45px] border border-slate-200 shadow-inner">
+        <div id="brandSection" class="mt-14 hidden bg-slate-50 p-12 rounded-[45px] border border-slate-200 shadow-inner">
             <label class="section-label" style="color:#64748b">Step 2: Select Brand Intelligence</label>
-            <div id="brandGrid" class="tab-grid">
-                </div>
+            <div id="brandGrid" class="tab-grid"></div>
         </div>
     </div>
 
     <div class="card">
         <span class="section-label">05. Transportation Fleet Capacity</span>
-        <div id="fleetGrid" class="fleet-grid">
-            </div>
+        <div id="fleetGrid" class="fleet-grid"></div>
     </div>
 </div>
 
@@ -384,19 +363,16 @@
 <script>
     /**
      * REGIONAL SMART ID ENGINE
-     * Implements Rajasthan-Udaipur logic based on supplier telemetry
+     * Implements Udaipur logic based on telemetry
      */
     function generateSmartID(supplierType, activeMaterial, currentCount) {
         const state = "RJ", dist = "UDR";
         const typeCode = (supplierType === "Wholesaler") ? "W" : "R";
         let matCode = "X";
         let matSearch = (activeMaterial || "").toLowerCase();
-
         if (matSearch.includes("cement")) matCode = "C";
         else if (matSearch.includes("steel") || matSearch.includes("tmt")) matCode = "T";
         else if (matSearch.includes("sand")) matCode = "S";
-        else if (matSearch.includes("brick")) matCode = "B";
-
         return `${state}-${dist}-${typeCode}${matCode}-${String(currentCount + 1).padStart(3, '0')}`;
     }
 
@@ -404,9 +380,6 @@
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
-        storageBucket: "infradepo.firebasestorage.app",
-        messagingSenderId: "733942710671",
-        appId: "1:733942710671:web:1a2fdd540032ea73b2cbfa",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
     
@@ -414,96 +387,61 @@
     const rtdb = firebase.database();
     const auth = firebase.auth();
 
-    // Terminal Global State Management
     window.Survey = {
-        state: { 
-            location: null, 
-            mat: null, 
-            brands: [], 
-            fleet: {}, 
-            photos: [], 
-            trackingId: "" 
-        },
-        
-        updateState(key, val) { 
-            this.state[key] = val; 
-            this.refreshID(); 
-        },
-
+        state: { location: null, mat: null, brands: [], fleet: {}, photos: [], trackingId: "" },
+        updateState(key, val) { this.state[key] = val; this.refreshID(); },
         async refreshID() {
             try {
                 const snap = await rtdb.ref('surveys').once('value');
-                const sType = document.getElementById('supplierType').value;
-                const smartId = generateSmartID(sType, this.state.mat || "Mixed", snap.numChildren());
+                const smartId = generateSmartID(document.getElementById('supplierType').value, this.state.mat || "Mixed", snap.numChildren());
                 const trackEl = document.getElementById('trackId');
-                if (trackEl) {
-                    trackEl.innerText = smartId;
-                    this.state.trackingId = smartId;
-                }
-            } catch (e) { console.error("ID Sync Fault", e); }
+                if (trackEl) { trackEl.innerText = smartId; this.state.trackingId = smartId; }
+            } catch (e) { console.error("ID Logic Crash", e); }
         },
-
         async sync() {
             const firm = document.getElementById('firmName').value;
-            if (!this.state.location || !firm) {
-                return alert("❌ Node protocols incomplete: Firm and GPS Geotag are required.");
-            }
-            
-            const btn = document.getElementById('sBtn');
-            btn.innerText = "TRANSMITTING...";
-            btn.disabled = true;
-
+            if (!this.state.location || !firm) return alert("❌ Node protocols incomplete: Firm & GPS required.");
+            const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
             try {
-                // Identity Integration: Link email and display identity from Gmail account
+                // Identity Integration: Link Gmail email and Identity
                 const user = auth.currentUser;
                 const payload = { 
                     ...this.state, 
                     firm: firm, 
                     agent: user.email,
-                    agent_name: user.displayName || "N/A",
-                    owner_name: document.getElementById('ownerName').value,
-                    manager_name: document.getElementById('mgrName').value,
+                    agent_identity: user.displayName || "FS-AGENT",
+                    ownerName: document.getElementById('ownerName').value,
+                    mgrName: document.getElementById('mgrName').value,
+                    ownerPhone: document.getElementById('ownerPhone').value,
                     timestamp: Date.now() 
                 };
-
                 await rtdb.ref('surveys').push(payload);
-                alert("✅ Sync Success: Node Synchronized to Singapore Cloud.");
+                alert("✅ Sync Success: Node Synchronized.");
                 location.reload();
-            } catch (e) {
-                alert("❌ Sync Fault: " + e.message);
-                btn.innerText = "🚀 Submit Sync";
-                btn.disabled = false;
-            }
+            } catch (e) { alert("❌ Sync Fault: " + e.message); btn.innerText = "🚀 Submit Sync"; }
         }
     };
 
     window.Validation = {
-        // Restored WhatsApp autofill and phone formatting logic
+        // Restored WhatsApp autofill logic
         phone(input, waId) {
             let val = input.value.trim().replace(/\D/g, '');
             if (val.length > 10) val = val.slice(-10);
             if (val.length === 10) {
                 input.value = "+91 " + val;
                 const toggleId = (input.id === 'ownerPhone') ? 'syncOwner' : 'syncMgr';
-                if (document.getElementById(toggleId).checked) {
-                    document.getElementById(waId).value = "+91 " + val;
-                }
+                if (document.getElementById(toggleId).checked) document.getElementById(waId).value = "+91 " + val;
             }
         },
         syncWA(phoneId, waId, isChecked) {
             const phone = document.getElementById(phoneId);
             const wa = document.getElementById(waId);
-            if (isChecked && phone.value.length >= 10) { 
-                wa.value = phone.value; wa.readOnly = true; 
-            } else { 
-                wa.readOnly = false; 
-            }
+            if (isChecked && phone.value.length >= 10) { wa.value = phone.value; wa.readOnly = true; } else { wa.readOnly = false; }
         }
     };
 
     window.Geo = {
-        map: null,
-        marker: null,
+        map: null, marker: null,
         init() {
             this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
@@ -512,30 +450,24 @@
             navigator.geolocation.getCurrentPosition(async p => {
                 const { latitude, longitude } = p.coords;
                 Survey.state.location = { lat: latitude, lng: longitude };
-                
                 this.map.setView([latitude, longitude], 16);
                 if (this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                 const data = await res.json();
-                document.getElementById('address').value = data.display_name || "Spatial Lock Verified";
+                document.getElementById('address').value = data.display_name || "Spatial lock verified";
                 Survey.refreshID();
-            }, (err) => {
-                alert("GPS Protocol Error: Signal unreachable.");
-            }, { enableHighAccuracy: true });
+            }, null, { enableHighAccuracy: true });
         }
     };
 
     /**
      * PRECISION PHOTO COMPRESSOR (STRICT 512KB LIMIT)
-     * Recursively reduces quality to meet individual photo budget
      */
     window.Evidence = {
         handle(input) {
-            if (Survey.state.photos.length >= 10) return alert("Storage quota full: Max 10 Photos allowed.");
-            if (!Survey.state.location) return alert("📍 GPS lock required for mandatory meta-stamping.");
-            
+            if (Survey.state.photos.length >= 10) return alert("Storage quota full: Max 10 Photos.");
+            if (!Survey.state.location) return alert("📍 GPS lock required for meta-stamping.");
             const file = input.files[0];
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -543,27 +475,15 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width, height = img.height;
-                    const MAX_BOUND = 1000;
-                    if (width > MAX_BOUND) { height *= MAX_BOUND / width; width = MAX_BOUND; }
+                    if (width > 1000) { height *= 1000 / width; width = 1000; }
                     canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    let quality = 0.7;
-                    let base64 = canvas.toDataURL('image/jpeg', quality);
-                    
-                    // Recursive Quality Drop Logic to force under 512 KB
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
+                    let quality = 0.7; let base64 = canvas.toDataURL('image/jpeg', quality);
+                    // Recursive force logic for 512 KB limit
                     while (Math.round((base64.length * 3) / 4) > 524288 && quality > 0.1) {
-                        quality -= 0.1;
-                        base64 = canvas.toDataURL('image/jpeg', quality);
+                        quality -= 0.1; base64 = canvas.toDataURL('image/jpeg', quality);
                     }
-                    
-                    const photoObj = { 
-                        src: base64, 
-                        time: new Date().toLocaleString(), 
-                        lat: Survey.state.location.lat.toFixed(4) 
-                    };
-                    Survey.state.photos.push(photoObj);
+                    Survey.state.photos.push({ src: base64, time: new Date().toLocaleString(), lat: Survey.state.location.lat.toFixed(4) });
                     this.render();
                 };
                 img.src = e.target.result;
@@ -571,38 +491,25 @@
             reader.readAsDataURL(file);
         },
         render() {
-            const grid = document.getElementById('photoGrid');
-            const addBtn = grid.firstElementChild;
-            grid.innerHTML = ""; grid.appendChild(addBtn);
-            
+            const grid = document.getElementById('photoGrid'); const btn = grid.firstElementChild;
+            grid.innerHTML = ""; grid.appendChild(btn);
             Survey.state.photos.forEach(p => {
-                grid.innerHTML += `
-                    <div class=\"photo-slot\">
-                        <img src=\"${p.src}\" class=\"photo-img\">
-                        <div class=\"stamp-overlay\">${p.time}<br>GPS: ${p.lat}</div>
-                    </div>`;
+                grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="photo-img"><div class="stamp-overlay">${p.time}<br>GPS: ${p.lat}</div></div>`;
             });
         }
     };
 
     /**
-     * MATERIAL MULTI-TAB ENGINE
-     * Bypasses Varieties and aggregates all Brands into individual chips
+     * MATERIAL ENGINE
+     * Aggregates Brands directly while bypassing varieties
      */
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
-            const cont = document.getElementById('matSelector');
-            cont.innerHTML = "";
+            const cont = document.getElementById('matSelector'); cont.innerHTML = "";
             window.registryData = snap.val() || {};
-            
             Object.keys(window.registryData).forEach(cat => {
                 if (window.registryData[cat].status === 'archived') return;
-                
-                cont.innerHTML += `
-                    <div class=\"mat-item\" id=\"mat-${cat}\" onclick=\"selectMat('${cat}')\">
-                        <span class=\"text-[12px] font-black uppercase tracking-[2px]\">${cat}</span>
-                        <div class=\"glow-dot\"></div>
-                    </div>`;
+                cont.innerHTML += `<div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')"><span class="text-[12px] font-black uppercase tracking-[2px]">${cat}</span><div class="glow-dot"></div></div>`;
             });
         });
     }
@@ -610,75 +517,27 @@
     window.selectMat = function(m) {
         document.querySelectorAll('.mat-item').forEach(r => r.classList.remove('active'));
         document.getElementById('mat-'+m).classList.add('active');
-        
         Survey.state.mat = m; Survey.state.brands = []; Survey.refreshID();
-        
         const bg = document.getElementById('brandGrid'); bg.innerHTML = "";
         document.getElementById('brandSection').classList.remove('hidden');
-        
-        const catData = window.registryData[m];
-        const uniqueBrands = new Set();
-        if (catData) {
-            Object.keys(catData).forEach(vKey => {
-                if (vKey !== 'status' && catData[vKey].brands) {
-                    catData[vKey].brands.forEach(b => uniqueBrands.add(b));
-                }
-            });
-        }
-        
-        uniqueBrands.forEach(b => {
-            bg.innerHTML += `<div class=\"chip\" onclick=\"toggleBrandSelection('${b}', this)\">${b}</div>`;
-        });
+        const catData = window.registryData[m]; const uniqueBrands = new Set();
+        if (catData) { Object.keys(catData).forEach(vKey => { if (vKey !== 'status' && catData[vKey].brands) catData[vKey].brands.forEach(b => uniqueBrands.add(b)); }); }
+        uniqueBrands.forEach(b => { bg.innerHTML += `<div class="chip" onclick="toggleBrandSelection('${b}', this)">${b}</div>`; });
         document.getElementById('brandSection').scrollIntoView({ behavior: 'smooth' });
     };
 
-    window.toggleBrandSelection = function(b, el) {
-        el.classList.toggle('active');
-        const idx = Survey.state.brands.indexOf(b);
-        if (idx > -1) {
-            Survey.state.brands.splice(idx, 1);
-        } else {
-            Survey.state.brands.push(b);
-        }
-    };
+    window.toggleBrandSelection = function(b, el) { el.classList.toggle('active'); const idx = Survey.state.brands.indexOf(b); idx > -1 ? Survey.state.brands.splice(idx, 1) : Survey.state.brands.push(b); };
+    window.fleetStep = function(t, v) { if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0; Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; };
+    window.Draft = { save() { try { localStorage.setItem('ns_v46_draft', JSON.stringify(Survey.state)); alert("💾 Draft Secured."); } catch(e) { alert("❌ Local Storage Full."); } }};
 
-    window.fleetStep = function(t, v) {
-        if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0;
-        Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v);
-        document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t];
-    };
-
-    window.Draft = { save() { 
-        try {
-            localStorage.setItem('ns_v36_draft', JSON.stringify(Survey.state)); 
-            alert("💾 Draft Secure: Local storage updated.");
-        } catch(e) { alert("❌ Local Storage Full: Clear browser cache."); }
-    }};
-
-    // Terminal Initializer Engine
     window.onload = () => {
         Geo.init(); syncRegistry();
-        
-        // RESTORED: Full 6-Vehicle Logistics matrix
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         const fGrid = document.getElementById('fleetGrid');
-        fGrid.innerHTML = fTypes.map(t => `
-            <div class=\"fleet-unit\">
-                <span class=\"text-[10px] font-black text-slate-500 uppercase\">${t}</span>
-                <div class=\"flex items-center gap-5\">
-                    <div class=\"circle-btn\" onclick=\"fleetStep('${t}', -1)\">-</div>
-                    <span id=\"fval-${t}\" class=\"font-black text-sm w-[20px] text-center\">0</span>
-                    <div class=\"circle-btn\" onclick=\"fleetStep('${t}', 1)\">+</div>
-                </div>
-            </div>`).join('');
-            
+        fGrid.innerHTML = fTypes.map(t => `<div class="fleet-unit"><span class="text-[10px] font-black text-slate-500 uppercase">${t}</span><div class="flex items-center gap-5"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join('');
         auth.onAuthStateChanged(u => {
-            if (!u) {
-                location.href = "../index.html";
-            } else {
-                const identity = u.displayName || u.email;
-                document.getElementById('agentTag').innerText = "AGENT: " + identity.toUpperCase();
-            }
+            if (!u) location.href = "../index.html";
+            else document.getElementById('agentIdentity').innerText = "AGENT: " + (u.displayName || u.email).toUpperCase();
         });
     };
 </script>
