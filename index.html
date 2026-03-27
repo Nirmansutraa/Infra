@@ -3,37 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Gateway</title>
+    <title>Nirmansutra | Unified Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #f8fafc; }
-        .login-card { background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(16px); padding: 60px; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); width: 100%; max-width: 450px; border: 1px solid rgba(255, 255, 255, 0.06); text-align: center; }
-        .btn-google { background: white; color: #0f172a; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 20px; font-weight: 800; width: 100%; padding: 18px; font-size: 14px; text-transform: uppercase; }
-        .reg-container { margin-top: 45px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .btn-reg { display: inline-block; color: #ff7a00; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; text-decoration: none; transition: 0.3s; }
-        #statusBox { margin-top: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: none; padding: 10px; border-radius: 12px; }
+        .login-card { background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(20px); padding: 60px; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); width: 100%; max-width: 480px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
+        .btn-universal { background: white; color: #0f172a; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 20px; font-weight: 800; width: 100%; padding: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-universal:hover { transform: scale(1.02); background: #f1f5f9; }
+        /* NEW: Loading and Disabled States */
+        .btn-universal:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .status-msg { margin-top: 25px; padding: 15px; border-radius: 15px; font-size: 11px; font-weight: 700; display: none; text-transform: uppercase; }
+        .supplier-link { margin-top: 30px; display: inline-block; color: #ff7a00; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        /* NEW: Offline Banner */
+        #offline-notice { position: fixed; top: 0; width: 100%; background: #ef4444; color: white; text-align: center; padding: 10px; font-size: 12px; font-weight: 800; display: none; z-index: 9999; }
     </style>
 </head>
 <body>
 
-<div class="login-card shadow-2xl mx-4">
+<div id="offline-notice">OFFLINE MODE: AUTHENTICATION UNAVAILABLE</div>
+
+<div class="login-card">
     <div class="mb-12">
         <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Security Gateway</p>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Unified Access Terminal</p>
     </div>
     
-    <button onclick="loginStaff()" class="btn-google">
+    <button onclick="unifiedLogin()" id="loginBtn" class="btn-universal shadow-xl">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
-        Staff Secure Login
+        <span id="loginBtnText">Secure Access Login</span>
     </button>
 
-    <div class="reg-container">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <a href="onboarding/index.html" class="btn-reg">➜ NEW SUPPLIER REGISTRATION</a>
-    </div>
+    <div id="msg" class="status-msg"></div>
 
-    <div id="statusBox"></div>
+    <div class="mt-10 pt-8 border-t border-white/10">
+        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4">New Partnership?</p>
+        <a href="onboarding/index.html" class="supplier-link">➜ Register as New Supplier</a>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -41,46 +47,173 @@
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
+    // --- CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
-    
+
+    // NEW: Centralized RBAC Routing Config
+    const ROLE_ROUTES = {
+        'super_admin': 'admin/dashboard.html',
+        'admin': 'admin/dashboard.html',
+        'field_staff': 'field/survey.html',
+        'supplier': 'onboarding/index.html'
+    };
+
+    // --- INITIALIZATION ---
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const rtdb = firebase.database();
 
-    function showStatus(msg, err) {
-        const b = document.getElementById('statusBox');
-        b.innerText = msg; b.style.display = 'block';
-        b.className = err ? "bg-red-500/20 text-red-500" : "bg-orange-500/20 text-orange-500";
+    // --- UI HELPERS ---
+    function updateUI(text, type = 'warn') {
+        const m = document.getElementById('msg');
+        const btn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('loginBtnText');
+        
+        m.innerText = text;
+        m.style.display = 'block';
+        
+        if (type === 'error') {
+            m.className = `status-msg bg-red-500/20 text-red-400`;
+            btn.disabled = false;
+            btnText.innerText = "Secure Access Login";
+        } else if (type === 'loading') {
+            m.className = `status-msg bg-orange-500/20 text-orange-400 animate-pulse`;
+            btn.disabled = true;
+            btnText.innerText = "Processing...";
+        } else {
+            m.className = `status-msg bg-emerald-500/20 text-emerald-400`;
+        }
     }
 
-    async function loginStaff() {
-        const provider = new firebase.auth.GoogleAuthProvider();
+    // --- ENHANCED: OFFLINE SUPPORT ---
+    window.addEventListener('online', () => document.getElementById('offline-notice').style.display = 'none');
+    window.addEventListener('offline', () => document.getElementById('offline-notice').style.display = 'block');
+
+    // --- ENHANCED: CORE AUTH LOGIC ---
+    
+    // NEW: Geo-Session & VFSI Capture
+    async function captureGeoSession(uid) {
+        return new Promise((resolve) => {
+            if (!navigator.geolocation) return resolve(null);
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const geoData = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude,
+                    timestamp: Date.now()
+                };
+                // Store in sessions/{uid}
+                await rtdb.ref(`sessions/${uid}`).set(geoData);
+                resolve(geoData);
+            }, () => resolve(null), { timeout: 5000 });
+        });
+    }
+
+    // NEW: Enterprise Logging System
+    async function logLoginEvent(user, role = 'unknown') {
+        const logData = {
+            uid: user.uid,
+            email: user.email,
+            role: role,
+            timestamp: ServerValue_Timestamp(), // Uses Firebase Server Time
+            userAgent: navigator.userAgent,
+            platform: navigator.platform
+        };
+        return rtdb.ref(`logs/login_events/${user.uid}/${Date.now()}`).set(logData);
+    }
+
+    function ServerValue_Timestamp() { return firebase.database.ServerValue.TIMESTAMP; }
+
+    // UPDATED: Centralized Routing Logic
+    async function executeRouting(user) {
         try {
-            showStatus("Verifying Identity...", false);
-            const result = await auth.signInWithPopup(provider);
-            const user = result.user;
+            updateUI("Fetching User Security Profile...", "loading");
             
-            const snap = await rtdb.ref('users/' + user.uid + '/role').once('value');
-            const role = snap.val();
-            
-            if (role) {
-                const path = (['admin', 'super_admin'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
-                window.location.href = path;
-            } else {
-                showStatus("Unauthorized: No Staff Role Found", true);
-                setTimeout(() => auth.signOut(), 2000);
+            // ENHANCED: Full object fetch instead of just role
+            const snap = await rtdb.ref(`users/${user.uid}`).once('value');
+            const userData = snap.val();
+
+            if (!userData || !userData.role) {
+                updateUI("Unauthorized: No Role Assigned", "error");
+                setTimeout(() => auth.signOut(), 3000);
+                return;
             }
-        } catch (e) { showStatus(e.message, true); }
+
+            // Capture Geo & Logs simultaneously
+            await Promise.all([
+                captureGeoSession(user.uid),
+                logLoginEvent(user, userData.role)
+            ]);
+
+            const targetRoute = ROLE_ROUTES[userData.role];
+            
+            if (targetRoute) {
+                updateUI(`Access Granted: ${userData.role.replace('_', ' ')}`, "success");
+                setTimeout(() => window.location.href = targetRoute, 800);
+            } else {
+                updateUI("Error: Invalid Route Configuration", "error");
+            }
+        } catch (e) {
+            updateUI(`System Error: ${e.message}`, "error");
+        }
     }
 
-    /** * THE LOOP KILLER: 
-     * We REMOVED the auto-redirect here. 
-     * This page will now stay still until you click a button.
+    // UPDATED: Sign-In Implementation (Redirect for PWA Compatibility)
+    async function unifiedLogin() {
+        if (!navigator.onLine) return updateUI("Offline: Check Connection", "error");
+        const provider = new firebase.auth.GoogleAuthProvider();
+        updateUI("Redirecting to Secure Gate...", "loading");
+        // UPDATED: signInWithRedirect is better for standalone PWAs
+        auth.signInWithRedirect(provider);
+    }
+
+    // NEW: Redirect Result Handler
+    async function handleRedirectResult() {
+        try {
+            const result = await auth.getRedirectResult();
+            if (result && result.user) {
+                await executeRouting(result.user);
+            }
+        } catch (e) {
+            updateUI(e.message, "error");
+        }
+    }
+
+    // --- ENHANCED: SESSION MANAGEMENT ---
+    auth.onAuthStateChanged(user => {
+        // Prevent duplicate redirects if we are already on a destination sub-path
+        const currentPath = window.location.pathname;
+        const isExcluded = currentPath.includes('admin') || currentPath.includes('field') || currentPath.includes('onboarding');
+        
+        if (user && !isExcluded) {
+            executeRouting(user);
+        }
+    });
+
+    // Initialize Redirect Handler
+    handleRedirectResult();
+
+    /** * SECURITY ADVISORY (RTDB Rules):
+     * To prevent insecure writes, ensure your Firebase Rules are configured as follows:
+     * * {
+     * "rules": {
+     * "users": {
+     * "$uid": { ".read": "auth != null && auth.uid == $uid", ".write": "false" }
+     * },
+     * "sessions": {
+     * "$uid": { ".write": "auth != null && auth.uid == $uid" }
+     * },
+     * "logs": {
+     * "login_events": {
+     * "$uid": { ".write": "auth != null && auth.uid == $uid" }
+     * }
+     * }
+     * }
+     * }
      */
 </script>
 </body>
