@@ -3,39 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Security Gateway</title>
+    <title>Nirmansutra | Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #f8fafc; }
         .login-card { background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(16px); padding: 60px; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); width: 100%; max-width: 450px; border: 1px solid rgba(255, 255, 255, 0.06); text-align: center; }
         .btn-google { background: white; color: #0f172a; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 20px; font-weight: 800; width: 100%; padding: 18px; font-size: 14px; text-transform: uppercase; }
-        .reg-container { margin-top: 45px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .btn-reg { display: inline-block; color: #ff7a00; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; transition: 0.3s; }
-        .status-box { margin-top: 25px; padding: 14px; border-radius: 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: none; }
+        .btn-reg { display: inline-block; color: #ff7a00; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
+        #statusBox { margin-top: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: none; padding: 10px; border-radius: 12px; }
     </style>
 </head>
 <body>
 
-<div class="login-card shadow-2xl mx-4">
-    <div class="mb-12">
-        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Executive Access Control</p>
-    </div>
+<div class="login-card shadow-2xl">
+    <h1 class="text-4xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px] mb-12">Security Gateway</p>
     
-    <div id="authSection">
-        <button onclick="loginWithGoogle()" id="loginBtn" class="btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
-            Staff Secure Login
-        </button>
-    </div>
+    <button onclick="loginStaff()" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+        Staff Login
+    </button>
 
-    <div class="reg-container">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <div onclick="cleanExitToRegistration()" class="btn-reg">➜ New Supplier Registration</div>
-    </div>
+    <a href="registration.html?flow=onboarding" class="btn-reg">➜ New Supplier Registration</a>
 
-    <div id="statusBox" class="status-box"></div>
+    <div id="statusBox"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -49,64 +41,37 @@
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
-    
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const rtdb = firebase.database();
+    const auth = firebase.auth(), rtdb = firebase.database();
 
-    // 1. THE GITHUB KILL-SWITCH
-    async function cleanExitToRegistration() {
-        showStatus("Wiping Session Data...", "warn");
-        // Clear all browser storage to stop auto-login
-        localStorage.clear();
-        sessionStorage.clear();
-        sessionStorage.setItem('onboarding_active', 'true');
-        
-        await auth.signOut();
-        
-        // Use a longer delay for GitHub Pages sync
-        setTimeout(() => {
-            window.location.href = "registration.html?v=" + Date.now();
-        }, 1000);
+    function showStatus(msg, err) {
+        const b = document.getElementById('statusBox');
+        b.innerText = msg; b.style.display = 'block';
+        b.className = err ? "bg-red-500/20 text-red-500" : "bg-orange-500/20 text-orange-500";
     }
 
-    function showStatus(msg, type) {
-        const box = document.getElementById('statusBox');
-        if(!box) return;
-        box.innerText = msg;
-        box.style.display = 'block';
-        box.className = `status-box ${type === 'err' ? 'bg-red-500/20 text-red-500' : 'bg-orange-500/20 text-orange-500 animate-pulse'}`;
-    }
-
-    async function loginWithGoogle() {
+    async function loginStaff() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            showStatus("Authenticating...", "warn");
-            const result = await auth.signInWithPopup(provider);
-            const user = result.user;
-            await rtdb.ref('users/' + user.uid).update({ email: user.email, name: user.displayName, lastLogin: Date.now() });
-            const snap = await rtdb.ref('users/' + user.uid + '/role').once('value');
-            handleRedirection(snap.val());
-        } catch (error) { showStatus(error.message, "err"); }
+            const res = await auth.signInWithPopup(provider);
+            const snap = await rtdb.ref('users/' + res.user.uid + '/role').once('value');
+            const role = snap.val();
+            if (role) {
+                window.location.href = (['admin', 'super_admin'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
+            } else {
+                showStatus("Access Pending Approval", false);
+                await auth.signOut();
+            }
+        } catch (e) { showStatus(e.message, true); }
     }
 
-    function handleRedirection(role) {
-        if (!role) {
-            showStatus("Pending Admin Approval.", "warn");
-            setTimeout(() => auth.signOut(), 3000);
-            return;
-        }
-        const path = (['admin', 'super_admin', 'admin_staff'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
-        window.location.href = path;
-    }
-
-    // 2. THE BYPASS CHECKER
+    // THE HANDBRAKE: Don't redirect if the user came here to register!
     auth.onAuthStateChanged(user => {
-        const isOnboarding = sessionStorage.getItem('onboarding_active');
-        if (user && !isOnboarding) {
+        if (user && !window.location.search.includes('flow=onboarding')) {
             rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
-                const role = snap.val();
-                if (role) handleRedirection(role);
+                if (snap.val()) {
+                    window.location.href = snap.val().includes('admin') ? 'admin/dashboard.html' : 'field/survey.html';
+                }
             });
         }
     });
