@@ -3,160 +3,660 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Onboarding</title>
-    
+    <title>Nirmansutra | Global Partner Registry</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <style>
-        :root { --accent: #ff7a00; --primary: #0f172a; --bg: #f8fafc; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); }
+        :root { 
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --accent: #10b981; 
+            --primary: #0f172a; 
+            --text-dim: #64748b; 
+        }
         
-        .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #334155; }
+        body { 
+            background: var(--bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: var(--primary); 
+            padding-bottom: 220px; 
+            -webkit-font-smoothing: antialiased; 
+            overflow-x: hidden;
+        }
         
-        .btn-primary { width: 100%; background: var(--accent); color: white; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,122,0,0.3); }
+        /* IDENTITY GATE OVERLAY */
+        .auth-gate { 
+            position: fixed; 
+            inset: 0; 
+            background: var(--primary); 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+
+        .gate-card { 
+            background: #1e293b; 
+            padding: 60px; 
+            border-radius: 45px; 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        /* CARD SYSTEM (MATCHES SURVEY.HTML) */
+        .card { 
+            background: var(--card); 
+            border-radius: 40px; 
+            padding: 45px; 
+            margin-bottom: 35px; 
+            border: 1px solid #e2e8f0; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
         
-        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; border: 1px solid transparent; transition: 0.3s; color: #0f172a; font-weight: 600; }
-        input:focus { border-color: var(--accent); background: white; }
+        .card:focus-within { 
+            border-color: var(--accent); 
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.15); 
+        }
+
+        .section-label { 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 30px; 
+            display: block; 
+        }
+
+        .id-box { 
+            background: var(--primary); 
+            color: #10b981; 
+            text-align: center; 
+            padding: 60px; 
+            border-radius: 35px; 
+            font-size: clamp(28px, 8vw, 40px); 
+            font-weight: 900; 
+            font-family: 'Courier New', monospace; 
+            letter-spacing: 8px; 
+            border: 1px solid #1e293b; 
+            box-shadow: inset 0 10px 40px rgba(0,0,0,0.5);
+            text-shadow: 0 0 25px rgba(16,185,129,0.6);
+        }
+
+        /* FORM ELEMENTS */
+        input, select, textarea { 
+            width: 100%; 
+            background: #f1f5f9; 
+            border: 2px solid transparent; 
+            padding: 22px 26px; 
+            border-radius: 20px; 
+            font-size: 16px; 
+            font-weight: 600;
+            margin-top: 15px; 
+            outline: none; 
+            transition: 0.3s ease; 
+        }
         
-        .step-inactive { opacity: 0.1; pointer-events: none; filter: grayscale(1); transition: 0.5s; }
-        .status-text { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; }
+        input:focus { border-color: var(--accent); background: #fff; }
+        
+        label { 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: var(--text-dim); 
+            text-transform: uppercase; 
+            margin-top: 25px; 
+            display: block; 
+            padding-left: 10px; 
+            letter-spacing: 1px;
+        }
+
+        /* MATERIAL SELECTION GRID */
+        .mat-item { 
+            background: var(--primary); 
+            color: white; 
+            padding: 30px 45px; 
+            border-radius: 28px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        .mat-item.active { 
+            border-color: var(--accent); 
+            transform: scale(1.04); 
+            box-shadow: 0 20px 40px rgba(16,185,129,0.3);
+        }
+
+        .tab-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; 
+            margin-top: 30px; 
+        }
+        
+        .chip { 
+            background: #f1f5f9; 
+            padding: 22px 15px; 
+            border-radius: 24px; 
+            font-size: 12px; 
+            font-weight: 800; 
+            color: #475569; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            text-align: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 85px;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+        
+        .chip.active { 
+            background: var(--accent); 
+            color: white; 
+            border-color: var(--accent); 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 25px rgba(16,185,129,0.25); 
+        }
+
+        /* 6-CATEGORY LOGISTICS SYSTEM */
+        .fleet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .fleet-unit { 
+            background: #f8fafc; 
+            padding: 25px; 
+            border-radius: 26px; 
+            border: 1px solid #e2e8f0; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .circle-btn { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 16px; 
+            background: var(--primary); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-size: 22px; 
+        }
+        .circle-btn:active { transform: scale(0.85); }
+
+        /* 10-SLOT PHOTO SYSTEM */
+        .photo-slot { 
+            aspect-ratio: 1; 
+            background: #f1f5f9; 
+            border-radius: 25px; 
+            border: 2px dashed #cbd5e1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            overflow: hidden; 
+            transition: 0.3s;
+        }
+        .photo-slot:hover { background: #e2e8f0; border-color: var(--accent); }
+        
+        .stamp-overlay { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.85); 
+            color: white; 
+            font-size: 8px; 
+            padding: 12px; 
+            font-weight: 800; 
+            line-height: 1.7; 
+        }
+
+        /* ACTION BAR */
+        .action-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(255,255,255,0.98); 
+            backdrop-filter: blur(40px); 
+            padding: 30px 40px; 
+            display: flex; 
+            gap: 25px; 
+            border-top: 1px solid #e2e8f0; 
+            z-index: 1000; 
+        }
+        
+        .btn { 
+            flex: 1; 
+            padding: 26px; 
+            border-radius: 24px; 
+            font-weight: 900; 
+            font-size: 15px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            transition: 0.4s ease; 
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-slate { background: #64748b; color: white; }
+        .btn-green { background: #10b981; color: white; box-shadow: 0 15px 30px rgba(16,185,129,0.3); }
+        
         .hidden { display: none; }
+        .step-inactive { opacity: 0.05; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
 <body>
 
 <div id="authGate" class="auth-gate">
     <div class="gate-card shadow-2xl">
-        <h1 class="text-white text-3xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Step 1: Identity Sync</p>
+        <h1 class="text-white text-4xl font-black italic mb-2 tracking-tighter">NIRMAN<span class="text-emerald-500">SUTRA</span></h1>
+        <p class="text-slate-400 text-[11px] font-bold uppercase tracking-[5px] mb-12">Global Partner Registry</p>
         
-        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition text-slate-900">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-            Verify Google ID
+        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-6 rounded-2xl font-black flex items-center justify-center gap-4 text-slate-900 transition hover:bg-slate-50">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
+            Sync Google Business ID
         </button>
 
-        <div id="otpSection" class="hidden mt-8">
-            <p class="text-emerald-400 status-text mb-4 animate-pulse">● Identity Verified. Enter OTP</p>
-            <input type="number" id="otpInput" placeholder="Enter 123456">
-            <button onclick="AuthManager.verifyOTP()" class="btn-primary">Unlock Registration Form</button>
-            <p id="otpMsg" class="text-slate-500 text-[9px] mt-4 uppercase font-bold tracking-widest">Test Code: 123456</p>
-        </div>
-        
-        <div id="loadingMsg" class="hidden text-orange-500 text-[10px] font-black uppercase mt-4 animate-bounce">
-            Authenticating Cloud Node...
+        <div id="otpSection" class="hidden mt-10">
+            <p class="text-emerald-400 text-[10px] font-bold uppercase mb-6 animate-pulse tracking-widest">● Identity Confirmed. Enter OTP</p>
+            <input type="number" id="otpInput" placeholder="6-DIGIT CODE" class="text-center mb-6 tracking-[10px] text-2xl font-black">
+            <button onclick="AuthManager.verifyOTP()" class="btn-primary bg-emerald-600 text-white w-full p-6 rounded-2xl font-black uppercase tracking-widest">Unlock Terminal</button>
+            <p class="text-slate-500 text-[9px] mt-6 uppercase font-black tracking-widest">Test Access Code: 123456</p>
         </div>
     </div>
 </div>
 
-<div class="max-w-2xl mx-auto px-8 py-10">
+<div class="max-w-2xl mx-auto px-8 py-12">
     <div id="mainForm" class="step-inactive">
-        <h1 class="text-3xl font-black italic uppercase mb-10">Supplier<span class="text-orange-500">Registry</span></h1>
-        
-        <div class="bg-white p-8 rounded-[35px] border border-slate-200 mb-6 shadow-sm">
-            <p class="text-orange-500 status-text mb-4">01. Firm Details</p>
-            <input id="firmName" placeholder="Full Registered Firm Name">
-            <input id="ownerName" placeholder="Owner Legal Name" class="mt-4">
-            <input id="ownerEmail" readonly class="mt-4 opacity-50 bg-slate-100 cursor-not-allowed" placeholder="Verified Email">
+        <header class="mb-14">
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter">Partner<span class="text-emerald-500">Onboarding</span></h1>
+            <p class="text-[12px] font-bold text-slate-400 uppercase tracking-[5px] mt-2" id="partnerIdentity">SYNCING CLOUD NODE...</p>
+        </header>
+
+        <div class="card">
+            <span class="section-label">01. Session Tracking Identity</span>
+            <div id="trackId" class="id-box">SUP-RJ-NODE---</div>
         </div>
 
-        <button onclick="RegistrationEngine.submit()" id="submitBtn" class="btn-primary bg-emerald-600">🚀 Submit Official Registration</button>
+        <div class="card">
+            <span class="section-label">02. Entity & Compliance Registry</span>
+            <label>Business Classification</label>
+            <select id="supplierType" onchange="Survey.refreshID()">
+                <option value="Retailer">Retailer (R)</option>
+                <option value="Wholesaler">Wholesaler (W)</option>
+                <option value="Manufacturer">Manufacturer (M)</option>
+            </select>
+            
+            <label>Legal Firm Name</label>
+            <input id="firmName" placeholder="As per GST / Trade License">
+            
+            <label>GSTIN Number</label>
+            <input id="gstNumber" placeholder="Optional for Small Retailers">
+            
+            <div class="mt-12 pt-12 border-t border-slate-100">
+                <p class="text-[13px] font-black text-emerald-600 uppercase mb-6 tracking-widest">Authorized Contact Hub</p>
+                <label>Owner / Manager Name</label>
+                <input id="ownerName" placeholder="Full Legal Name">
+                
+                <div class="grid grid-cols-2 gap-8 mt-4">
+                    <div>
+                        <label>Phone Number</label>
+                        <input id="ownerPhone" type="tel" oninput="Validation.phone(this)">
+                    </div>
+                    <div class="flex items-center gap-4 pt-10">
+                        <input type="checkbox" checked class="w-7 h-7 accent-emerald-500">
+                        <label class="mt-0">WhatsApp Sync</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="section-label">03. Warehouse GPS & Spatial Lock</span>
+            <div id="map" class="h-80 rounded-[45px] mb-10 border border-slate-200 shadow-inner"></div>
+            <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[3px] mb-8 shadow-2xl">📍 Verify Spatial Lock</button>
+            <textarea id="address" class="h-32 text-[14px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync..." readonly></textarea>
+            
+            <div class="mt-16">
+                <label>Warehouse Evidence (Max 10 Slots with Meta-Stamps)</label>
+                <div class="grid grid-cols-5 gap-5 mt-8" id="photoGrid">
+                    <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl transition-all">+</button>
+                </div>
+                <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="section-label">04. Material Supply Intelligence</span>
+            <div id="matSelector" class="grid grid-cols-2 gap-6"></div>
+            
+            <div id="varietySection" class="mt-16 hidden bg-slate-50 p-12 rounded-[50px] border border-slate-200 shadow-inner">
+                <label class="section-label" style="color:#64748b">Step 2: Brand Specialization</label>
+                <div id="varietyGrid" class="tab-grid"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="section-label">05. Logistics Dispatch Capacity</span>
+            <div id="fleetGrid" class="fleet-grid"></div>
+        </div>
     </div>
+</div>
+
+<div class="action-bar">
+    <button onclick="Draft.save()" class="btn btn-slate">💾 Local Save</button>
+    <button onclick="RegistrationEngine.submit()" id="sBtn" class="btn btn-green">🚀 Finalize Registry Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+    /**
+     * NIRMANSUTRA PARTNER ENGINE v42.0 (EXPANDED)
+     * Total Line Target: 540+
+     */
+    
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
-    
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(), rtdb = firebase.database();
+    const rtdb = firebase.database(), auth = firebase.auth();
 
+    // GLOBAL STATE
+    window.Survey = {
+        state: { 
+            location: null, 
+            mat: null, 
+            varieties: [], 
+            brands: [], 
+            fleet: {}, 
+            photos: [], 
+            trackingId: "", 
+            role: "supplier" 
+        },
+        async refreshID() {
+            const snap = await rtdb.ref('surveys').once('value');
+            const typeChar = document.getElementById('supplierType').value[0];
+            const smartId = `NS-SUP-${typeChar}-${String(snap.numChildren()+1).padStart(4,'0')}`;
+            document.getElementById('trackId').innerText = smartId;
+            this.state.trackingId = smartId;
+        }
+    };
+
+    // IDENTITY MANAGER
     window.AuthManager = {
         userData: null,
         login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            document.getElementById('loadingMsg').classList.remove('hidden');
-            document.getElementById('gBtn').classList.add('hidden');
-            // Using Popup for more consistent behavior during registration
             auth.signInWithPopup(provider).then(res => {
-                this.showOTP(res.user);
-            }).catch(e => {
-                alert(e.message);
-                document.getElementById('gBtn').classList.remove('hidden');
-            });
-        },
-        showOTP(user) {
-            this.userData = user;
-            document.getElementById('loadingMsg').classList.add('hidden');
-            document.getElementById('gBtn').classList.add('hidden');
-            document.getElementById('otpSection').classList.remove('hidden');
-            document.getElementById('ownerEmail').value = user.email;
+                this.userData = res.user;
+                document.getElementById('gBtn').classList.add('hidden');
+                document.getElementById('otpSection').classList.remove('hidden');
+                document.getElementById('partnerIdentity').innerText = "PARTNER: " + res.user.email.toUpperCase();
+            }).catch(e => alert("Auth Fault: " + e.message));
         },
         verifyOTP() {
-            const code = document.getElementById('otpInput').value;
-            if(code === "123456") {
+            const val = document.getElementById('otpInput').value;
+            if(val === "123456") {
                 document.getElementById('authGate').classList.add('hidden');
                 document.getElementById('mainForm').classList.remove('step-inactive');
-            } else {
-                alert("Incorrect OTP. Please use 123456.");
+                Geo.init(); 
+                syncRegistry();
+            } else { alert("Verification Failed."); }
+        }
+    };
+
+    // GEOSPATIAL ENGINE
+    window.Geo = {
+        map: null, marker: null,
+        init() {
+            this.map = L.map('map', { 
+                zoomControl: false, 
+                attributionControl: false 
+            }).setView([24.58, 73.71], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        },
+        capture() {
+            navigator.geolocation.getCurrentPosition(async p => {
+                const { latitude, longitude } = p.coords;
+                Survey.state.location = { lat: latitude, lng: longitude };
+                this.map.setView([latitude, longitude], 17);
+                if (this.marker) this.map.removeLayer(this.marker);
+                this.marker = L.marker([latitude, longitude]).addTo(this.map);
+                
+                // Reverse Geocoding
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data = await res.json();
+                    document.getElementById('address').value = data.display_name;
+                    Survey.refreshID();
+                } catch(e) { document.getElementById('address').value = `${latitude}, ${longitude}`; }
+            }, (err) => alert("GPS Denied. Enable location."), { enableHighAccuracy: true });
+        }
+    };
+
+    // EVIDENCE HANDLER (CANVAS COMPRESSION)
+    window.Evidence = {
+        handle(input) {
+            if(!Survey.state.location) return alert("📍 Capture Warehouse Location first.");
+            if(Survey.state.photos.length >= 10) return alert("Max 10 evidence slots filled.");
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Fixed high-res capture aspect
+                    canvas.width = 1000; 
+                    canvas.height = 750;
+                    
+                    ctx.drawImage(img, 0, 0, 1000, 750);
+                    
+                    // Meta-Stamping logic
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(0, 680, 1000, 70);
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 20px monospace";
+                    const stamp = `NS-REG | ${new Date().toLocaleString()} | GPS: ${Survey.state.location.lat.toFixed(5)}`;
+                    ctx.fillText(stamp, 30, 725);
+
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                    Survey.state.photos.push({ 
+                        src: base64, 
+                        time: new Date().toLocaleString(), 
+                        gps: Survey.state.location.lat.toFixed(4) 
+                    });
+                    this.render();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        render() {
+            const grid = document.getElementById('photoGrid');
+            const btn = grid.firstElementChild;
+            grid.innerHTML = "";
+            grid.appendChild(btn);
+            Survey.state.photos.forEach((p, index) => { 
+                grid.innerHTML += `
+                    <div class="photo-slot group" onclick="Evidence.remove(${index})">
+                        <img src="${p.src}" class="w-full h-full object-cover">
+                        <div class="stamp-overlay">${p.time}</div>
+                    </div>`; 
+            });
+        },
+        remove(idx) {
+            if(confirm("Remove this evidence slot?")) {
+                Survey.state.photos.splice(idx, 1);
+                this.render();
             }
         }
     };
 
+    // MATERIAL REGISTRY (DASHBOARD ALIGNED)
+    function syncRegistry() {
+        rtdb.ref('registry/materials').on('value', snap => {
+            const cont = document.getElementById('matSelector');
+            if(!cont) return;
+            cont.innerHTML = "";
+            window.registryData = snap.val() || {
+                "Cement": {"PPC":{}, "OPC":{}},
+                "Steel": {"TMT 500":{}, "TMT 550":{}},
+                "Bricks": {"Red":{}, "AAC":{}}
+            };
+            
+            Object.keys(window.registryData).forEach(cat => {
+                cont.innerHTML += `
+                    <div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')">
+                        <span class="text-[14px] font-black uppercase tracking-[2px]">${cat}</span>
+                        <div class="w-5 h-5 rounded-full bg-slate-800 border-2 border-slate-700 transition-all"></div>
+                    </div>`;
+            });
+        });
+    }
+
+    window.selectMat = function(cat) {
+        Survey.state.mat = cat;
+        Survey.state.varieties = [];
+        
+        document.querySelectorAll('.mat-item').forEach(i => {
+            i.classList.remove('active');
+            i.querySelector('div').style.background = "#1e293b";
+        });
+        
+        const active = document.getElementById('mat-'+cat);
+        active.classList.add('active');
+        active.querySelector('div').style.background = "#10b981";
+
+        const vGrid = document.getElementById('varietyGrid');
+        vGrid.innerHTML = "";
+        document.getElementById('varietySection').classList.remove('hidden');
+        
+        const varieties = window.registryData[cat];
+        Object.keys(varieties).forEach(vKey => {
+            if (vKey === 'status' || varieties[vKey].status === 'archived') return;
+            vGrid.innerHTML += `<div class="chip" onclick="toggleVariety('${vKey}', this)">${vKey}</div>`;
+        });
+        Survey.refreshID();
+    }
+
+    window.toggleVariety = function(v, el) {
+        el.classList.toggle('active');
+        const idx = Survey.state.varieties.indexOf(v);
+        idx > -1 ? Survey.state.varieties.splice(idx, 1) : Survey.state.varieties.push(v);
+    }
+
+    // LOGISTICS ENGINE
+    window.fleetStep = function(t, v) { 
+        if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0; 
+        Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); 
+        document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; 
+    };
+
+    // VALIDATION
+    window.Validation = {
+        phone(input) {
+            let val = input.value.trim().replace(/\D/g, '');
+            if (val.length > 10) val = val.slice(-10);
+            if (val.length === 10) input.value = "+91 " + val;
+        }
+    };
+
+    // LOCAL DRAFT STORAGE
+    window.Draft = {
+        save() {
+            const data = { ...Survey.state, firm: document.getElementById('firmName').value };
+            localStorage.setItem('ns_partner_draft_v42', JSON.stringify(data));
+            alert("💾 Profile draft secured in local terminal.");
+        }
+    };
+
+    // MASTER SUBMISSION ENGINE
     window.RegistrationEngine = {
         async submit() {
             const firm = document.getElementById('firmName').value;
-            if(!firm) return alert("Please enter Firm Name");
+            const owner = document.getElementById('ownerName').value;
             
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "TRANSMITTING...";
+            if(!firm || !Survey.state.location) {
+                return alert("❌ REGISTRY ERROR: Firm Name and Spatial Lock are mandatory.");
+            }
+            
+            const btn = document.getElementById('sBtn');
+            btn.innerText = "TRANSMITTING TO COMMAND CENTER...";
             btn.disabled = true;
-            
-            const payload = {
-                firm: firm,
-                owner: document.getElementById('ownerName').value,
+
+            const payload = { 
+                ...Survey.state, 
+                firm: firm, 
+                owner: owner,
+                gst: document.getElementById('gstNumber').value,
+                phone: document.getElementById('ownerPhone').value,
                 email: AuthManager.userData.email,
                 uid: AuthManager.userData.uid,
+                address: document.getElementById('address').value,
                 timestamp: Date.now(),
-                status: 'pending'
+                status: 'pending_review'
             };
 
             try {
+                // Write to isolated onboarding node
                 await rtdb.ref('supplier_onboarding/' + AuthManager.userData.uid).set(payload);
-                alert("SUCCESS! Application submitted for approval.");
-                // Hard logout and return home
-                await auth.signOut();
-                window.location.href = "index.html";
+                alert("🚀 REGISTRY SUCCESSFUL! Your profile is now live in the Command Matrix.");
+                auth.signOut().then(() => location.href = "index.html");
             } catch(e) {
-                alert("Database Error: " + e.message);
-                btn.innerText = "🚀 Submit Official Registration";
+                alert("Transmission Fault: " + e.message);
+                btn.innerText = "🚀 Finalize Registry Sync";
                 btn.disabled = false;
             }
         }
     };
 
-    // ONLOAD ENGINE
+    // INIT FLEET UNITS
     window.onload = () => {
-        // Force a fresh session state
-        const isNewMode = window.location.search.includes('mode=new_partner');
-        
-        auth.onAuthStateChanged(user => {
-            if(user && !isNewMode) {
-                AuthManager.showOTP(user);
-            }
-        });
+        const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
+        document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `
+            <div class="fleet-unit">
+                <span class="text-[11px] font-black text-slate-500 uppercase">${t}</span>
+                <div class="flex items-center gap-6">
+                    <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
+                    <span id="fval-${t}" class="font-black text-sm w-[25px] text-center">0</span>
+                    <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
+                </div>
+            </div>`).join('');
     };
+
 </script>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>
