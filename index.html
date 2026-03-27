@@ -3,78 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Security Gateway</title>
-    
+    <title>Nirmansutra | Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
     <style>
-        body { 
-            background-color: #020617; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: #f8fafc; 
-        }
-        
-        .login-card { 
-            background: rgba(30, 41, 59, 0.45); 
-            backdrop-filter: blur(16px); 
-            padding: 60px; 
-            border-radius: 32px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); 
-            width: 100%; 
-            max-width: 450px; 
-            border: 1px solid rgba(255, 255, 255, 0.06); 
-            text-align: center; 
-        }
-        
-        .btn-google { 
-            background: white; 
-            color: #0f172a; 
-            transition: 0.3s; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px; 
-            cursor: pointer; 
-            border-radius: 20px; 
-            font-weight: 800; 
-            width: 100%; 
-            padding: 18px; 
-            font-size: 14px; 
-            text-transform: uppercase; 
-        }
-
-        .reg-container {
-            margin-top: 45px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-        
-        .btn-reg {
-            display: inline-block;
-            color: #ff7a00;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .btn-reg:hover { color: white; letter-spacing: 4px; }
+        body { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #f8fafc; }
+        .login-card { background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(16px); padding: 60px; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); width: 100%; max-width: 450px; border: 1px solid rgba(255, 255, 255, 0.06); text-align: center; }
+        .btn-google { background: white; color: #0f172a; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 20px; font-weight: 800; width: 100%; padding: 18px; font-size: 14px; text-transform: uppercase; }
+        .reg-container { margin-top: 45px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .btn-reg { display: inline-block; color: #ff7a00; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; text-decoration: none; transition: 0.3s; }
+        #statusBox { margin-top: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: none; padding: 10px; border-radius: 12px; }
     </style>
 </head>
 <body>
 
 <div class="login-card shadow-2xl mx-4">
     <div class="mb-12">
-        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
-            NIRMAN<span class="text-orange-500">SUTRA</span>
-        </h1>
+        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Security Gateway</p>
     </div>
     
@@ -85,10 +30,10 @@
 
     <div class="reg-container">
         <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <a href="onboarding/index.html" class="btn-reg">
-            ➜ NEW SUPPLIER REGISTRATION
-        </a>
+        <a href="onboarding/index.html" class="btn-reg">➜ NEW SUPPLIER REGISTRATION</a>
     </div>
+
+    <div id="statusBox"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -107,11 +52,19 @@
     const auth = firebase.auth();
     const rtdb = firebase.database();
 
+    function showStatus(msg, err) {
+        const b = document.getElementById('statusBox');
+        b.innerText = msg; b.style.display = 'block';
+        b.className = err ? "bg-red-500/20 text-red-500" : "bg-orange-500/20 text-orange-500";
+    }
+
     async function loginStaff() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
+            showStatus("Verifying Identity...", false);
             const result = await auth.signInWithPopup(provider);
             const user = result.user;
+            
             const snap = await rtdb.ref('users/' + user.uid + '/role').once('value');
             const role = snap.val();
             
@@ -119,25 +72,16 @@
                 const path = (['admin', 'super_admin'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
                 window.location.href = path;
             } else {
-                alert("Access Denied. Redirecting to Onboarding...");
-                window.location.href = 'onboarding/index.html';
+                showStatus("Unauthorized: No Staff Role Found", true);
+                setTimeout(() => auth.signOut(), 2000);
             }
-        } catch (e) { alert(e.message); }
+        } catch (e) { showStatus(e.message, true); }
     }
 
-    // THE LOOP BREAKER: Do not redirect if we are in the onboarding folder
-    auth.onAuthStateChanged(user => {
-        if (user && !window.location.pathname.includes('onboarding')) {
-            rtdb.ref('users/' + user.uid + '/role').once('value').then(snap => {
-                const role = snap.val();
-                if (role) {
-                    const path = (['admin', 'super_admin'].includes(role)) ? 'admin/dashboard.html' : 'field/survey.html';
-                    window.location.href = path;
-                }
-            });
-        }
-    });
+    /** * THE LOOP KILLER: 
+     * We REMOVED the auto-redirect here. 
+     * This page will now stay still until you click a button.
+     */
 </script>
-
 </body>
 </html>
