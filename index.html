@@ -94,9 +94,9 @@
 
     <div class="partnership-box">
         <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <a href="onboarding/index.html" class="text-orange-500 text-[11px] font-black uppercase tracking-[3px] hover:text-white transition-colors">
+        <div onclick="goToOnboarding()" class="text-orange-500 text-[11px] font-black uppercase tracking-[3px] hover:text-white transition-colors cursor-pointer">
             ➜ New Supplier Registration
-        </a>
+        </div>
     </div>
 </div>
 
@@ -116,7 +116,6 @@
     const auth = firebase.auth();
     const rtdb = firebase.database();
 
-    // CENTRALIZED ROUTING CONFIG
     const ROLE_ROUTES = {
         'super_admin': 'admin/dashboard.html',
         'admin': 'admin/dashboard.html',
@@ -138,17 +137,23 @@
     }
 
     /**
+     * NEW: BYPASS HANDLER
+     * Sets an intent flag to stop auto-routing while registering
+     */
+    function goToOnboarding() {
+        sessionStorage.setItem('onboarding_intent', 'true');
+        window.location.href = "onboarding/index.html";
+    }
+
+    /**
      * MASTER ROUTING ENGINE
      */
     async function executeRouting(user) {
         try {
             updateUI("Verifying Permissions...", "warn");
-            
-            // 1. Fetch User Role from Database
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             const role = snap.val();
 
-            // 2. LOGIC: NEW USER / SUPPLIER (No role yet)
             if (!role) {
                 updateUI("New User: Directing to Onboarding...", "success");
                 setTimeout(() => {
@@ -157,36 +162,16 @@
                 return;
             }
 
-            // 3. LOGIC: REGISTERED STAFF/SUPPLIER
             const cleanRole = role.toLowerCase().trim();
             const target = ROLE_ROUTES[cleanRole];
 
             if (target) {
                 updateUI(`Identity Confirmed: ${cleanRole.toUpperCase()}`, "success");
                 setTimeout(() => {
-                    // Use replace to prevent "Back Button" loops
                     window.location.replace(target + "?v=" + Date.now());
                 }, 800);
             } else {
-                updateUI("Unknown Role Configuration. Contact IT.", "err");
-            }
-
-        } catch (e) {
-            updateUI(`Connection Error: ${e.message}`, "err");
-        }
-    }
-
-    /**
-     * UNIFIED LOGIN TRIGGER
-     */
-    async function unifiedLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        updateUI("Opening Secure Terminal...", "warn");
-        try {
-            // Using Popup for immediate feedback in Unified Gateway
-            const result = await auth.signInWithPopup(provider);
-            if (result.user) {
-                await executeRouting(result.user);
+                updateUI("Unknown Role Configuration", "err");
             }
         } catch (e) {
             updateUI(e.message, "err");
@@ -194,20 +179,10 @@
     }
 
     /**
-     * SESSION RECOVERY (Auth Listener)
-     * Automatically routes user if they are already logged in
+     * LOGIN TRIGGER
      */
-    auth.onAuthStateChanged(user => {
-        // Only trigger auto-route if we aren't already in the sub-folders
-        const isOutside = !window.location.pathname.includes('admin') && 
-                          !window.location.pathname.includes('field') && 
-                          !window.location.pathname.includes('onboarding');
-                          
-        if (user && isOutside) {
-            executeRouting(user);
-        }
-    });
-</script>
-
-</body>
-</html>
+    async function unifiedLogin() {
+        // Clear onboarding intent if clicking manual staff login
+        sessionStorage.removeItem('onboarding_intent');
+        const provider = new firebase.auth.GoogleAuthProvider();
+        updateUI("Opening Secure Terminal...", "warn
