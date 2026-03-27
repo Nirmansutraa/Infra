@@ -10,63 +10,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --accent: #ff7a00; --primary: #0f172a; }
-        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 100px; }
-        .card { background: white; border-radius: 35px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        :root { --accent: #ff7a00; --primary: #0f172a; --bg: #f8fafc; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 80px; }
+        
+        .card { background: white; border-radius: 35px; padding: 40px; margin-bottom: 25px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05); }
         .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; }
-        .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #334155; }
-        input, select { width: 100%; background: #f1f5f9; border: 1px solid transparent; padding: 18px 24px; border-radius: 18px; font-size: 15px; font-weight: 600; margin-top: 12px; outline: none; transition: 0.3s; }
-        .btn-action { width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-top: 20px; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: white; }
-        .step-inactive { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
-        #map { height: 300px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        
+        input, select, textarea { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px 24px; border-radius: 20px; font-size: 15px; font-weight: 600; margin-top: 12px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: white; }
+        
+        .btn-action { width: 100%; padding: 22px; border-radius: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 15px 30px -10px rgba(255,122,0,0.4); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -10px rgba(255,122,0,0.5); }
+        
+        .auth-overlay { position: fixed; inset: 0; background: var(--primary); z-index: 5000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        #map { height: 350px; border-radius: 25px; margin-top: 15px; border: 1px solid #e2e8f0; z-index: 10; }
+        .step-locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
 <body>
 
-<div id="authGate" class="auth-gate">
-    <div class="gate-card shadow-2xl">
-        <h1 class="text-white text-3xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Supplier Registry</p>
+<div id="authOverlay" class="auth-overlay">
+    <div class="px-10">
+        <h1 class="text-white text-4xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[4px] mb-12">Supplier Identity Lock</p>
         
-        <button onclick="Auth.login()" id="gBtn" class="bg-white text-slate-900 w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Verify Google ID
-        </button>
-
-        <div id="otpBox" class="hidden mt-8">
-            <p class="text-emerald-400 text-[10px] font-bold uppercase mb-4 tracking-widest">● Identity Verified. Enter OTP</p>
-            <input type="number" id="otpInput" placeholder="Enter 123456">
-            <button onclick="Auth.verify()" class="btn-action btn-primary">Unlock Form</button>
+        <div id="otpBox" class="hidden">
+            <p class="text-emerald-500 text-[10px] font-black uppercase mb-4 animate-pulse">● Google ID Verified. Enter OTP</p>
+            <input type="number" id="otpInput" placeholder="Enter 123456" class="text-center text-slate-900">
+            <button onclick="FormManager.unlock()" class="btn-action btn-primary mt-6">Unlock Application</button>
+        </div>
+        
+        <div id="loadingStatus" class="text-orange-500 font-bold text-xs uppercase tracking-widest">
+            Syncing Cloud Identity...
         </div>
     </div>
 </div>
 
-<div class="max-w-2xl mx-auto px-8 py-10">
-    <h1 class="text-3xl font-black italic uppercase mb-10">Official<span class="text-orange-500">Onboarding</span></h1>
+<div class="max-w-3xl mx-auto px-6 py-12">
+    <header class="mb-12">
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter">Supplier<span class="text-orange-500">Onboarding</span></h2>
+        <p class="text-slate-400 text-[11px] font-bold uppercase tracking-[2px] mt-2">Partner Registry Portal v32.0</p>
+    </header>
 
-    <div id="mainForm" class="step-inactive">
+    <div id="registrationForm" class="step-locked">
         <div class="card">
-            <span class="section-label">01. Firm Identity</span>
-            <select id="type"><option value="Retailer">Retailer (R)</option><option value="Wholesaler">Wholesaler (W)</option></select>
-            <input id="firm" placeholder="Registered Firm Name">
+            <span class="section-label">01. Business Entity</span>
+            <select id="supplierType">
+                <option value="Retailer">Retailer (B2C)</option>
+                <option value="Wholesaler">Wholesaler (B2B)</option>
+                <option value="Manufacturer">Manufacturer / Mill</option>
+            </select>
+            <input id="firmName" placeholder="Registered Firm Name (GST/Trade Name)">
+            <input id="gstNumber" placeholder="GSTIN (Optional)">
         </div>
 
         <div class="card">
-            <span class="section-label">02. Spatial Lock</span>
+            <span class="section-label">02. Warehouse/Store Location</span>
+            <p class="text-slate-400 text-[10px] font-bold italic mb-4">Click below to lock your physical coordinates for delivery routing.</p>
             <div id="map"></div>
-            <button onclick="Geo.capture()" class="btn-action btn-primary">📍 Verify GPS Pin</button>
-            <textarea id="address" class="w-full mt-4 bg-transparent border-none text-slate-500 text-sm italic" readonly placeholder="Address Syncing..."></textarea>
+            <button onclick="GeoEngine.capture()" class="btn-action btn-primary mt-6">📍 Capture Physical Location</button>
+            <textarea id="fullAddress" readonly placeholder="Physical address will sync here..." class="mt-4 text-slate-500 text-sm italic h-24"></textarea>
         </div>
 
         <div class="card">
-            <span class="section-label">03. Contact Hub</span>
-            <input id="owner" placeholder="Owner Legal Name">
-            <input id="email" readonly class="bg-slate-100 opacity-60 mt-4">
-            <input id="phone" placeholder="WhatsApp Number (+91...)" class="mt-4">
+            <span class="section-label">03. Authorized Contact</span>
+            <input id="ownerName" placeholder="Owner / Director Name">
+            <input id="ownerEmail" readonly class="opacity-50 cursor-not-allowed">
+            <input id="ownerPhone" placeholder="WhatsApp Number (+91...)">
         </div>
 
-        <button onclick="Submission.run()" id="subBtn" class="btn-action btn-primary bg-emerald-600 shadow-xl">🚀 Transmit Registration</button>
+        <button id="submitBtn" onclick="SubmissionEngine.run()" class="btn-action btn-primary bg-emerald-600 shadow-emerald-500/20">🚀 Submit Official Partnership Application</button>
     </div>
 </div>
 
@@ -82,74 +96,105 @@
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), rtdb = firebase.database();
 
-    window.Auth = {
-        user: null,
-        login() {
-            auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-        },
-        verify() {
-            if(document.getElementById('otpInput').value === "123456") {
-                document.getElementById('authGate').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('step-inactive');
-                Geo.init();
-            } else { alert("Incorrect OTP"); }
+    window.FormManager = {
+        currentUser: null,
+        unlock() {
+            const code = document.getElementById('otpInput').value;
+            if(code === "123456") {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('registrationForm').classList.remove('step-locked');
+                GeoEngine.init();
+            } else { alert("Invalid Security Code"); }
         }
     };
 
-    window.Geo = {
+    window.GeoEngine = {
         map: null, marker: null,
         init() {
-            if(this.map) return;
             this.map = L.map('map', { zoomControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         },
         capture() {
-            navigator.geolocation.getCurrentPosition(async p => {
+            navigator.geolocation.getCurrentPosition(async (p) => {
                 const { latitude, longitude } = p.coords;
-                this.map.setView([latitude, longitude], 16);
-                if (this.marker) this.map.removeLayer(this.marker);
+                this.map.setView([latitude, longitude], 17);
+                if(this.marker) this.map.removeLayer(this.marker);
                 this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const data = await res.json();
-                document.getElementById('address').value = data.display_name;
-            }, null, { enableHighAccuracy: true });
+                
+                // Reverse Geocoding
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data = await res.json();
+                    document.getElementById('fullAddress').value = data.display_name;
+                } catch(e) { document.getElementById('fullAddress').value = `${latitude}, ${longitude}`; }
+            }, (err) => alert("Please enable GPS/Location access."), { enableHighAccuracy: true });
         }
     };
 
-    window.Submission = {
+    window.SubmissionEngine = {
         async run() {
-            const firm = document.getElementById('firm').value;
-            if(!firm || !Geo.marker) return alert("Firm & GPS Required.");
-            document.getElementById('subBtn').innerText = "TRANSMITTING...";
-            
-            const data = {
-                firm: firm, type: document.getElementById('type').value,
-                owner: document.getElementById('owner').value,
-                email: Auth.user.email, phone: document.getElementById('phone').value,
-                lat: Geo.marker.getLatLng().lat, lng: Geo.marker.getLatLng().lng,
-                address: document.getElementById('address').value,
-                timestamp: Date.now(), status: 'pending'
+            const firm = document.getElementById('firmName').value;
+            const phone = document.getElementById('ownerPhone').value;
+            if(!firm || !phone || !GeoEngine.marker) return alert("Firm Name, Phone, and GPS Location are mandatory.");
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "TRANSMITTING DATA...";
+            btn.disabled = true;
+
+            const payload = {
+                uid: FormManager.currentUser.uid,
+                email: FormManager.currentUser.email,
+                firm: firm,
+                type: document.getElementById('supplierType').value,
+                gst: document.getElementById('gstNumber').value,
+                owner: document.getElementById('ownerName').value,
+                phone: phone,
+                lat: GeoEngine.marker.getLatLng().lat,
+                lng: GeoEngine.marker.getLatLng().lng,
+                address: document.getElementById('fullAddress').value,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                status: "pending_review"
             };
 
             try {
-                await rtdb.ref('supplier_onboarding').push(data);
-                alert("REGISTRATION SUCCESSFUL.");
-                auth.signOut().then(() => { window.location.href = "../index.html"; });
-            } catch(e) { alert("Error: " + e.message); }
+                // Save to registry
+                await rtdb.ref(`supplier_onboarding/${FormManager.currentUser.uid}`).set(payload);
+                
+                // Log the activity
+                await rtdb.ref(`logs/onboarding_attempts/${FormManager.currentUser.uid}`).push({
+                    action: "registration_submitted",
+                    time: Date.now()
+                });
+
+                alert("APPLICATION SUBMITTED SUCCESSFULLY. Our team will verify your details within 24 hours.");
+                
+                // After success, send back to home (where they will see "Pending" status)
+                window.location.href = "../index.html";
+            } catch(e) {
+                alert("Submission Error: " + e.message);
+                btn.innerText = "🚀 Submit Official Partnership Application";
+                btn.disabled = false;
+            }
         }
     };
 
+    // IDENTITY HANDSHAKE
     auth.onAuthStateChanged(user => {
         if(user) {
-            Auth.user = user;
-            document.getElementById('gBtn').classList.add('hidden');
+            FormManager.currentUser = user;
+            document.getElementById('ownerEmail').value = user.email;
+            document.getElementById('loadingStatus').classList.add('hidden');
             document.getElementById('otpBox').classList.remove('hidden');
-            document.getElementById('email').value = user.email;
+        } else {
+            // If they aren't logged in, send them back to the gate
+            window.location.href = "../index.html";
         }
     });
 </script>
+
 </body>
 </html>
