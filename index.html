@@ -35,7 +35,7 @@
         .btn-universal { 
             background: white; 
             color: #0f172a; 
-            transition: 0.3s; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -48,9 +48,14 @@
             font-size: 14px; 
             text-transform: uppercase; 
             letter-spacing: 1px;
+            box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.1);
         }
         
-        .btn-universal:hover { transform: translateY(-2px); background: #f8fafc; }
+        .btn-universal:hover { 
+            transform: translateY(-2px); 
+            background: #f8fafc;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        }
 
         .status-msg { 
             margin-top: 30px; 
@@ -60,6 +65,7 @@
             font-weight: 800; 
             display: none; 
             text-transform: uppercase; 
+            letter-spacing: 1px;
         }
 
         .partnership-box {
@@ -68,7 +74,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .btn-reg {
+        .btn-reg-link {
             color: #ff7a00;
             font-size: 11px;
             font-weight: 900;
@@ -76,8 +82,9 @@
             letter-spacing: 3px;
             cursor: pointer;
             transition: 0.3s;
+            display: inline-block;
         }
-        .btn-reg:hover { color: white; letter-spacing: 4px; }
+        .btn-reg-link:hover { color: white; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -99,7 +106,7 @@
 
     <div class="partnership-box">
         <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <div onclick="cleanExitToRegistration()" class="btn-reg">
+        <div onclick="forceSupplierRegistration()" class="btn-reg-link">
             ➜ New Supplier Registration
         </div>
     </div>
@@ -125,46 +132,57 @@
         'super_admin': 'admin/dashboard.html',
         'admin': 'admin/dashboard.html',
         'field_staff': 'field/survey.html',
-        'supplier': 'onboarding/index.html'
+        'supplier': 'field/survey.html'
     };
 
     function updateUI(text, type) {
         const m = document.getElementById('msg');
         m.innerText = text;
         m.style.display = 'block';
-        m.className = `status-msg ${type === 'err' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400 animate-pulse'}`;
+        if(type === 'err') {
+            m.className = "status-msg bg-red-500/20 text-red-400";
+        } else if(type === 'success') {
+            m.className = "status-msg bg-emerald-500/20 text-emerald-400";
+        } else {
+            m.className = "status-msg bg-orange-500/20 text-orange-400 animate-pulse";
+        }
     }
 
     /**
-     * ENHANCED: CLEAN EXIT
-     * This function "kills" the current session before moving to the onboarding folder.
-     * This prevents the "Staff Redirect" loop.
+     * SOLUTION: AUTH-SILENCE BYPASS
+     * Signs out any existing Admin session to prevent the background redirect
+     * from pulling the user back to index.html while trying to register.
      */
-    async function cleanExitToRegistration() {
-        updateUI("Wiping Session Data...", "warn");
-        
-        // 1. Clear Browser Memory
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // 2. Clear Firebase Auth
-        await auth.signOut();
-        
-        // 3. Move to onboarding after a tiny delay
-        setTimeout(() => {
-            window.location.href = "onboarding/index.html?v=" + Date.now();
-        }, 800);
+    async function forceSupplierRegistration() {
+        updateUI("Preparing Registry Terminal...", "warn");
+        try {
+            // Kill active sessions
+            await auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Move to registration with cache-buster and mode flag
+            console.log("Session Silenced. Moving to Registry.");
+            window.location.href = "registration.html?mode=new_partner&t=" + Date.now();
+        } catch (e) {
+            window.location.href = "registration.html";
+        }
     }
 
+    /**
+     * MASTER ROUTING ENGINE
+     */
     async function executeRouting(user) {
         try {
             updateUI("Verifying Permissions...", "warn");
+            
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             const role = snap.val();
 
             if (!role) {
-                updateUI("New User: Directing to Onboarding...", "success");
-                setTimeout(() => { window.location.replace("onboarding/index.html"); }, 1000);
+                // Logged in but no role assigned? Send to registration.
+                updateUI("Profile Found: No Role Assigned", "warn");
+                setTimeout(() => { window.location.href = "registration.html"; }, 1000);
                 return;
             }
 
@@ -172,30 +190,41 @@
             const target = ROLE_ROUTES[cleanRole];
 
             if (target) {
-                updateUI(`Identity Confirmed: ${cleanRole.toUpperCase()}`, "success");
-                setTimeout(() => { window.location.replace(target + "?v=" + Date.now()); }, 800);
+                updateUI(`Access Granted: ${cleanRole.toUpperCase()}`, "success");
+                setTimeout(() => {
+                    window.location.replace(target + "?v=" + Date.now());
+                }, 800);
             } else {
-                updateUI("Unknown Role Configuration", "err");
+                updateUI("Unknown System Role", "err");
             }
-        } catch (e) { updateUI(e.message, "err"); }
+
+        } catch (e) {
+            updateUI(e.message, "err");
+        }
     }
 
     async function unifiedLogin() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        updateUI("Opening Terminal...", "warn");
+        updateUI("Opening Secure Portal...", "warn");
         try {
             const result = await auth.signInWithPopup(provider);
             if (result.user) await executeRouting(result.user);
-        } catch (e) { updateUI(e.message, "err"); }
+        } catch (e) {
+            updateUI(e.message, "err");
+        }
     }
 
     /**
-     * AUTO-RECOVERY LISTENER
+     * SESSION LISTENER
      */
     auth.onAuthStateChanged(user => {
-        const isRoot = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
-        // If they are logged in and at the root, move them to their dashboard
-        if (user && isRoot) {
+        // Only trigger if we are at the root index
+        const isAtRoot = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+        
+        // Don't auto-route if we are intentionally trying to register
+        const isRegistering = window.location.search.includes('mode=new_partner');
+
+        if (user && isAtRoot && !isRegistering) {
             executeRouting(user);
         }
     });
