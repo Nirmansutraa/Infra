@@ -4,45 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nirmansutra | Onboarding</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --accent: #ff7a00; --primary: #0f172a; }
-        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); }
+        :root { --accent: #ff7a00; --primary: #0f172a; --bg: #f8fafc; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); }
+        
         .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; }
-        .btn-primary { width: 100%; background: var(--accent); color: white; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; margin-top: 20px; }
-        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; }
-        .step-inactive { opacity: 0.2; pointer-events: none; }
+        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #334155; }
+        
+        .btn-primary { width: 100%; background: var(--accent); color: white; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,122,0,0.3); }
+        
+        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; border: 1px solid transparent; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: white; }
+        
+        .step-inactive { opacity: 0.1; pointer-events: none; filter: grayscale(1); transition: 0.5s; }
+        .status-text { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div id="authGate" class="auth-gate">
-    <div class="gate-card">
+    <div class="gate-card shadow-2xl">
         <h1 class="text-white text-3xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-8">Supplier Verification</p>
-        <button onclick="login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Verify Google ID
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Step 1: Identity Sync</p>
+        
+        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+            Verify Google ID
         </button>
-        <div id="otpSection" class="hidden mt-8">
-            <p class="text-emerald-400 text-[10px] font-bold uppercase mb-4 tracking-widest">● ID Verified. Enter OTP</p>
-            <input type="number" id="otpInput" placeholder="000000">
-            <button onclick="verifyOTP()" class="btn-primary">Unlock Form</button>
+
+        <div id="otpSection" class="hidden mt-8 animate-pulse">
+            <p class="text-emerald-400 status-text mb-4">● Identity Verified. Enter OTP</p>
+            <input type="number" id="otpInput" placeholder="Enter 123456">
+            <button onclick="AuthManager.verifyOTP()" class="btn-primary">Unlock Registration Form</button>
+            <p id="otpMsg" class="text-slate-500 text-[9px] mt-4 uppercase font-bold tracking-widest">Test Code: 123456</p>
         </div>
     </div>
 </div>
 
 <div class="max-w-2xl mx-auto px-8 py-10">
-    <h1 class="text-3xl font-black italic uppercase mb-10">Supplier<span class="text-orange-500">Onboarding</span></h1>
     <div id="mainForm" class="step-inactive">
-        <div class="bg-white p-8 rounded-[35px] border mb-6 shadow-sm">
-            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-4">Firm Details</p>
-            <input id="firmName" placeholder="Firm Name">
-            <input id="ownerName" placeholder="Owner Name" class="mt-4">
-            <input id="ownerEmail" readonly class="mt-4 opacity-50 bg-slate-100">
+        <h1 class="text-3xl font-black italic uppercase mb-10">Supplier<span class="text-orange-500">Registry</span></h1>
+        
+        <div class="bg-white p-8 rounded-[35px] border border-slate-200 mb-6 shadow-sm">
+            <p class="text-orange-500 status-text mb-4">01. Firm Details</p>
+            <input id="firmName" placeholder="Full Registered Firm Name">
+            <input id="ownerName" placeholder="Owner Legal Name" class="mt-4">
+            <input id="ownerEmail" readonly class="mt-4 opacity-50 bg-slate-100 cursor-not-allowed" placeholder="Verified Email">
         </div>
-        <button onclick="submit()" id="sBtn" class="btn-primary bg-emerald-600">🚀 Finalize Registration</button>
+
+        <button onclick="RegistrationEngine.submit()" id="submitBtn" class="btn-primary bg-emerald-600">🚀 Submit Official Registration</button>
     </div>
 </div>
 
@@ -57,40 +72,81 @@
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), rtdb = firebase.database();
-    let userData = null;
 
-    async function login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        try { await auth.signInWithRedirect(provider); } catch(e) { alert(e.message); }
-    }
-
-    function verifyOTP() {
-        if(document.getElementById('otpInput').value === "123456") {
-            document.getElementById('authGate').classList.add('hidden');
-            document.getElementById('mainForm').classList.remove('step-inactive');
-        } else { alert("Invalid Code"); }
-    }
-
-    async function submit() {
-        const firm = document.getElementById('firmName').value;
-        if(!firm) return alert("Firm name required");
-        try {
-            await rtdb.ref('supplier_onboarding').push({ firm, owner: document.getElementById('ownerName').value, email: userData.email, timestamp: Date.now() });
-            alert("SUCCESS! Wait for your email.");
-            auth.signOut().then(() => { window.location.href = "index.html"; });
-        } catch(e) { alert(e.message); }
-    }
-
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            userData = user;
+    window.AuthManager = {
+        userData: null,
+        login() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // Redirect handles GitHub Pages security policy better than Popups
+            auth.signInWithRedirect(provider);
+        },
+        async checkRedirect() {
+            try {
+                const result = await auth.getRedirectResult();
+                if (result.user) {
+                    this.showOTP(result.user);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error.message);
+            }
+        },
+        showOTP(user) {
+            this.userData = user;
             document.getElementById('gBtn').classList.add('hidden');
             document.getElementById('otpSection').classList.remove('hidden');
             document.getElementById('ownerEmail').value = user.email;
+        },
+        verifyOTP() {
+            const code = document.getElementById('otpInput').value;
+            if(code === "123456") {
+                document.getElementById('authGate').classList.add('hidden');
+                document.getElementById('mainForm').classList.remove('step-inactive');
+            } else {
+                alert("Incorrect OTP. Please use 123456 for testing.");
+            }
         }
-    });
+    };
+
+    window.RegistrationEngine = {
+        async submit() {
+            const firm = document.getElementById('firmName').value;
+            if(!firm) return alert("Please enter Firm Name");
+            
+            document.getElementById('submitBtn').innerText = "TRANSMITTING...";
+            
+            const payload = {
+                firm: firm,
+                owner: document.getElementById('ownerName').value,
+                email: AuthManager.userData.email,
+                timestamp: Date.now(),
+                status: 'pending'
+            };
+
+            try {
+                await rtdb.ref('supplier_onboarding').push(payload);
+                alert("REGISTRATION SUCCESSFUL! You will receive an email once approved.");
+                auth.signOut().then(() => { window.location.href = "index.html"; });
+            } catch(e) {
+                alert("Database Error: " + e.message);
+                document.getElementById('submitBtn').innerText = "🚀 Submit Official Registration";
+            }
+        }
+    };
+
+    // Initialize logic on load
+    window.onload = () => {
+        // First check if we just came back from a Google login
+        AuthManager.checkRedirect();
+        
+        // Second, check if a session already exists
+        auth.onAuthStateChanged(user => {
+            if(user) AuthManager.showOTP(user);
+        });
+    };
 </script>
+
 </body>
 </html>
