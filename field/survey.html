@@ -231,6 +231,8 @@
         
         .btn-slate { background: #64748b; color: white; }
         .btn-green { background: #10b981; color: white; box-shadow: 0 12px 25px rgba(16,185,129,0.25); }
+        .hidden { display: none; }
+        #roleBadge { font-size: 9px; padding: 4px 12px; border-radius: 10px; font-weight: 900; color: white; margin-top: 5px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -238,7 +240,10 @@
 <nav class="bg-white p-8 flex justify-between items-center rounded-b-[45px] border-b mb-10 shadow-sm">
     <div>
         <h1 class="text-2xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px] mt-1" id="agentIdentity">AUTHENTICATING...</p>
+        <div class="flex items-center gap-2">
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px]" id="agentIdentity">AUTHENTICATING...</p>
+            <div id="roleBadge" class="hidden"></div>
+        </div>
     </div>
     <button onclick="auth.signOut()" class="text-red-500 text-[11px] font-black uppercase tracking-widest bg-red-50 px-6 py-3 rounded-full shadow-sm">Logout</button>
 </nav>
@@ -256,8 +261,23 @@
             <option value="Retailer">Retailer (R)</option>
             <option value="Wholesaler">Wholesaler (W)</option>
         </select>
+
+        <div id="staffSection" class="hidden mt-8 pt-8 border-t border-slate-100">
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4">● Field Staff Site Audit</p>
+            <input id="inspectionNotes" placeholder="Site Progress / Technical Notes">
+            <select id="siteStatus" class="mt-4">
+                <option value="Active">Site Status: Active</option>
+                <option value="Halted">Site Status: Halted</option>
+            </select>
+        </div>
+
         <input id="firmName" placeholder="Full Registered Firm Name" class="mt-8">
         
+        <div id="supplierSection" class="hidden mt-8 pt-8 border-t border-slate-100">
+            <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-4">● Supplier Dispatch Registry</p>
+            <input id="gstNumber" placeholder="GSTIN (For Formal Invoicing)">
+        </div>
+
         <div class="mt-10 pt-10 border-t border-slate-100">
             <p class="text-[12px] font-black text-orange-500 uppercase mb-5 tracking-widest">Primary Owner Hub</p>
             <input id="ownerName" placeholder="Owner Legal Name">
@@ -344,7 +364,7 @@
     const rtdb = firebase.database(), auth = firebase.auth();
 
     window.Survey = {
-        state: { location: null, mat: null, varieties: [], brands: [], fleet: {}, photos: [], trackingId: "" },
+        state: { location: null, mat: null, varieties: [], brands: [], fleet: {}, photos: [], trackingId: "", role: "unassigned" },
         async refreshID() {
             try {
                 const snap = await rtdb.ref('surveys').once('value');
@@ -380,6 +400,10 @@
                 timestamp: Date.now(),
                 status: 'live'
             };
+
+            // NEW: Role Specific Data Enrichment
+            if(this.state.role === 'field_staff') payload.audit = document.getElementById('inspectionNotes').value;
+            if(this.state.role === 'supplier') payload.gst = document.getElementById('gstNumber').value;
 
             try {
                 await rtdb.ref('surveys').push(payload);
@@ -508,7 +532,32 @@
         Geo.init(); syncRegistry();
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `<div class="fleet-unit"><span class="text-[11px] font-black text-slate-500 uppercase">${t}</span><div class="flex items-center gap-6"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}" class="font-black text-sm w-[25px] text-center">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join('');
-        auth.onAuthStateChanged(u => { if(u) document.getElementById('agentIdentity').innerText = "AGENT: " + u.email.toUpperCase(); else location.href="../index.html"; });
+        
+        // ENHANCED SECURITY HANDSHAKE
+        auth.onAuthStateChanged(async u => { 
+            if(u) {
+                document.getElementById('agentIdentity').innerText = "AGENT: " + u.email.toUpperCase();
+                
+                // Fetch User Role for RBAC
+                const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
+                const role = snap.val();
+                Survey.state.role = role || 'guest';
+
+                const badge = document.getElementById('roleBadge');
+                if(badge) {
+                    badge.classList.remove('hidden');
+                    badge.innerText = role ? role.toUpperCase() : 'NO ROLE';
+                }
+
+                // UI Visibility Protection
+                if (role === 'field_staff' || role === 'admin' || role === 'super_admin') {
+                    document.getElementById('staffSection').classList.remove('hidden');
+                } 
+                if (role === 'supplier' || role === 'admin' || role === 'super_admin') {
+                    document.getElementById('supplierSection').classList.remove('hidden');
+                }
+            } else { location.href="../index.html"; }
+        });
     };
 </script>
 
