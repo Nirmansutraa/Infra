@@ -3,174 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Supplier Onboarding</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <title>Nirmansutra | Onboarding</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     <style>
-        :root { --bg: #f8fafc; --card: #ffffff; --accent: #ff7a00; --primary: #0f172a; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 100px; }
-        .card { background: var(--card); border-radius: 35px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block; }
+        :root { --accent: #ff7a00; --primary: #0f172a; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); }
         .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; border: 1px solid #334155; }
-        input, select { width: 100%; background: #f1f5f9; border: 1px solid transparent; padding: 18px 24px; border-radius: 18px; font-size: 15px; font-weight: 600; margin-top: 12px; outline: none; }
-        .btn-action { width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; margin-top: 20px; cursor: pointer; }
-        .btn-google { background: white; color: var(--primary); }
-        .btn-primary { background: var(--accent); color: white; }
+        .gate-card { background: #1e293b; padding: 50px; border-radius: 30px; width: 100%; max-width: 450px; text-align: center; }
+        .btn-primary { width: 100%; background: var(--accent); color: white; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; margin-top: 20px; }
+        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; }
         .step-inactive { opacity: 0.2; pointer-events: none; }
-        #map { height: 300px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
-<div id="googleGate" class="auth-gate">
-    <div class="gate-card shadow-2xl">
-        <h1 class="text-white text-3xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Identity Verification</p>
-        <button onclick="AuthManager.login()" class="btn-action btn-google flex items-center justify-center gap-4">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-            Verify Google ID
-        </button>
-    </div>
-</div>
-
-<div id="emailGate" class="auth-gate hidden">
+<div id="authGate" class="auth-gate">
     <div class="gate-card">
-        <p class="text-emerald-500 text-[10px] font-black uppercase tracking-[4px] mb-4">● ID Authenticated</p>
-        <h2 class="text-white text-2xl font-black mb-4">Step 2: OTP Security</h2>
-        <p class="text-slate-400 text-xs mb-8">Enter the 6-digit code sent to your Gmail.</p>
-        <input type="number" id="regOtp" placeholder="000000">
-        <button onclick="AuthManager.verifyOTP()" class="btn-action btn-primary">Unlock Registration</button>
-        <div id="authStatus" class="text-orange-400 text-[10px] font-bold uppercase mt-6"></div>
+        <h1 class="text-white text-3xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-8">Supplier Verification</p>
+        <button onclick="login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Verify Google ID
+        </button>
+        <div id="otpSection" class="hidden mt-8">
+            <p class="text-emerald-400 text-[10px] font-bold uppercase mb-4 tracking-widest">● ID Verified. Enter OTP</p>
+            <input type="number" id="otpInput" placeholder="000000">
+            <button onclick="verifyOTP()" class="btn-primary">Unlock Form</button>
+        </div>
     </div>
 </div>
 
 <div class="max-w-2xl mx-auto px-8 py-10">
-    <h1 class="text-3xl font-black italic tracking-tighter uppercase mb-10">Supplier<span class="text-orange-500">Onboarding</span></h1>
-
+    <h1 class="text-3xl font-black italic uppercase mb-10">Supplier<span class="text-orange-500">Onboarding</span></h1>
     <div id="mainForm" class="step-inactive">
-        <div class="card">
-            <span class="section-label">01. Entity Identity</span>
-            <select id="supplierType"><option value="Retailer">Retailer (R)</option><option value="Wholesaler">Wholesaler (W)</option></select>
-            <input id="firmName" placeholder="Full Registered Firm Name">
+        <div class="bg-white p-8 rounded-[35px] border mb-6 shadow-sm">
+            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-4">Firm Details</p>
+            <input id="firmName" placeholder="Firm Name">
+            <input id="ownerName" placeholder="Owner Name" class="mt-4">
+            <input id="ownerEmail" readonly class="mt-4 opacity-50 bg-slate-100">
         </div>
-
-        <div class="card">
-            <span class="section-label">02. Spatial Lock</span>
-            <div id="map"></div>
-            <button onclick="GeoEngine.capture()" class="btn-action btn-primary">📍 Verify GPS Location</button>
-            <textarea id="address" class="w-full mt-4 bg-transparent border-none text-slate-500 text-sm italic" readonly placeholder="Address Syncing..."></textarea>
-        </div>
-
-        <div class="card">
-            <span class="section-label">03. Verified Contact (Maps to Registry)</span>
-            <input id="ownerName" placeholder="Owner Legal Name">
-            <input id="ownerEmail" readonly class="bg-slate-100 opacity-60 mt-4">
-            <input id="regPhone" placeholder="WhatsApp Number (+91...)" class="mt-4">
-        </div>
-
-        <button onclick="RegistrationEngine.submit()" id="submitBtn" class="btn-action btn-primary bg-emerald-600 shadow-xl">🚀 Finalize Registration</button>
+        <button onclick="submit()" id="sBtn" class="btn-primary bg-emerald-600">🚀 Finalize Registration</button>
     </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    /**
-     * GITHUB ONBOARDING CORE v10.0
-     */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
         projectId: "infradepo",
         databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
-    
     firebase.initializeApp(firebaseConfig);
-    const rtdb = firebase.database(), auth = firebase.auth();
+    const auth = firebase.auth(), rtdb = firebase.database();
+    let userData = null;
 
-    window.AuthManager = {
-        userData: null,
-        testOtp: "123456", 
-        async login() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithRedirect(provider); } catch(e) { alert(e.message); }
-        },
-        advance(user) {
-            this.userData = user;
-            document.getElementById('googleGate').classList.add('hidden');
-            document.getElementById('emailGate').classList.remove('hidden');
-            document.getElementById('ownerEmail').value = user.email;
-            document.getElementById('authStatus').innerText = "TEST CODE: 123456";
-        },
-        verifyOTP() {
-            if(document.getElementById('regOtp').value === this.testOtp) {
-                document.getElementById('emailGate').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('step-inactive');
-                GeoEngine.init();
-            } else { alert("Verification Failed."); }
-        }
-    };
+    async function login() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try { await auth.signInWithRedirect(provider); } catch(e) { alert(e.message); }
+    }
 
-    window.GeoEngine = {
-        map: null, marker: null,
-        init() {
-            if(this.map) return;
-            this.map = L.map('map', { zoomControl: false }).setView([24.58, 73.71], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-        },
-        capture() {
-            navigator.geolocation.getCurrentPosition(async p => {
-                const { latitude, longitude } = p.coords;
-                this.map.setView([latitude, longitude], 16);
-                if (this.marker) this.map.removeLayer(this.marker);
-                this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const data = await res.json();
-                document.getElementById('address').value = data.display_name;
-            }, null, { enableHighAccuracy: true });
-        }
-    };
+    function verifyOTP() {
+        if(document.getElementById('otpInput').value === "123456") {
+            document.getElementById('authGate').classList.add('hidden');
+            document.getElementById('mainForm').classList.remove('step-inactive');
+        } else { alert("Invalid Code"); }
+    }
 
-    window.RegistrationEngine = {
-        async submit() {
-            const firm = document.getElementById('firmName').value;
-            if(!firm || !GeoEngine.marker) return alert("Firm & GPS Pin Required.");
-            
-            const payload = {
-                firm: firm, type: document.getElementById('supplierType').value,
-                ownerName: document.getElementById('ownerName').value,
-                email: AuthManager.userData.email, phone: document.getElementById('regPhone').value,
-                location: { lat: GeoEngine.marker.getLatLng().lat, lng: GeoEngine.marker.getLatLng().lng },
-                address: document.getElementById('address').value,
-                status: 'pending_review', timestamp: Date.now()
-            };
+    async function submit() {
+        const firm = document.getElementById('firmName').value;
+        if(!firm) return alert("Firm name required");
+        try {
+            await rtdb.ref('supplier_onboarding').push({ firm, owner: document.getElementById('ownerName').value, email: userData.email, timestamp: Date.now() });
+            alert("SUCCESS! Wait for your email.");
+            auth.signOut().then(() => { window.location.href = "index.html"; });
+        } catch(e) { alert(e.message); }
+    }
 
-            try {
-                await rtdb.ref('supplier_onboarding').push(payload);
-                alert("REGISTRATION SUCCESSFUL. Closing session...");
-                // Clear the GitHub handshake before leaving
-                sessionStorage.removeItem('onboarding_active');
-                auth.signOut().then(() => { window.location.href = "index.html"; });
-            } catch(e) { alert("Sync Error: " + e.message); }
-        }
-    };
-
-    /**
-     * GITHUB HANDSHAKE: Ensure session stays in Onboarding Mode
-     */
     auth.onAuthStateChanged(user => {
-        sessionStorage.setItem('onboarding_active', 'true'); 
         if(user) {
-            AuthManager.advance(user);
-        } else {
-            document.getElementById('googleGate').classList.remove('hidden');
+            userData = user;
+            document.getElementById('gBtn').classList.add('hidden');
+            document.getElementById('otpSection').classList.remove('hidden');
+            document.getElementById('ownerEmail').value = user.email;
         }
     });
 </script>
