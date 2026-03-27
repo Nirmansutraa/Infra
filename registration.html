@@ -132,7 +132,7 @@
             };
 
             try {
-                await rtdb.ref('supplier_onboarding').push(payload);
+                await rtdb.ref('supplier_onboarding/' + AuthManager.userData.uid).set(payload);
                 alert("SUCCESS! Application submitted for approval.");
                 // Hard logout and return home
                 await auth.signOut();
