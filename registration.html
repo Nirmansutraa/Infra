@@ -18,11 +18,12 @@
         .btn-primary { width: 100%; background: var(--accent); color: white; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,122,0,0.3); }
         
-        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; border: 1px solid transparent; transition: 0.3s; }
+        input { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; margin-top: 12px; outline: none; border: 1px solid transparent; transition: 0.3s; color: #0f172a; font-weight: 600; }
         input:focus { border-color: var(--accent); background: white; }
         
         .step-inactive { opacity: 0.1; pointer-events: none; filter: grayscale(1); transition: 0.5s; }
         .status-text { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -32,16 +33,20 @@
         <h1 class="text-white text-3xl font-black italic mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[4px] mb-10">Step 1: Identity Sync</p>
         
-        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition">
+        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-5 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition text-slate-900">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             Verify Google ID
         </button>
 
-        <div id="otpSection" class="hidden mt-8 animate-pulse">
-            <p class="text-emerald-400 status-text mb-4">● Identity Verified. Enter OTP</p>
+        <div id="otpSection" class="hidden mt-8">
+            <p class="text-emerald-400 status-text mb-4 animate-pulse">● Identity Verified. Enter OTP</p>
             <input type="number" id="otpInput" placeholder="Enter 123456">
             <button onclick="AuthManager.verifyOTP()" class="btn-primary">Unlock Registration Form</button>
             <p id="otpMsg" class="text-slate-500 text-[9px] mt-4 uppercase font-bold tracking-widest">Test Code: 123456</p>
+        </div>
+        
+        <div id="loadingMsg" class="hidden text-orange-500 text-[10px] font-black uppercase mt-4 animate-bounce">
+            Authenticating Cloud Node...
         </div>
     </div>
 </div>
@@ -80,21 +85,19 @@
         userData: null,
         login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // Redirect handles GitHub Pages security policy better than Popups
-            auth.signInWithRedirect(provider);
-        },
-        async checkRedirect() {
-            try {
-                const result = await auth.getRedirectResult();
-                if (result.user) {
-                    this.showOTP(result.user);
-                }
-            } catch (error) {
-                console.error("Auth Error:", error.message);
-            }
+            document.getElementById('loadingMsg').classList.remove('hidden');
+            document.getElementById('gBtn').classList.add('hidden');
+            // Using Popup for more consistent behavior during registration
+            auth.signInWithPopup(provider).then(res => {
+                this.showOTP(res.user);
+            }).catch(e => {
+                alert(e.message);
+                document.getElementById('gBtn').classList.remove('hidden');
+            });
         },
         showOTP(user) {
             this.userData = user;
+            document.getElementById('loadingMsg').classList.add('hidden');
             document.getElementById('gBtn').classList.add('hidden');
             document.getElementById('otpSection').classList.remove('hidden');
             document.getElementById('ownerEmail').value = user.email;
@@ -105,7 +108,7 @@
                 document.getElementById('authGate').classList.add('hidden');
                 document.getElementById('mainForm').classList.remove('step-inactive');
             } else {
-                alert("Incorrect OTP. Please use 123456 for testing.");
+                alert("Incorrect OTP. Please use 123456.");
             }
         }
     };
@@ -115,35 +118,42 @@
             const firm = document.getElementById('firmName').value;
             if(!firm) return alert("Please enter Firm Name");
             
-            document.getElementById('submitBtn').innerText = "TRANSMITTING...";
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "TRANSMITTING...";
+            btn.disabled = true;
             
             const payload = {
                 firm: firm,
                 owner: document.getElementById('ownerName').value,
                 email: AuthManager.userData.email,
+                uid: AuthManager.userData.uid,
                 timestamp: Date.now(),
                 status: 'pending'
             };
 
             try {
                 await rtdb.ref('supplier_onboarding').push(payload);
-                alert("REGISTRATION SUCCESSFUL! You will receive an email once approved.");
-                auth.signOut().then(() => { window.location.href = "index.html"; });
+                alert("SUCCESS! Application submitted for approval.");
+                // Hard logout and return home
+                await auth.signOut();
+                window.location.href = "index.html";
             } catch(e) {
                 alert("Database Error: " + e.message);
-                document.getElementById('submitBtn').innerText = "🚀 Submit Official Registration";
+                btn.innerText = "🚀 Submit Official Registration";
+                btn.disabled = false;
             }
         }
     };
 
-    // Initialize logic on load
+    // ONLOAD ENGINE
     window.onload = () => {
-        // First check if we just came back from a Google login
-        AuthManager.checkRedirect();
+        // Force a fresh session state
+        const isNewMode = window.location.search.includes('mode=new_partner');
         
-        // Second, check if a session already exists
         auth.onAuthStateChanged(user => {
-            if(user) AuthManager.showOTP(user);
+            if(user && !isNewMode) {
+                AuthManager.showOTP(user);
+            }
         });
     };
 </script>
