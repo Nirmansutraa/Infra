@@ -3,35 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Unified Terminal</title>
+    <title>Nirmansutra | Unified Access Terminal</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: #f8fafc; }
-        .login-card { background: rgba(30, 41, 59, 0.45); backdrop-filter: blur(20px); padding: 60px; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); width: 100%; max-width: 480px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
-        .btn-universal { background: white; color: #0f172a; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; border-radius: 20px; font-weight: 800; width: 100%; padding: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-universal:hover { transform: scale(1.02); }
-        .status-msg { margin-top: 25px; padding: 15px; border-radius: 15px; font-size: 11px; font-weight: 700; display: none; text-transform: uppercase; }
+        body { 
+            background-color: #020617; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #f8fafc; 
+        }
+        
+        .login-card { 
+            background: rgba(30, 41, 59, 0.45); 
+            backdrop-filter: blur(20px); 
+            padding: 60px; 
+            border-radius: 40px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            width: 100%; 
+            max-width: 480px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            text-align: center; 
+        }
+        
+        .btn-universal { 
+            background: white; 
+            color: #0f172a; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            border-radius: 22px; 
+            font-weight: 800; 
+            width: 100%; 
+            padding: 22px; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-universal:hover { 
+            transform: translateY(-2px); 
+            background: #f8fafc;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        }
+
+        .status-msg { 
+            margin-top: 30px; 
+            padding: 16px; 
+            border-radius: 18px; 
+            font-size: 11px; 
+            font-weight: 800; 
+            display: none; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        .partnership-box {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
     </style>
 </head>
 <body>
 
 <div class="login-card">
     <div class="mb-12">
-        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Unified Access Terminal</p>
+        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
+            NIRMAN<span class="text-orange-500">SUTRA</span>
+        </h1>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Enterprise Unified Gateway</p>
     </div>
     
-    <button onclick="unifiedLogin()" id="loginBtn" class="btn-universal shadow-xl">
+    <button onclick="unifiedLogin()" id="loginBtn" class="btn-universal">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
-        Secure Access Login
+        Secure Identity Access
     </button>
 
     <div id="msg" class="status-msg"></div>
 
-    <div class="mt-10 pt-8 border-t border-white/10">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4">New Partnership?</p>
-        <a href="onboarding/index.html" class="text-[#ff7a00] text-[11px] font-black uppercase tracking-widest">➜ Register as New Supplier</a>
+    <div class="partnership-box">
+        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
+        <a href="onboarding/index.html" class="text-orange-500 text-[11px] font-black uppercase tracking-[3px] hover:text-white transition-colors">
+            ➜ New Supplier Registration
+        </a>
     </div>
 </div>
 
@@ -48,8 +113,10 @@
     };
     
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(), rtdb = firebase.database();
+    const auth = firebase.auth();
+    const rtdb = firebase.database();
 
+    // CENTRALIZED ROUTING CONFIG
     const ROLE_ROUTES = {
         'super_admin': 'admin/dashboard.html',
         'admin': 'admin/dashboard.html',
@@ -59,56 +126,88 @@
 
     function updateUI(text, type) {
         const m = document.getElementById('msg');
-        m.innerText = text; m.style.display = 'block';
-        m.className = `status-msg ${type === 'err' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400 animate-pulse'}`;
+        m.innerText = text;
+        m.style.display = 'block';
+        if(type === 'err') {
+            m.className = "status-msg bg-red-500/20 text-red-400";
+        } else if(type === 'success') {
+            m.className = "status-msg bg-emerald-500/20 text-emerald-400";
+        } else {
+            m.className = "status-msg bg-orange-500/20 text-orange-400 animate-pulse";
+        }
     }
 
+    /**
+     * MASTER ROUTING ENGINE
+     */
     async function executeRouting(user) {
-        console.log("Checking role for UID:", user.uid);
-        updateUI("Verifying Permissions...", "warn");
-        
         try {
+            updateUI("Verifying Permissions...", "warn");
+            
+            // 1. Fetch User Role from Database
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             const role = snap.val();
 
+            // 2. LOGIC: NEW USER / SUPPLIER (No role yet)
             if (!role) {
-                console.error("No role found in DB for this UID.");
-                updateUI("Access Denied: No Role Assigned", "err");
+                updateUI("New User: Directing to Onboarding...", "success");
+                setTimeout(() => {
+                    window.location.replace("onboarding/index.html");
+                }, 1000);
                 return;
             }
 
+            // 3. LOGIC: REGISTERED STAFF/SUPPLIER
             const cleanRole = role.toLowerCase().trim();
             const target = ROLE_ROUTES[cleanRole];
 
             if (target) {
-                updateUI(`Redirecting to ${cleanRole}...`, "success");
-                // Use window.location.replace to prevent back-button loops
-                window.location.replace(target + "?v=" + Date.now());
+                updateUI(`Identity Confirmed: ${cleanRole.toUpperCase()}`, "success");
+                setTimeout(() => {
+                    // Use replace to prevent "Back Button" loops
+                    window.location.replace(target + "?v=" + Date.now());
+                }, 800);
             } else {
-                updateUI("Invalid Role Route", "err");
+                updateUI("Unknown Role Configuration. Contact IT.", "err");
+            }
+
+        } catch (e) {
+            updateUI(`Connection Error: ${e.message}`, "err");
+        }
+    }
+
+    /**
+     * UNIFIED LOGIN TRIGGER
+     */
+    async function unifiedLogin() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        updateUI("Opening Secure Terminal...", "warn");
+        try {
+            // Using Popup for immediate feedback in Unified Gateway
+            const result = await auth.signInWithPopup(provider);
+            if (result.user) {
+                await executeRouting(result.user);
             }
         } catch (e) {
             updateUI(e.message, "err");
         }
     }
 
-    // THE LOGIN TRIGGER
-    async function unifiedLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        updateUI("Connecting to Google...", "warn");
-        try {
-            // Using Popup for testing—it's easier to debug than Redirect
-            const result = await auth.signInWithPopup(provider);
-            if (result.user) executeRouting(result.user);
-        } catch (e) { updateUI(e.message, "err"); }
-    }
-
-    // AUTO-RECOVERY (If page is refreshed)
+    /**
+     * SESSION RECOVERY (Auth Listener)
+     * Automatically routes user if they are already logged in
+     */
     auth.onAuthStateChanged(user => {
-        if (user && !window.location.pathname.includes('onboarding')) {
+        // Only trigger auto-route if we aren't already in the sub-folders
+        const isOutside = !window.location.pathname.includes('admin') && 
+                          !window.location.pathname.includes('field') && 
+                          !window.location.pathname.includes('onboarding');
+                          
+        if (user && isOutside) {
             executeRouting(user);
         }
     });
 </script>
+
 </body>
 </html>
