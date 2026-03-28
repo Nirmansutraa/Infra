@@ -9,42 +9,92 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff7a00; --bg-deep: #020617; --card-glass: rgba(30, 41, 59, 0.45); }
-        body { background-color: var(--bg-deep); font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; margin: 0; scroll-behavior: smooth; overflow-x: hidden; }
-
-        /* UNCHANGED: Hero & Terminal Design */
-        .hero-matrix { background: radial-gradient(circle at 80% 20%, #1e293b 0%, #020617 60%); min-height: 100vh; display: flex; align-items: center; padding: 0 8%; }
-        .kinetic-title { font-size: clamp(3rem, 8vw, 7rem); line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        :root { 
+            --accent: #ff7a00; 
+            --bg-deep: #020617; 
+            --card-glass: rgba(30, 41, 59, 0.45); 
+        }
         
+        body { 
+            background-color: var(--bg-deep); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #f8fafc; 
+            margin: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Hero Matrix Design */
+        .hero-matrix {
+            background: radial-gradient(circle at 80% 20%, #1e293b 0%, #020617 60%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 8%;
+            position: relative;
+        }
+
+        .kinetic-title {
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-tag { color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 6px; font-size: 12px; margin-bottom: 20px; display: block; }
+
+        /* Compact Identity Terminal */
         .identity-dock {
-            position: fixed; bottom: 25px; right: 25px; width: 280px;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
-            padding: 20px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5000;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 280px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            z-index: 5000;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dock-minimized { transform: translateY(calc(100% - 60px)); opacity: 0.8; }
         .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 15px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 2px; }
 
-        /* SCALED SECTIONS */
+        /* Content Scaling (75% Adjustment) */
         .scaled-section { padding-top: 5rem; padding-bottom: 5rem; }
         .scaled-title { font-size: 3.5rem; font-weight: 900; line-height: 1; margin-bottom: 1.5rem; }
-
-        /* FORM INPUT STYLING */
         .direct-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 15px; color: white; width: 100%; outline: none; transition: 0.3s; }
         .direct-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
 
-        #pdfOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; backdrop-filter: blur(20px); }
-        .pdf-container { width: 100%; height: 100%; max-width: 1000px; margin: 0 auto; border-radius: 25px; overflow: hidden; background: white; }
+        /* PDF Viewport System */
+        #pdfOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+        }
+        .pdf-container { width: 100%; height: 100%; max-width: 1000px; margin: 0 auto; border-radius: 30px; overflow: hidden; background: white; position: relative; }
+        .close-pdf { position: absolute; top: 20px; right: 20px; background: var(--accent); color: white; padding: 10px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; z-index: 10001; }
 
-        @media (max-width: 768px) { .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; } }
+        @media (max-width: 768px) {
+            .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; }
+            .hero-matrix { padding-top: 140px; align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
 
     <div id="pdfOverlay">
-        <button onclick="closePDF()" class="bg-orange-500 text-white px-6 py-2 rounded-full mb-4 font-bold">CLOSE TERMINAL [X]</button>
-        <div class="pdf-container"><iframe id="pdfFrame" src="" width="100%" height="100%"></iframe></div>
+        <div class="close-pdf" onclick="closePDF()">CLOSE READER [X]</div>
+        <div class="pdf-container">
+            <iframe id="pdfFrame" src="" width="100%" height="100%" style="border:none;"></iframe>
+        </div>
     </div>
 
     <header class="fixed top-0 w-full z-40 px-10 py-6 flex justify-between items-center backdrop-blur-md border-b border-white/5">
@@ -57,55 +107,82 @@
     </header>
 
     <main class="hero-matrix">
-        <div class="max-w-5xl">
-            <span class="text-orange-500 font-black uppercase tracking-[6px] text-xs mb-4 block">Established 2026</span>
-            <h2 class="kinetic-title italic mb-8">Smart Data.<br>Strong Foundations.</h2>
-            <p class="text-slate-400 text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed">India's leading unified platform for material intelligence and field auditing.</p>
-            <div class="flex gap-6"><a href="#about" class="bg-orange-500 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition">Discover More</a></div>
+        <div class="max-w-6xl">
+            <span class="section-tag">Established 2026</span>
+            <h2 class="kinetic-title font-black italic mb-10">
+                Building the <br>Future of <br><span class="text-orange-500">Infrastructure.</span>
+            </h2>
+            <p class="text-slate-400 text-xl md:text-3xl leading-relaxed max-w-3xl font-medium mb-12">
+                India's leading unified platform for material intelligence, field auditing, and strategic supplier connectivity.
+            </p>
+            <div class="flex gap-6">
+                <a href="#about" class="bg-orange-500 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition">Explore Intelligent Supply</a>
+            </div>
         </div>
     </main>
 
     <section id="about" class="scaled-section px-10 md:px-24 bg-[#010411]">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24">
             <div>
+                <span class="section-tag">About NirmanSutra</span>
                 <h3 class="scaled-title">Intelligence Behind Every Decision.</h3>
-                <p class="text-slate-400 mb-8 leading-relaxed">NirmanSutra is a next-generation platform designed to bring trust and precision to the industry. We bridge the gap between ground reality and strategic execution.</p>
-                <div class="grid grid-cols-2 gap-6">
-                    <div><h4 class="text-white font-black uppercase text-xs mb-2">The Mission</h4><p class="text-slate-500 text-xs">Empowering with authentic, real-time intelligence.</p></div>
-                    <div><h4 class="text-white font-black uppercase text-xs mb-2">The Vision</h4><p class="text-slate-500 text-xs">India's most trusted intelligence network.</p></div>
+                <p class="text-slate-400 mb-8 leading-relaxed">
+                    NirmanSutra is a next-generation platform designed to bring trust and precision to the construction industry. We bridge the gap between ground reality and strategic execution.
+                </p>
+                <div class="grid grid-cols-2 gap-8 mt-12">
+                    <div>
+                        <h4 class="text-white font-black uppercase text-xs mb-4">The Mission</h4>
+                        <p class="text-slate-500 text-xs">Empowering the ecosystem with authentic, real-time intelligence to reduce risk.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-black uppercase text-xs mb-4">The Vision</h4>
+                        <p class="text-slate-500 text-xs">To become India's most trusted construction intelligence network.</p>
+                    </div>
                 </div>
             </div>
-            <div class="bg-slate-900/50 rounded-[40px] border border-white/5 p-10 flex items-center justify-center text-center">
-                <div><div class="text-orange-500 text-5xl font-black mb-2">100%</div><p class="text-slate-400 uppercase font-black tracking-widest text-[10px]">Verified Accuracy</p></div>
+            <div class="bg-slate-900/50 rounded-[40px] border border-white/5 p-12 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-orange-500 text-6xl font-black mb-4">100%</div>
+                    <p class="text-slate-400 uppercase font-black tracking-widest text-xs">Verified Data Accuracy</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="founder" class="scaled-section px-10 md:px-24">
-        <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
-            <div class="w-32 h-32 bg-slate-800 rounded-full mb-6 shadow-2xl border-4 border-orange-500/20 flex items-center justify-center text-3xl">👨‍💼</div>
-            <h3 class="text-4xl font-black mb-2">Vijay Bhati</h3>
-            <p class="text-orange-500 font-black uppercase tracking-[3px] text-xs mb-6">Founder & Chief Architect</p>
-            <p class="text-slate-400 text-lg italic max-w-xl">"Our goal is to eliminate assumptions from the supply chain. We are building the foundations of a data-driven infrastructure future."</p>
+        <div class="max-w-5xl mx-auto text-center flex flex-col items-center">
+            <div class="w-32 h-32 bg-slate-800 rounded-full mb-8 shadow-2xl border-4 border-orange-500/20 flex items-center justify-center text-4xl">👨‍💼</div>
+            <h3 class="text-5xl font-black mb-4">Vijay Bhati</h3>
+            <p class="text-orange-500 font-black uppercase tracking-[4px] mb-8 text-xs">Founder & Chief Architect</p>
+            <p class="text-slate-400 text-xl leading-relaxed max-w-2xl italic">
+                "Our goal is to eliminate assumptions from the supply chain. We are building the foundations of a data-driven infrastructure future."
+            </p>
         </div>
     </section>
 
     <section id="contact" class="scaled-section px-10 md:px-24 bg-slate-950">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
             <div>
-                <h3 class="text-5xl font-black mb-6">Let's Build Smart.</h3>
-                <div class="space-y-6">
-                    <div><p class="text-slate-500 text-[10px] font-black uppercase mb-1">Mobile & WhatsApp</p><p class="text-xl font-bold">+91 9414370806</p></div>
-                    <div><p class="text-slate-500 text-[10px] font-black uppercase mb-1">Email Identity</p><p class="text-xl font-bold">info@nirmansutra.in</p></div>
+                <span class="section-tag">Get in Touch</span>
+                <h3 class="text-6xl font-black mb-10 leading-none">Let's Build Smart.</h3>
+                <div class="space-y-10">
+                    <div>
+                        <p class="text-slate-500 text-xs font-black uppercase tracking-widest mb-2">WhatsApp / Mobile</p>
+                        <p class="text-2xl font-bold">+91 9414370806</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-black uppercase tracking-widest mb-2">Direct Email</p>
+                        <p class="text-2xl font-bold">info@nirmansutra.in</p>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white/5 p-8 rounded-[35px] border border-white/10 shadow-4xl">
-                <form action="https://formspree.io/f/mqaelonl" method="POST" class="space-y-5">
-                    <input type="text" name="name" placeholder="YOUR FULL NAME" class="direct-input text-[10px] font-bold uppercase" required>
-                    <input type="email" name="email" placeholder="EMAIL ADDRESS" class="direct-input text-[10px] font-bold uppercase" required>
-                    <textarea name="message" rows="3" placeholder="HOW CAN WE HELP?" class="direct-input text-[10px] font-bold uppercase" required></textarea>
+            <div class="bg-white/5 p-12 rounded-[50px] border border-white/10 shadow-4xl">
+                <form action="https://formspree.io/f/mqaelonl" method="POST" class="space-y-6">
+                    <input type="text" name="Sender_Name" placeholder="FULL NAME" class="direct-input text-[10px] font-bold uppercase" required>
+                    <input type="email" name="_replyto" placeholder="EMAIL ADDRESS" class="direct-input text-[10px] font-bold uppercase" required>
+                    <textarea name="Inquiry_Details" rows="4" placeholder="MESSAGE / INQUIRY" class="direct-input text-[10px] font-bold uppercase" required></textarea>
                     <input type="hidden" name="_subject" value="New Inquiry: NirmanSutra Landing Page">
-                    <button type="submit" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-orange-500 hover:text-white transition shadow-2xl">Transmit Intelligence</button>
+                    <button type="submit" class="bg-white text-black w-full py-6 rounded-2xl font-black uppercase text-xs tracking-[4px] hover:bg-orange-500 hover:text-white transition shadow-2xl">Transmit Message</button>
                 </form>
             </div>
         </div>
@@ -114,28 +191,32 @@
     <div id="terminalDock" class="identity-dock dock-minimized">
         <div class="dock-toggle" onclick="toggleDock()">▲ OPEN TERMINAL</div>
         <div id="dockContent">
-            <h3 class="text-[10px] font-black text-orange-500 uppercase mb-1">Secure Terminal</h3>
-            <div class="mb-4 flex gap-3 items-start cursor-pointer mt-4">
-                <input type="checkbox" id="consentCheckbox" class="mt-1 w-4 h-4 accent-orange-500">
-                <label for="consentCheckbox" class="text-[9px] text-slate-400 font-bold leading-tight">
-                    I agree to the <span onclick="viewPDF('privacy_policy.pdf')" class="text-white underline">Privacy Policy</span> and 
-                    <span onclick="viewPDF('terms_of_service.pdf')" class="text-white underline">Terms</span>.
+            <h3 class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-4">Unified Terminal Access</h3>
+            
+            <div class="mb-4 flex gap-3 items-start cursor-pointer">
+                <input type="checkbox" id="consentCheckbox" class="w-4 h-4 accent-orange-500 mt-1">
+                <label for="consentCheckbox" class="text-[9px] text-slate-400 leading-tight font-bold">
+                    I agree to the <span onclick="viewPDF('privacy_policy.pdf')" class="underline text-white">Privacy Policy</span> and 
+                    <span onclick="viewPDF('terms_of_service.pdf')" class="underline text-white">Terms</span>.
                 </label>
             </div>
-            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-4 rounded-xl font-black uppercase text-[10px] flex items-center justify-center gap-2 mb-6 shadow-xl">
+
+            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-4 rounded-xl font-black uppercase text-[10px] flex items-center justify-center gap-2 mb-6">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"> Identity Access
             </button>
+
             <div class="border-t border-white/5 pt-4 text-center">
-                <div onclick="forceReg()" class="text-orange-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition">➜ New Partner? Register</div>
+                <div onclick="forceReg()" class="text-orange-500 font-black text-[10px] uppercase cursor-pointer">➜ Start Partner Registration</div>
             </div>
         </div>
     </div>
 
-    <footer class="p-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase">
-        <div class="text-slate-600">© 2026 NirmanSutra Private Limited</div>
-        <div class="flex gap-8 text-slate-500">
-            <span onclick="viewPDF('privacy_policy.pdf')" class="hover:text-white cursor-pointer transition">Privacy Policy</span>
-            <span onclick="viewPDF('terms_of_service.pdf')" class="hover:text-white cursor-pointer transition">Terms of Service</span>
+    <footer class="p-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
+        <div class="text-[11px] font-black text-slate-600 uppercase tracking-[6px]">© 2026 NirmanSutra Private Limited</div>
+        <div class="flex gap-10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <span onclick="viewPDF('privacy_policy.pdf')" class="hover:text-white cursor-pointer transition">Privacy</span>
+            <span onclick="viewPDF('terms_of_service.pdf')" class="hover:text-white cursor-pointer transition">Terms</span>
+            <span class="hover:text-white cursor-pointer transition">@Nirmansutraa</span>
         </div>
     </footer>
 
@@ -153,6 +234,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), rtdb = firebase.database();
 
+        // 1. Identity Terminal Interaction
         function toggleDock() {
             const dock = document.getElementById('terminalDock');
             const toggle = document.querySelector('.dock-toggle');
@@ -160,6 +242,7 @@
             toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ OPEN TERMINAL" : "▼ MINIMIZE TERMINAL";
         }
 
+        // 2. PDF Viewport Logic
         function viewPDF(file) {
             document.getElementById('pdfFrame').src = file;
             document.getElementById('pdfOverlay').style.display = 'block';
@@ -170,20 +253,51 @@
             document.body.style.overflow = 'auto';
         }
 
+        // 3. Secure Identity Gateway
+        const ROLE_ROUTES = {
+            'super_admin': 'admin/dashboard.html',
+            'admin_staff': 'admin/dashboard.html',
+            'field_survey_staff': 'field/survey.html'
+        };
+
         async function unifiedLogin() {
-            if (!document.getElementById("consentCheckbox").checked) { alert("Please accept the terms."); return; }
+            if (!document.getElementById("consentCheckbox").checked) {
+                alert("Please accept the Privacy Policy & Terms of Service to proceed.");
+                return;
+            }
             try {
-                const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                if (res.user) {
-                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({
-                        email: res.user.email, consent: true, timestamp: new Date().toISOString()
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                if (result.user) {
+                    // Record Consent Audit Trail
+                    await rtdb.ref(`consent_logs/${result.user.uid}`).set({
+                        email: result.user.email,
+                        consent: true,
+                        timestamp: new Date().toISOString()
                     });
-                    // Routing logic remains active
+                    executeRouting(result.user);
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { alert(e.message); }
         }
 
-        function forceReg() { window.location.href = "registration.html?mode=new_partner"; }
+        async function executeRouting(user) {
+            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
+            const role = snap.val();
+            if (!role) { alert("Access Unauthorized. Personnel ID not found."); return; }
+            const target = ROLE_ROUTES[role];
+            if (target) window.location.replace(target);
+        }
+
+        function forceReg() { 
+            auth.signOut();
+            window.location.href = "registration.html?mode=new_partner"; 
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user && !window.location.search.includes('mode=new_partner')) {
+                executeRouting(user);
+            }
+        });
     </script>
 </body>
 </html>
