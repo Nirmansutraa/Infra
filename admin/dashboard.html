@@ -906,8 +906,160 @@
     }
     
     function logout() { auth.signOut(); }
-</script>
+    <script>
+// ============================================================
+// 🔐 ENTERPRISE SECURITY + EXPORT EXTENSION MODULE (ADD-ONLY)
+// VERSION: InfraEXT_SECURE_v1
+// ============================================================
 
+// =======================
+// 🔒 ENHANCED LOGOUT
+// =======================
+function logout() {
+    const confirmExit = confirm("⚠️ TERMINATE SECURE SESSION?\n\nAll tokens & memory will be wiped.");
+
+    if (!confirmExit) return;
+
+    console.log("[SECURITY] Full Logout Initiated");
+
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+    } catch(e) {
+        console.warn("Storage cleanup skipped");
+    }
+
+    auth.signOut()
+        .then(() => {
+            console.log("[AUTH] Logout success");
+            window.location.replace("../index.html");
+        })
+        .catch(err => {
+            console.error("[AUTH ERROR]:", err.message);
+            alert("Logout Failed: " + err.message);
+        });
+}
+
+
+// =======================
+// 🔐 SECURE EXPORT ENGINE
+// =======================
+const SecureExportEngine = {
+
+    MASTER_KEY: "NS-ADMIN-SECURE-2026",
+
+    validateAccess() {
+        const key = prompt("🔐 ENTER ADMIN EXPORT KEY:");
+        if (!key) return false;
+
+        if (key !== this.MASTER_KEY) {
+            alert("❌ ACCESS DENIED");
+            return false;
+        }
+        return true;
+    },
+
+    // =======================
+    // 📊 SECURE EXCEL
+    // =======================
+    toSecureExcel() {
+        if (!this.validateAccess()) return;
+
+        console.log("[EXPORT] Secure Excel Triggered");
+
+        const dataRows = globalSurveyData.map(n => ({
+            Source: n.source,
+            Firm: n.firm,
+            Tracking_ID: n.trackingId,
+            Owner: n.ownerName || n.owner,
+            Mobile: n.ownerWa || n.phone,
+            Manager: n.mgrName,
+            Manager_Contact: n.mgrWa || n.mgrPhone,
+            Address: n.address,
+            Status: n.status,
+            Timestamp: n.timestamp ? new Date(n.timestamp).toLocaleString() : ''
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(dataRows);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Secure_Audit");
+
+        XLSX.writeFile(workbook, `NS_SECURE_${Date.now()}.xlsx`);
+    },
+
+    // =======================
+    // 📄 SECURE PDF
+    // =======================
+    toSecurePDF() {
+        if (!this.validateAccess()) return;
+
+        console.log("[EXPORT] Secure PDF Triggered");
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF("l", "mm", "a3");
+
+        const columns = [
+            "Source","Firm","Tracking ID","Owner",
+            "Mobile","Manager","Address","Status"
+        ];
+
+        const rows = [];
+
+        globalSurveyData.forEach(n => {
+            rows.push([
+                n.source,
+                n.firm,
+                n.trackingId,
+                n.ownerName || n.owner,
+                n.ownerWa || n.phone,
+                n.mgrName,
+                n.address,
+                n.status
+            ]);
+        });
+
+        doc.text("NIRMANSUTRA SECURE AUDIT REPORT", 14, 15);
+
+        doc.autoTable({
+            head: [columns],
+            body: rows,
+            startY: 25,
+            styles: { fontSize: 8 }
+        });
+
+        doc.save(`NS_SECURE_${Date.now()}.pdf`);
+    }
+};
+
+
+// =======================
+// 🎯 UI BUTTON INJECTION (AUTO)
+// =======================
+document.addEventListener("DOMContentLoaded", () => {
+
+    const exportContainer = document.querySelector("#tab-explorer .flex");
+
+    if (!exportContainer) return;
+
+    const btnExcel = document.createElement("button");
+    btnExcel.innerText = "🔐 Secure Excel";
+    btnExcel.className = "bg-blue-600 text-white px-10 py-6 rounded-[25px] font-black uppercase hover:bg-blue-500 shadow-4xl transition-all";
+    btnExcel.onclick = () => SecureExportEngine.toSecureExcel();
+
+    const btnPDF = document.createElement("button");
+    btnPDF.innerText = "🔐 Secure PDF";
+    btnPDF.className = "bg-purple-600 text-white px-10 py-6 rounded-[25px] font-black uppercase hover:bg-purple-500 shadow-4xl transition-all";
+    btnPDF.onclick = () => SecureExportEngine.toSecurePDF();
+
+    exportContainer.appendChild(btnExcel);
+    exportContainer.appendChild(btnPDF);
+
+    console.log("[UI] Secure Export Buttons Injected");
+});
+
+</script>
+</script>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
