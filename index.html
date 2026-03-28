@@ -10,7 +10,7 @@
     
     <style>
         /* ===========================================================
-        SECTION 1: GLOBAL ARCHITECTURAL STYLING (VERBOSE)
+        SECTION 1: GLOBAL ARCHITECTURAL STYLING
         =========================================================== */
         :root { 
             --accent: #ff7a00; 
@@ -26,7 +26,6 @@
             margin: 0;
             overflow-x: hidden;
             scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
         }
 
         /* HERO MATRIX ARCHITECTURE */
@@ -60,272 +59,163 @@
         .dock-minimized { transform: translateY(calc(100% - 60px)); opacity: 0.9; }
         .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 15px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
 
-        /* CONTENT SCALING (75% RATIO) */
-        .scaled-section { padding-top: 5.5rem; padding-bottom: 5.5rem; }
-        .scaled-title { font-size: 3.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 2rem; letter-spacing: -0.02em; }
-        
-        .feature-card { 
-            background: rgba(255,255,255,0.02); 
-            border: 1px solid rgba(255,255,255,0.06); 
-            padding: 2.5rem; 
-            border-radius: 35px; 
-            transition: var(--transition-main); 
+        /* LEGAL MODAL SYSTEM (RELIABLE OVERLAY) */
+        .legal-overlay { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
+            z-index: 9999; padding: 20px; backdrop-filter: blur(20px); overflow-y: auto;
         }
-        .feature-card:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(255,255,255,0.05); }
-        
-        .contact-tile { 
-            background: rgba(255,255,255,0.02); 
-            border: 1px solid rgba(255,255,255,0.08); 
-            padding: 2.2rem; 
-            border-radius: 32px; 
-            transition: 0.3s; 
+        .legal-content-box { 
+            max-width: 900px; margin: 40px auto; background: #0f172a; padding: 60px; 
+            border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
         }
-        .contact-tile:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+        .legal-content-box h2 { color: var(--accent); font-weight: 900; font-size: 2.2rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -1px; }
+        .legal-content-box h3 { color: white; font-weight: 800; font-size: 1.1rem; margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .legal-content-box p, .legal-content-box li { color: #94a3b8; line-height: 1.8; margin-bottom: 15px; font-size: 0.95rem; }
+        .legal-content-box ul { padding-left: 20px; list-style-type: square; }
 
-        /* PDF OVERLAY ENGINE */
-        #pdfOverlay { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); 
-            z-index: 9999; padding: 30px; backdrop-filter: blur(25px); 
-        }
-        .pdf-container { 
-            width: 100%; height: 100%; max-width: 1100px; margin: 0 auto; 
-            border-radius: 35px; overflow: hidden; background: white; box-shadow: 0 50px 100px rgba(0,0,0,0.5); 
-        }
-
-        /* SCROLLBAR AESTHETICS */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .contact-tile { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); padding: 2.5rem; border-radius: 32px; transition: 0.3s; text-align: center; }
+        .contact-tile:hover { border-color: var(--accent); transform: translateY(-5px); }
 
         @media (max-width: 768px) {
             .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; }
-            .kinetic-title { font-size: 3rem; }
-            .scaled-title { font-size: 2.5rem; }
+            .legal-content-box { padding: 35px 25px; margin: 10px; }
+            .kinetic-title { font-size: 3.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="pdfOverlay">
-        <div class="flex justify-between items-center max-w-7xl mx-auto mb-6">
-            <h4 class="text-xs font-black uppercase tracking-[5px] text-slate-500">Legal Document Reader</h4>
-            <button onclick="closePDF()" class="bg-orange-500 text-white px-8 py-3 rounded-full font-black text-[10px] uppercase tracking-widest shadow-xl">Close Reader [X]</button>
+    <div id="modalPrivacy" class="legal-overlay">
+        <div class="legal-content-box">
+            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
+            <h2>Privacy Policy</h2>
+            <p><strong>Last Updated: March 28, 2026</strong></p>
+            <p>NirmanSutra ("we", "our", "us") is committed to protecting your privacy in compliance with the Information Technology Act, 2000 and the Digital Personal Data Protection Act, 2023.</p>
+            
+            <h3>1. Data Collection</h3>
+            <p>We collect personal identifiers (Name, Email, Mobile Number) and technical field data (GPS Coordinates, Device Metadata, Survey Responses) essential for the operational integrity of our infrastructure intelligence network.</p>
+            
+            <h3>2. Purpose of Processing</h3>
+            <ul>
+                <li>Verification of raw material supply nodes.</li>
+                <li>Fraud prevention in field reporting.</li>
+                <li>Strategic analytics for enterprise construction execution.</li>
+            </ul>
+
+            <h3>3. Data Security</h3>
+            <p>Your information is stored in high-security encrypted environments within Indian jurisdictions. We strictly do NOT sell or trade user data to third-party marketing entities.</p>
+            
+            <p class="mt-10 pt-6 border-t border-white/5 text-[10px] text-slate-500 font-bold uppercase">Contact: info@nirmansutra.in for data requests.</p>
         </div>
-        <div class="pdf-container">
-            <iframe id="pdfFrame" src="" width="100%" height="100%" style="border:none;"></iframe>
+    </div>
+
+    <div id="modalTerms" class="legal-overlay">
+        <div class="legal-content-box">
+            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
+            <h2>Terms of Service</h2>
+            <p><strong>Effective Date: March 28, 2026</strong></p>
+            
+            <h3>1. Operational Access</h3>
+            <p>By accessing the NirmanSutra Unified Terminal, you acknowledge that you are an authorized agent or strategic partner. Unauthorized access is subject to legal action under the IT Act.</p>
+            
+            <h3>2. Data Authenticity</h3>
+            <p>Users are legally obligated to provide authentic ground reality data. Submission of intentionally falsified material variety, brand, or location data will result in immediate session termination and account blacklisting.</p>
+
+            <h3>3. Intellectual Property</h3>
+            <p>All structured intelligence, UI frameworks, and proprietary algorithms within the NirmanSutra Matrix remain the exclusive property of NirmanSutra Private Limited.</p>
+
+            <h3>4. Jurisdiction</h3>
+            <p>These terms are governed by the laws of India. Any disputes arising shall be subject to the exclusive jurisdiction of the courts in Jodhpur, Rajasthan.</p>
         </div>
     </div>
 
     <header class="fixed top-0 w-full z-40 px-12 py-8 flex justify-between items-center backdrop-blur-lg border-b border-white/5">
-        <div class="flex flex-col">
-            <h1 class="text-3xl font-black italic tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <span class="text-[8px] font-bold text-slate-500 uppercase tracking-[4px] mt-1">Infrastructure Intelligence</span>
-        </div>
+        <h1 class="text-3xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
         <nav class="hidden md:flex gap-12 text-[10px] font-black uppercase tracking-[3px]">
-            <a href="#about" class="hover:text-orange-500 transition-colors">About</a>
-            <a href="#features" class="hover:text-orange-500 transition-colors">Features</a>
-            <a href="#protocol" class="hover:text-orange-500 transition-colors">Protocol</a>
-            <a href="#leadership" class="hover:text-orange-500 transition-colors">Leadership</a>
-            <a href="#contact" class="hover:text-orange-500 transition-colors">Contact</a>
+            <a href="#about" class="hover:text-orange-500 transition">Mission</a>
+            <a href="#leadership" class="hover:text-orange-500 transition">Leadership</a>
+            <a href="#contact" class="hover:text-orange-500 transition">Connect</a>
         </nav>
     </header>
 
     <main class="hero-matrix">
         <div class="max-w-6xl">
-            <div class="inline-block px-6 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-10">
-                <span class="text-orange-500 font-black uppercase tracking-[6px] text-[10px]">Strategic Access Node: March 2026</span>
-            </div>
-            <h2 class="kinetic-title italic mb-10">From Ground Reality<br>To Smart Decisions.</h2>
+            <h2 class="kinetic-title italic mb-10">Building the<br>Foundations of<br><span class="text-orange-500">Certainty.</span></h2>
             <p class="text-slate-400 text-xl md:text-3xl leading-relaxed max-w-4xl font-medium mb-14">
-                NirmanSutra transforms fragmented field data into structured, verified material intelligence. We empower the construction ecosystem to build smarter, faster, and with absolute confidence.
+                NirmanSutra bridges the gap between field reality and strategic execution. We transform fragmented data into structured intelligence.
             </p>
-            <div class="flex flex-wrap gap-8">
-                <a href="#about" class="bg-orange-500 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition-transform duration-500">Initialize Exploration</a>
-                <a href="#contact" class="border border-slate-700 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">Request Executive Demo</a>
-            </div>
+            <a href="#about" class="bg-orange-500 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 inline-block transition">Explore Matrix</a>
         </div>
     </main>
 
-    <section id="about" class="scaled-section px-10 md:px-32 bg-[#010411]">
+    <section id="about" class="py-24 px-10 md:px-32 bg-[#010411]">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
             <div>
-                <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-6 block">Building Trust</span>
-                <h3 class="scaled-title">Intelligence Behind Every Decision.</h3>
-                <p class="text-slate-400 text-lg mb-10 leading-relaxed">
-                    In an industry often governed by assumptions, NirmanSutra bridges the gap between ground reality and strategic execution. Our platform provides the clarity required for large-scale infrastructure stability.
-                </p>
-                <div class="space-y-8">
+                <h3 class="text-5xl font-black mb-8 leading-tight italic">Intelligence Behind Decision.</h3>
+                <p class="text-slate-400 text-lg mb-10">NirmanSutra is a next-generation platform designed to bring clarity and precision to the construction ecosystem.</p>
+                <div class="space-y-6">
                     <div class="border-l-4 border-orange-500 pl-8">
-                        <h4 class="text-white font-black uppercase text-[11px] mb-2 tracking-widest">Our Mission</h4>
-                        <p class="text-slate-500 text-sm italic">To empower the construction ecosystem with authentic, real-time intelligence, reducing risk and improving efficiency.</p>
-                    </div>
-                    <div class="border-l-4 border-slate-700 pl-8">
-                        <h4 class="text-white font-black uppercase text-[11px] mb-2 tracking-widest">Our Vision</h4>
-                        <p class="text-slate-500 text-sm italic">To become India’s most trusted and technologically advanced construction intelligence network.</p>
+                        <h4 class="text-white font-black uppercase text-xs mb-2">Our Mission</h4>
+                        <p class="text-slate-500 text-sm italic">Empowering the industry with authentic, real-time intelligence.</p>
                     </div>
                 </div>
             </div>
-            <div class="relative">
-                <div class="bg-slate-900/40 rounded-[60px] border border-white/5 p-16 flex items-center justify-center text-center backdrop-blur-xl">
-                    <div>
-                        <div class="text-orange-500 text-8xl font-black mb-4 tracking-tighter">100%</div>
-                        <p class="text-slate-400 uppercase font-black tracking-[10px] text-xs">Verified Accuracy</p>
-                        <div class="mt-10 pt-10 border-t border-white/5 flex gap-8 justify-center">
-                            <div class="text-center font-black"><div class="text-2xl text-white">4.8k</div><div class="text-[8px] text-slate-500 uppercase mt-1">Surveys</div></div>
-                            <div class="text-center font-black"><div class="text-2xl text-white">920</div><div class="text-[8px] text-slate-500 uppercase mt-1">Partners</div></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-slate-900/40 rounded-[60px] border border-white/5 p-16 text-center backdrop-blur-xl">
+                <div class="text-orange-500 text-8xl font-black mb-4 tracking-tighter italic">100%</div>
+                <p class="text-slate-400 uppercase font-black tracking-[10px] text-xs">Verified Accuracy</p>
             </div>
         </div>
     </section>
 
-    <section id="features" class="scaled-section px-10 md:px-32">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-24">
-                <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-4 block">System Modules</span>
-                <h3 class="scaled-title">Enterprise Capabilities</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div class="feature-card">
-                    <div class="w-12 h-12 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500 mb-8">📡</div>
-                    <h4 class="font-black text-xl mb-4 text-white uppercase tracking-tighter">Verified Surveys (VFSI)</h4>
-                    <ul class="text-slate-500 text-xs space-y-3 font-bold leading-relaxed">
-                        <li>• AGENT-BASED VALIDATION</li>
-                        <li>• GPS-TAGGED GEOLOCATIONS</li>
-                        <li>• REAL-TIME SESSION TRACKING</li>
-                        <li>• AUTHENTIC BUSINESS PROFILING</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-8">🏗️</div>
-                    <h4 class="font-black text-xl mb-4 text-white uppercase tracking-tighter">Material Intelligence</h4>
-                    <ul class="text-slate-500 text-xs space-y-3 font-bold leading-relaxed">
-                        <li>• HIERARCHICAL DATA MAPPING</li>
-                        <li>• VARIETY-TO-BRAND ENGINE</li>
-                        <li>• MARKET INSIGHT SYNCHRONICITY</li>
-                        <li>• INTELLIGENT SOURCING FILTERS</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 mb-8">📊</div>
-                    <h4 class="font-black text-xl mb-4 text-white uppercase tracking-tighter">Unified Dashboard</h4>
-                    <ul class="text-slate-500 text-xs space-y-3 font-bold leading-relaxed">
-                        <li>• GRAND AUDIT GRID ACCESS</li>
-                        <li>• OFFLINE-FIRST SYNC ENGINE</li>
-                        <li>• ZERO DATA LOSS PROTOCOLS</li>
-                        <li>• ENTERPRISE-GRADE VALIDATION</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <section id="leadership" class="py-24 px-10 md:px-32 text-center">
+        <div class="w-40 h-40 bg-slate-800 rounded-full mx-auto mb-8 shadow-4xl border-4 border-orange-500/30 flex items-center justify-center text-5xl">👨‍💼</div>
+        <h3 class="text-5xl font-black mb-2 tracking-tighter uppercase italic">Vijay Bhati</h3>
+        <p class="text-orange-500 font-black uppercase tracking-[5px] text-[11px] mb-8">Founder & Chief Architect</p>
+        <p class="text-slate-400 text-xl italic max-w-3xl mx-auto leading-relaxed">"We are building the data-driven foundations of tomorrow's India."</p>
     </section>
 
-    <section id="protocol" class="scaled-section px-10 md:px-32 bg-slate-950">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-24">
-                <h3 class="scaled-title">The Intelligence Protocol</h3>
-                <p class="text-slate-500 font-black uppercase tracking-widest text-[10px]">Collect → Validate → Structure → Analyze → Act</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 relative">
-                <div class="hidden md:block absolute top-12 left-0 right-0 h-[2px] bg-white/5 z-0"></div>
-                <div class="relative z-10 text-center">
-                    <div class="w-24 h-24 bg-slate-900 border-2 border-orange-500/30 rounded-full mx-auto flex items-center justify-center font-black text-2xl text-orange-500 mb-8 shadow-2xl">01</div>
-                    <h5 class="text-white font-black uppercase text-[10px] tracking-widest mb-3">Collection</h5>
-                    <p class="text-slate-500 text-xs leading-relaxed">Field agents capture raw intelligence on-site via secure mobile interface.</p>
-                </div>
-                <div class="relative z-10 text-center">
-                    <div class="w-24 h-24 bg-slate-900 border-2 border-orange-500/30 rounded-full mx-auto flex items-center justify-center font-black text-2xl text-orange-500 mb-8 shadow-2xl">02</div>
-                    <h5 class="text-white font-black uppercase text-[10px] tracking-widest mb-3">Validation</h5>
-                    <p class="text-slate-500 text-xs leading-relaxed">System cross-references data against GPS and 5-tier verification matrix.</p>
-                </div>
-                <div class="relative z-10 text-center">
-                    <div class="w-24 h-24 bg-slate-900 border-2 border-orange-500/30 rounded-full mx-auto flex items-center justify-center font-black text-2xl text-orange-500 mb-8 shadow-2xl">03</div>
-                    <h5 class="text-white font-black uppercase text-[10px] tracking-widest mb-3">Sync</h5>
-                    <p class="text-slate-500 text-xs leading-relaxed">Verified nodes are instantly pushed to the Executive Command Center.</p>
-                </div>
-                <div class="relative z-10 text-center">
-                    <div class="w-24 h-24 bg-slate-900 border-2 border-orange-500/30 rounded-full mx-auto flex items-center justify-center font-black text-2xl text-orange-500 mb-8 shadow-2xl">04</div>
-                    <h5 class="text-white font-black uppercase text-[10px] tracking-widest mb-3">Execution</h5>
-                    <p class="text-slate-500 text-xs leading-relaxed">Strategic decisions are finalized with 100% data-backed certainty.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="leadership" class="scaled-section px-10 md:px-32">
-        <div class="max-w-5xl mx-auto text-center flex flex-col items-center">
-            <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-8 block">Chief Architect</span>
-            <div class="w-40 h-40 bg-slate-800 rounded-full mb-8 shadow-4xl border-4 border-orange-500/30 flex items-center justify-center text-5xl relative">
-                👨‍💼
-                <div class="absolute bottom-0 right-0 bg-orange-500 w-10 h-10 rounded-full border-4 border-slate-950 flex items-center justify-center text-xs">✓</div>
-            </div>
-            <h3 class="text-5xl font-black mb-3 tracking-tighter">Vijay Bhati</h3>
-            <p class="text-orange-500 font-black uppercase tracking-[4px] text-[10px] mb-10">Founder & Chief Architect</p>
-            <p class="text-slate-400 text-xl italic max-w-3xl leading-relaxed">
-                "NirmanSutra was born from a singular vision: to eliminate the ambiguity and operational risk that plagues modern infrastructure. We are building the data-driven foundations of tomorrow's India."
-            </p>
-        </div>
-    </section>
-
-    <section id="contact" class="scaled-section px-10 md:px-32 bg-slate-950">
-        <div class="max-w-6xl mx-auto text-center">
-            <h3 class="scaled-title mb-4">Let's Build Smart.</h3>
-            <p class="text-slate-500 mb-20 uppercase tracking-[10px] text-[10px]">Executive Connection Terminal</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                <a href="mailto:info@nirmansutra.in" class="contact-tile block">
-                    <div class="text-3xl mb-6">📧</div>
-                    <p class="text-slate-500 text-[10px] font-black uppercase mb-3 tracking-widest">Email Identity</p>
-                    <p class="text-2xl font-bold text-white hover:text-orange-500 transition-colors">info@nirmansutra.in</p>
-                </a>
-                <a href="https://wa.me/919414370806" target="_blank" class="contact-tile block">
-                    <div class="text-3xl mb-6">💬</div>
-                    <p class="text-slate-500 text-[10px] font-black uppercase mb-3 tracking-widest">WhatsApp Protocol</p>
-                    <p class="text-2xl font-bold text-white hover:text-orange-500 transition-colors">+91 9414370806</p>
-                </a>
-            </div>
-            <div class="mt-20">
-                <p class="text-slate-700 text-[10px] font-black uppercase tracking-[15px]">Operational Availability</p>
-                <p class="text-slate-500 text-sm mt-4 font-bold">Monday – Saturday | 10:00 AM – 7:00 PM (IST)</p>
-            </div>
+    <section id="contact" class="py-24 px-10 md:px-32 bg-slate-950">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            <a href="mailto:info@nirmansutra.in" class="contact-tile block">
+                <div class="text-3xl mb-6">📧</div>
+                <p class="text-slate-500 text-[11px] font-black uppercase mb-3">Email Identity</p>
+                <p class="text-2xl font-bold italic">info@nirmansutra.in</p>
+            </a>
+            <a href="https://wa.me/919414370806" target="_blank" class="contact-tile block">
+                <div class="text-3xl mb-6">💬</div>
+                <p class="text-slate-500 text-[11px] font-black uppercase mb-3">Instant Protocol</p>
+                <p class="text-2xl font-bold italic">+91 9414370806</p>
+            </a>
         </div>
     </section>
 
     <div id="terminalDock" class="identity-dock dock-minimized">
         <div class="dock-toggle" onclick="toggleDock()">▲ Open Secure Terminal</div>
         <div id="dockContent">
-            <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-1">Unified Terminal</h3>
-            <p class="text-[8px] text-slate-500 font-bold uppercase mb-6 tracking-widest">Identity Gateway</p>
-            
-            <div class="mb-6 flex gap-4 items-start cursor-pointer">
+            <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-6">Unified Terminal</h3>
+            <div class="mb-6 flex gap-3 items-start cursor-pointer">
                 <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500 rounded bg-slate-900 border-white/10">
                 <label for="consentCheckbox" class="text-[10px] text-slate-400 font-bold leading-tight">
-                    I agree to the <span onclick="viewPDF('privacy_policy.pdf')" class="text-white underline">Privacy</span> & 
-                    <span onclick="viewPDF('terms_of_service.pdf')" class="text-white underline">Terms</span>.
+                    I agree to the <span onclick="openLegal('modalPrivacy')" class="text-white underline cursor-pointer">Privacy Policy</span> and 
+                    <span onclick="openLegal('modalTerms')" class="text-white underline cursor-pointer">Terms</span>.
                 </label>
             </div>
-
-            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 mb-6 shadow-2xl hover:bg-orange-500 hover:text-white transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Personnel Access
+            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 shadow-2xl hover:bg-orange-500 hover:text-white transition-all">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Identity Access
             </button>
-
-            <div class="border-t border-white/5 pt-6 text-center">
-                <div onclick="forceReg()" class="text-orange-500 font-black text-[10px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">➜ New Partner Registration</div>
+            <div class="border-t border-white/5 mt-6 pt-6 text-center">
+                <div onclick="forceReg()" class="text-orange-500 font-black text-[10px] uppercase cursor-pointer italic">➜ Partner Registration</div>
             </div>
         </div>
     </div>
 
-    <footer class="p-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10 bg-[#010411]">
-        <div class="flex flex-col items-center md:items-start">
-            <div class="text-[11px] font-black text-slate-500 uppercase tracking-[6px]">© 2026 NirmanSutra Private Limited</div>
-            <span class="text-[9px] text-slate-700 uppercase mt-2 font-black tracking-[4px]">Smart Data. Strong Foundations.</span>
-        </div>
-        <div class="flex gap-12 text-[10px] font-black uppercase tracking-widest text-slate-500">
-            <span onclick="viewPDF('privacy_policy.pdf')" class="hover:text-white cursor-pointer transition-colors">Privacy</span>
-            <span onclick="viewPDF('terms_of_service.pdf')" class="hover:text-white cursor-pointer transition-colors">Terms</span>
-            <span class="text-slate-800">|</span>
-            <span class="hover:text-white cursor-pointer transition-colors tracking-[1px]">@Nirmansutraa</span>
+    <footer class="p-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
+        <div class="text-[12px] font-black text-slate-500 uppercase italic">NIRMAN<span class="text-orange-500">SUTRA</span></div>
+        <div class="flex gap-12 text-[10px] font-black uppercase text-slate-500">
+            <span onclick="openLegal('modalPrivacy')" class="hover:text-white cursor-pointer transition-colors">Privacy</span>
+            <span onclick="openLegal('modalTerms')" class="hover:text-white cursor-pointer transition-colors">Terms</span>
+            <span class="text-slate-600 tracking-[2px]">© 2026 NirmanSutra Pvt Ltd</span>
         </div>
     </footer>
 
@@ -350,58 +240,30 @@
             toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ Open Secure Terminal" : "▼ Minimize Terminal";
         }
 
-        function viewPDF(file) {
-            document.getElementById('pdfFrame').src = file;
-            document.getElementById('pdfOverlay').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        function closePDF() {
-            document.getElementById('pdfOverlay').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+        // Master Legal Logic
+        function openLegal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
+        function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); document.body.style.overflow = 'auto'; }
 
-        const ROLE_ROUTES = {
-            'super_admin': 'admin/dashboard.html',
-            'admin_staff': 'admin/dashboard.html',
-            'field_survey_staff': 'field/survey.html'
-        };
+        const ROLE_ROUTES = { 'super_admin': 'admin/dashboard.html', 'admin_staff': 'admin/dashboard.html', 'field_survey_staff': 'field/survey.html' };
 
         async function unifiedLogin() {
-            if (!document.getElementById("consentCheckbox").checked) {
-                alert("Protocol Required: Please accept the Terms & Privacy to proceed.");
-                return;
-            }
+            if (!document.getElementById("consentCheckbox").checked) { alert("Accept legal terms to proceed."); return; }
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 if (res.user) {
-                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({
-                        email: res.user.email,
-                        consent: true,
-                        timestamp: new Date().toISOString()
-                    });
+                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({ email: res.user.email, consent: true, timestamp: new Date().toISOString() });
                     executeRouting(res.user);
                 }
-            } catch (e) { console.error("[AUTH_FAULT]", e.message); }
+            } catch (e) { console.error(e); }
         }
 
         async function executeRouting(user) {
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             const role = snap.val();
-            if (!role) { alert("Access Unauthorized: No personnel mapping found."); return; }
-            const target = ROLE_ROUTES[role];
-            if (target) window.location.replace(target);
+            if (role && ROLE_ROUTES[role]) window.location.replace(ROLE_ROUTES[role]);
         }
 
-        function forceReg() { 
-            auth.signOut();
-            window.location.href = "registration.html?mode=new_partner"; 
-        }
-
-        auth.onAuthStateChanged(user => {
-            if (user && !window.location.search.includes('mode=new_partner')) executeRouting(user);
-        });
+        function forceReg() { auth.signOut(); window.location.href = "registration.html?mode=new_partner"; }
     </script>
-
-    <br><br><br><br><br>
 </body>
 </html>
