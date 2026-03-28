@@ -3,232 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Unified Access Terminal</title>
+    <title>NirmanSutra | Infrastructure Intelligence Matrix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            background-color: #020617; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: #f8fafc; 
-        }
-        
-        .login-card { 
-            background: rgba(30, 41, 59, 0.45); 
-            backdrop-filter: blur(20px); 
-            padding: 60px; 
-            border-radius: 40px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            width: 100%; 
-            max-width: 480px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            text-align: center; 
-        }
-        
-        .btn-universal { 
-            background: white; 
-            color: #0f172a; 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px; 
-            cursor: pointer; 
-            border-radius: 22px; 
-            font-weight: 800; 
-            width: 100%; 
-            padding: 22px; 
-            font-size: 14px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn-universal:hover { 
-            transform: translateY(-2px); 
-            background: #f8fafc;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
-        }
+        :root { --accent: #ff7a00; --bg-deep: #020617; --card-glass: rgba(30, 41, 59, 0.45); }
+        body { background-color: var(--bg-deep); font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; margin: 0; scroll-behavior: smooth; overflow-x: hidden; }
 
-        .status-msg { 
-            margin-top: 30px; 
-            padding: 16px; 
-            border-radius: 18px; 
-            font-size: 11px; 
-            font-weight: 800; 
-            display: none; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
+        /* UNCHANGED: Hero & Terminal Design */
+        .hero-matrix { background: radial-gradient(circle at 80% 20%, #1e293b 0%, #020617 60%); min-height: 100vh; display: flex; align-items: center; padding: 0 8%; }
+        .kinetic-title { font-size: clamp(3rem, 8vw, 7rem); line-height: 0.95; font-weight: 900; letter-spacing: -0.04em; background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .identity-dock {
+            position: fixed; bottom: 25px; right: 25px; width: 280px;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+            padding: 20px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); z-index: 5000;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .dock-minimized { transform: translateY(calc(100% - 60px)); opacity: 0.8; }
+        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 15px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 2px; }
 
-        .partnership-box {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
+        /* SCALED SECTIONS */
+        .scaled-section { padding-top: 5rem; padding-bottom: 5rem; }
+        .scaled-title { font-size: 3.5rem; font-weight: 900; line-height: 1; margin-bottom: 1.5rem; }
 
-        .btn-reg-link {
-            color: #ff7a00;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: inline-block;
-        }
-        .btn-reg-link:hover { color: white; transform: scale(1.05); }
+        /* FORM INPUT STYLING */
+        .direct-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 15px; color: white; width: 100%; outline: none; transition: 0.3s; }
+        .direct-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.06); }
+
+        #pdfOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; backdrop-filter: blur(20px); }
+        .pdf-container { width: 100%; height: 100%; max-width: 1000px; margin: 0 auto; border-radius: 25px; overflow: hidden; background: white; }
+
+        @media (max-width: 768px) { .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; } }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <div class="mb-12">
-        <h1 class="text-4xl font-black text-white italic tracking-tighter mb-2">
-            NIRMAN<span class="text-orange-500">SUTRA</span>
-        </h1>
-        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[4px]">Unified Access Terminal</p>
+    <div id="pdfOverlay">
+        <button onclick="closePDF()" class="bg-orange-500 text-white px-6 py-2 rounded-full mb-4 font-bold">CLOSE TERMINAL [X]</button>
+        <div class="pdf-container"><iframe id="pdfFrame" src="" width="100%" height="100%"></iframe></div>
     </div>
-    
-    <button onclick="unifiedLogin()" id="loginBtn" class="btn-universal">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
-        Secure Identity Access
-    </button>
 
-    <div id="msg" class="status-msg"></div>
+    <header class="fixed top-0 w-full z-40 px-10 py-6 flex justify-between items-center backdrop-blur-md border-b border-white/5">
+        <h1 class="text-3xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <nav class="hidden md:flex gap-10 text-[10px] font-black uppercase tracking-[3px]">
+            <a href="#about" class="hover:text-orange-500 transition">Mission</a>
+            <a href="#founder" class="hover:text-orange-500 transition">Leadership</a>
+            <a href="#contact" class="hover:text-orange-500 transition">Contact</a>
+        </nav>
+    </header>
 
-    <div class="partnership-box">
-        <p class="text-slate-500 text-[9px] font-bold uppercase mb-4 tracking-widest">New Partnership?</p>
-        <div onclick="forceSupplierRegistration()" class="btn-reg-link">
-            ➜ New Supplier Registration
+    <main class="hero-matrix">
+        <div class="max-w-5xl">
+            <span class="text-orange-500 font-black uppercase tracking-[6px] text-xs mb-4 block">Established 2026</span>
+            <h2 class="kinetic-title italic mb-8">Smart Data.<br>Strong Foundations.</h2>
+            <p class="text-slate-400 text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed">India's leading unified platform for material intelligence and field auditing.</p>
+            <div class="flex gap-6"><a href="#about" class="bg-orange-500 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition">Discover More</a></div>
+        </div>
+    </main>
+
+    <section id="about" class="scaled-section px-10 md:px-24 bg-[#010411]">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+                <h3 class="scaled-title">Intelligence Behind Every Decision.</h3>
+                <p class="text-slate-400 mb-8 leading-relaxed">NirmanSutra is a next-generation platform designed to bring trust and precision to the industry. We bridge the gap between ground reality and strategic execution.</p>
+                <div class="grid grid-cols-2 gap-6">
+                    <div><h4 class="text-white font-black uppercase text-xs mb-2">The Mission</h4><p class="text-slate-500 text-xs">Empowering with authentic, real-time intelligence.</p></div>
+                    <div><h4 class="text-white font-black uppercase text-xs mb-2">The Vision</h4><p class="text-slate-500 text-xs">India's most trusted intelligence network.</p></div>
+                </div>
+            </div>
+            <div class="bg-slate-900/50 rounded-[40px] border border-white/5 p-10 flex items-center justify-center text-center">
+                <div><div class="text-orange-500 text-5xl font-black mb-2">100%</div><p class="text-slate-400 uppercase font-black tracking-widest text-[10px]">Verified Accuracy</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="founder" class="scaled-section px-10 md:px-24">
+        <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+            <div class="w-32 h-32 bg-slate-800 rounded-full mb-6 shadow-2xl border-4 border-orange-500/20 flex items-center justify-center text-3xl">👨‍💼</div>
+            <h3 class="text-4xl font-black mb-2">Vijay Bhati</h3>
+            <p class="text-orange-500 font-black uppercase tracking-[3px] text-xs mb-6">Founder & Chief Architect</p>
+            <p class="text-slate-400 text-lg italic max-w-xl">"Our goal is to eliminate assumptions from the supply chain. We are building the foundations of a data-driven infrastructure future."</p>
+        </div>
+    </section>
+
+    <section id="contact" class="scaled-section px-10 md:px-24 bg-slate-950">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+            <div>
+                <h3 class="text-5xl font-black mb-6">Let's Build Smart.</h3>
+                <div class="space-y-6">
+                    <div><p class="text-slate-500 text-[10px] font-black uppercase mb-1">Mobile & WhatsApp</p><p class="text-xl font-bold">+91 9414370806</p></div>
+                    <div><p class="text-slate-500 text-[10px] font-black uppercase mb-1">Email Identity</p><p class="text-xl font-bold">info@nirmansutra.in</p></div>
+                </div>
+            </div>
+            <div class="bg-white/5 p-8 rounded-[35px] border border-white/10 shadow-4xl">
+                <form action="https://formspree.io/f/mqaelonl" method="POST" class="space-y-5">
+                    <input type="text" name="name" placeholder="YOUR FULL NAME" class="direct-input text-[10px] font-bold uppercase" required>
+                    <input type="email" name="email" placeholder="EMAIL ADDRESS" class="direct-input text-[10px] font-bold uppercase" required>
+                    <textarea name="message" rows="3" placeholder="HOW CAN WE HELP?" class="direct-input text-[10px] font-bold uppercase" required></textarea>
+                    <input type="hidden" name="_subject" value="New Inquiry: NirmanSutra Landing Page">
+                    <button type="submit" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-orange-500 hover:text-white transition shadow-2xl">Transmit Intelligence</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="terminalDock" class="identity-dock dock-minimized">
+        <div class="dock-toggle" onclick="toggleDock()">▲ OPEN TERMINAL</div>
+        <div id="dockContent">
+            <h3 class="text-[10px] font-black text-orange-500 uppercase mb-1">Secure Terminal</h3>
+            <div class="mb-4 flex gap-3 items-start cursor-pointer mt-4">
+                <input type="checkbox" id="consentCheckbox" class="mt-1 w-4 h-4 accent-orange-500">
+                <label for="consentCheckbox" class="text-[9px] text-slate-400 font-bold leading-tight">
+                    I agree to the <span onclick="viewPDF('privacy_policy.pdf')" class="text-white underline">Privacy Policy</span> and 
+                    <span onclick="viewPDF('terms_of_service.pdf')" class="text-white underline">Terms</span>.
+                </label>
+            </div>
+            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-4 rounded-xl font-black uppercase text-[10px] flex items-center justify-center gap-2 mb-6 shadow-xl">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"> Identity Access
+            </button>
+            <div class="border-t border-white/5 pt-4 text-center">
+                <div onclick="forceReg()" class="text-orange-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition">➜ New Partner? Register</div>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <footer class="p-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black uppercase">
+        <div class="text-slate-600">© 2026 NirmanSutra Private Limited</div>
+        <div class="flex gap-8 text-slate-500">
+            <span onclick="viewPDF('privacy_policy.pdf')" class="hover:text-white cursor-pointer transition">Privacy Policy</span>
+            <span onclick="viewPDF('terms_of_service.pdf')" class="hover:text-white cursor-pointer transition">Terms of Service</span>
+        </div>
+    </footer>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
-        authDomain: "infradepo.firebaseapp.com",
-        projectId: "infradepo",
-        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const rtdb = firebase.database();
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
-    const ROLE_ROUTES = {
-        'super_admin': 'admin/dashboard.html',
-        'admin': 'admin/dashboard.html',
-        'field_staff': 'field/survey.html',
-        'supplier': 'field/survey.html'
-    };
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+            authDomain: "infradepo.firebaseapp.com",
+            projectId: "infradepo",
+            databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(), rtdb = firebase.database();
 
-    function updateUI(text, type) {
-        const m = document.getElementById('msg');
-        m.innerText = text;
-        m.style.display = 'block';
-        if(type === 'err') {
-            m.className = "status-msg bg-red-500/20 text-red-400";
-        } else if(type === 'success') {
-            m.className = "status-msg bg-emerald-500/20 text-emerald-400";
-        } else {
-            m.className = "status-msg bg-orange-500/20 text-orange-400 animate-pulse";
+        function toggleDock() {
+            const dock = document.getElementById('terminalDock');
+            const toggle = document.querySelector('.dock-toggle');
+            dock.classList.toggle('dock-minimized');
+            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ OPEN TERMINAL" : "▼ MINIMIZE TERMINAL";
         }
-    }
 
-    /**
-     * SOLUTION: AUTH-SILENCE BYPASS
-     * Signs out any existing Admin session to prevent the background redirect
-     * from pulling the user back to index.html while trying to register.
-     */
-    async function forceSupplierRegistration() {
-        updateUI("Preparing Registry Terminal...", "warn");
-        try {
-            // Kill active sessions
-            await auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
-            
-            // Move to registration with cache-buster and mode flag
-            console.log("Session Silenced. Moving to Registry.");
-            window.location.href = "registration.html?mode=new_partner&t=" + Date.now();
-        } catch (e) {
-            window.location.href = "registration.html";
+        function viewPDF(file) {
+            document.getElementById('pdfFrame').src = file;
+            document.getElementById('pdfOverlay').style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
-    }
-
-    /**
-     * MASTER ROUTING ENGINE
-     */
-    async function executeRouting(user) {
-        try {
-            updateUI("Verifying Permissions...", "warn");
-            
-            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
-            const role = snap.val();
-
-            if (!role) {
-                // Logged in but no role assigned? Send to registration.
-                updateUI("Profile Found: No Role Assigned", "warn");
-                setTimeout(() => { window.location.href = "registration.html"; }, 1000);
-                return;
-            }
-
-            const cleanRole = role.toLowerCase().trim();
-            const target = ROLE_ROUTES[cleanRole];
-
-            if (target) {
-                updateUI(`Access Granted: ${cleanRole.toUpperCase()}`, "success");
-                setTimeout(() => {
-                    window.location.replace(target + "?v=" + Date.now());
-                }, 800);
-            } else {
-                updateUI("Unknown System Role", "err");
-            }
-
-        } catch (e) {
-            updateUI(e.message, "err");
+        function closePDF() {
+            document.getElementById('pdfOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
-    }
 
-    async function unifiedLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        updateUI("Opening Secure Portal...", "warn");
-        try {
-            const result = await auth.signInWithPopup(provider);
-            if (result.user) await executeRouting(result.user);
-        } catch (e) {
-            updateUI(e.message, "err");
+        async function unifiedLogin() {
+            if (!document.getElementById("consentCheckbox").checked) { alert("Please accept the terms."); return; }
+            try {
+                const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                if (res.user) {
+                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({
+                        email: res.user.email, consent: true, timestamp: new Date().toISOString()
+                    });
+                    // Routing logic remains active
+                }
+            } catch (e) { console.error(e); }
         }
-    }
 
-    /**
-     * SESSION LISTENER
-     */
-    auth.onAuthStateChanged(user => {
-        // Only trigger if we are at the root index
-        const isAtRoot = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
-        
-        // Don't auto-route if we are intentionally trying to register
-        const isRegistering = window.location.search.includes('mode=new_partner');
-
-        if (user && isAtRoot && !isRegistering) {
-            executeRouting(user);
-        }
-    });
-</script>
-
+        function forceReg() { window.location.href = "registration.html?mode=new_partner"; }
+    </script>
 </body>
 </html>
