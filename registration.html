@@ -30,9 +30,7 @@
             overflow-x: hidden;
         }
         
-        /* -----------------------------------------------------------
-           1. IDENTITY GATE ARCHITECTURE
-           ----------------------------------------------------------- */
+        /* 1. IDENTITY GATE ARCHITECTURE */
         .auth-gate { 
             position: fixed; 
             inset: 0; 
@@ -67,9 +65,7 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* -----------------------------------------------------------
-           2. DESIGN SYSTEM (CARDS & INPUTS)
-           ----------------------------------------------------------- */
+        /* 2. DESIGN SYSTEM (CARDS & INPUTS) */
         .card { 
             background: var(--card); 
             border-radius: 45px; 
@@ -102,7 +98,7 @@
             text-align: center; 
             padding: 75px; 
             border-radius: 40px; 
-            font-size: clamp(32px, 10vw, 48px); 
+            font-size: clamp(24px, 10vw, 48px); 
             font-weight: 900; 
             font-family: 'Courier New', monospace; 
             letter-spacing: 12px; 
@@ -137,9 +133,7 @@
             letter-spacing: 2px;
         }
 
-        /* -----------------------------------------------------------
-           3. INTERACTIVE COMPONENTS (CHIPS & GRID)
-           ----------------------------------------------------------- */
+        /* 3. INTERACTIVE COMPONENTS (CHIPS & GRID) */
         .mat-item { 
             background: var(--primary); 
             color: white; 
@@ -162,7 +156,7 @@
 
         .tab-grid { 
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 15px; 
             margin-top: 35px; 
         }
@@ -171,7 +165,7 @@
             background: #f1f5f9; 
             padding: 25px 15px; 
             border-radius: 26px; 
-            font-size: 12px; 
+            font-size: 11px; 
             font-weight: 800; 
             color: #475569; 
             cursor: pointer; 
@@ -180,7 +174,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100px;
+            min-height: 80px;
             line-height: 1.4;
             text-transform: uppercase;
             border: 2px solid transparent;
@@ -193,9 +187,7 @@
             box-shadow: 0 20px 30px rgba(16,185,129,0.3); 
         }
 
-        /* -----------------------------------------------------------
-           4. FLEET MATRIX & PHOTO GRID
-           ----------------------------------------------------------- */
+        /* 4. FLEET MATRIX & PHOTO GRID */
         .fleet-unit { 
             background: #f8fafc; 
             padding: 30px; 
@@ -244,28 +236,26 @@
             line-height: 1.8; 
         }
 
-        /* -----------------------------------------------------------
-           5. ACTION BAR & GLOBAL UI
-           ----------------------------------------------------------- */
+        /* 5. ACTION BAR & GLOBAL UI */
         .action-bar { 
             position: fixed; 
             bottom: 0; left: 0; right: 0; 
             background: rgba(255,255,255,0.98); 
             backdrop-filter: blur(50px); 
-            padding: 40px 50px; 
+            padding: 30px; 
             display: flex; 
-            gap: 30px; 
+            gap: 20px; 
             border-top: 1px solid #e2e8f0; 
             z-index: 1000; 
         }
         
         .btn { 
-            flex: 1; padding: 30px; 
-            border-radius: 28px; 
+            flex: 1; padding: 25px; 
+            border-radius: 22px; 
             font-weight: 900; 
-            font-size: 16px; 
+            font-size: 14px; 
             text-transform: uppercase; 
-            letter-spacing: 3px; 
+            letter-spacing: 2px; 
             transition: 0.4s ease; 
             cursor: pointer; 
             border: none;
@@ -276,6 +266,23 @@
         
         .hidden { display: none; }
         .step-inactive { opacity: 0.02; pointer-events: none; filter: grayscale(1); }
+
+        /* MOBILE OVERRIDES (NEW ADDITIVE CSS) */
+        @media (max-width: 640px) {
+            .gate-card { padding: 40px 20px; border-radius: 30px; }
+            .card { padding: 30px 20px; border-radius: 35px; }
+            .id-box { padding: 40px 10px; border-radius: 25px; letter-spacing: 6px; }
+            .section-label { margin-bottom: 20px; font-size: 10px; }
+            input, select, textarea { padding: 20px; border-radius: 18px; font-size: 14px; }
+            .mat-item { padding: 25px; border-radius: 25px; }
+            .mat-item span { font-size: 12px !important; }
+            .grid-cols-5 { grid-template-columns: repeat(2, 1fr) !important; }
+            .tab-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .circle-btn { width: 44px; height: 44px; font-size: 20px; }
+            .action-bar { padding: 20px; gap: 10px; }
+            .btn { padding: 20px; font-size: 11px; border-radius: 18px; }
+            h1 { font-size: 40px !important; }
+        }
     </style>
 </head>
 <body>
@@ -300,11 +307,11 @@
     </div>
 </div>
 
-<div class="max-w-3xl mx-auto px-8 py-20">
+<div class="max-w-3xl mx-auto px-8 py-10 lg:py-20">
     <div id="mainForm" class="step-inactive">
-        <header class="mb-20">
-            <h1 class="text-6xl font-black italic uppercase tracking-tighter">Partner<span class="text-emerald-500">Node</span></h1>
-            <p class="text-[14px] font-bold text-slate-400 uppercase tracking-[8px] mt-4" id="idSyncTag">IDENTITY SYNC REQUIRED...</p>
+        <header class="mb-14 lg:mb-20">
+            <h1 class="text-5xl lg:text-6xl font-black italic uppercase tracking-tighter">Partner<span class="text-emerald-500">Node</span></h1>
+            <p class="text-[12px] lg:text-[14px] font-bold text-slate-400 uppercase tracking-[5px] lg:tracking-[8px] mt-4" id="idSyncTag">IDENTITY SYNC REQUIRED...</p>
         </header>
 
         <div class="card">
@@ -327,27 +334,27 @@
             <label>GSTIN (Tax Identification)</label>
             <input id="gstNumber" placeholder="Verified Alpha-Numeric Code">
 
-            <div class="mt-16 pt-12 border-t border-slate-100">
+            <div class="mt-12 lg:mt-16 pt-8 lg:pt-12 border-t border-slate-100">
                 <p class="text-[14px] font-black text-emerald-600 uppercase mb-8 tracking-widest">● Tier 1: Primary Owner Hub</p>
                 <label>Owner Legal Name</label>
                 <input id="ownerName" placeholder="Full Name">
-                <div class="grid grid-cols-2 gap-8 mt-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-4">
                     <div><label>Primary Phone</label><input id="ownerPhone" type="tel" oninput="Validation.phone(this, 'ownerWa')"></div>
                     <div>
-                        <div class="flex items-center gap-4 pt-10"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-8 h-8 accent-emerald-500" checked onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div>
+                        <div class="flex items-center gap-4 pt-4 lg:pt-10"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-8 h-8 accent-emerald-500" checked onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div>
                         <input id="ownerWa" type="tel" placeholder="WhatsApp">
                     </div>
                 </div>
             </div>
 
-            <div class="mt-16 pt-12 border-t border-slate-100">
+            <div class="mt-12 lg:mt-16 pt-8 lg:pt-12 border-t border-slate-100">
                 <p class="text-[14px] font-black text-blue-500 uppercase mb-8 tracking-widest">● Tier 2: Operational Manager</p>
                 <label>Manager Name</label>
                 <input id="mgrName" placeholder="In-Charge Name">
-                <div class="grid grid-cols-2 gap-8 mt-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-4">
                     <div><label>Phone Number</label><input id="mgrPhone" type="tel" oninput="Validation.phone(this, 'mgrWa')"></div>
                     <div>
-                        <div class="flex items-center gap-4 pt-10"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-8 h-8 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div>
+                        <div class="flex items-center gap-4 pt-4 lg:pt-10"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-8 h-8 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div>
                         <input id="mgrWa" type="tel" placeholder="WhatsApp">
                     </div>
                 </div>
@@ -356,14 +363,14 @@
 
         <div class="card">
             <span class="section-label">03. Warehouse GPS & Spatial Lock</span>
-            <div id="map" class="h-[450px] rounded-[60px] mb-14 border border-slate-200 shadow-inner"></div>
-            <button onclick="Geo.capture()" class="bg-primary text-white w-full py-10 rounded-3xl font-black text-[18px] uppercase tracking-[5px] mb-12 shadow-2xl">📍 Secure Warehouse Spatial Lock</button>
-            <textarea id="address" class="h-40 text-[16px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync pending..." readonly></textarea>
+            <div id="map" class="h-[300px] lg:h-[450px] rounded-[35px] lg:rounded-[60px] mb-10 lg:mb-14 border border-slate-200 shadow-inner"></div>
+            <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 lg:py-10 rounded-2xl lg:rounded-3xl font-black text-[16px] lg:text-[18px] uppercase tracking-[3px] lg:tracking-[5px] mb-10 lg:mb-12 shadow-2xl">📍 Secure Warehouse Spatial Lock</button>
+            <textarea id="address" class="h-32 lg:h-40 text-sm lg:text-[16px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync pending..." readonly></textarea>
             
-            <div class="mt-20">
+            <div class="mt-12 lg:mt-20">
                 <label>Warehouse Evidence matrix (Max 10 Slots)</label>
-                <div class="grid grid-cols-5 gap-8 mt-12" id="photoGrid">
-                    <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-8xl hover:bg-slate-50 transition-all">+</button>
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 mt-10 lg:mt-12" id="photoGrid">
+                    <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl lg:text-8xl hover:bg-slate-50 transition-all">+</button>
                 </div>
                 <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
             </div>
@@ -371,14 +378,14 @@
 
         <div class="card">
             <span class="section-label">04. Material Supply Intelligence</span>
-            <div id="matSelector" class="grid grid-cols-2 gap-8"></div>
+            <div id="matSelector" class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8"></div>
 
-            <div id="varietySection" class="mt-16 hidden bg-slate-50 p-12 rounded-[50px] border border-slate-200 shadow-inner">
+            <div id="varietySection" class="mt-12 lg:mt-16 hidden bg-slate-50 p-8 lg:p-12 rounded-[35px] lg:rounded-[50px] border border-slate-200 shadow-inner">
                 <label class="section-label" style="color:#64748b">Step 2: Stock Varieties</label>
                 <div id="varietyGrid" class="tab-grid"></div>
             </div>
 
-            <div id="brandSection" class="mt-16 hidden bg-slate-50 p-12 rounded-[50px] border border-slate-200 shadow-inner">
+            <div id="brandSection" class="mt-12 lg:mt-16 hidden bg-slate-50 p-8 lg:p-12 rounded-[35px] lg:rounded-[50px] border border-slate-200 shadow-inner">
                 <label class="section-label" style="color:#64748b">Step 3: Brand Specialization</label>
                 <div id="brandGrid" class="tab-grid"></div>
             </div>
@@ -386,14 +393,14 @@
 
         <div class="card">
             <span class="section-label">05. Logistics Dispatch Capacity</span>
-            <div id="fleetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+            <div id="fleetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"></div>
         </div>
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="Draft.save()" class="btn btn-slate">💾 Local State Save</button>
-    <button onclick="RegistrationEngine.submit()" id="sBtn" class="btn btn-green">🚀 Finalize Registry Sync</button>
+    <button onclick="Draft.save()" class="btn btn-slate">💾 Local Save</button>
+    <button onclick="RegistrationEngine.submit()" id="sBtn" class="btn btn-green">🚀 Finalize Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
