@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -595,13 +596,13 @@
         explorerTable.innerHTML = "";
 
         if (unifiedData.length === 0) {
-            explorerTable.innerHTML = `
+            explorerTable.innerHTML = 
                 <tr>
                     <td colspan="6" class="text-center p-60">
                         <h4 class="text-4xl font-black text-slate-800 uppercase tracking-widest">NO_CLOUD_NODES_IDENTIFIED</h4>
                         <p class="text-slate-600 mt-6 font-bold">Synchronize Database or Verify Connectivity</p>
                     </td>
-                </tr>`;
+                </tr>;
             return;
         }
 
@@ -618,18 +619,18 @@
             else if(nodeStatus === 'Profile Inactive') pillStyle = 'status-inactive';
 
             // 6.4.2 EVIDENCE GALLERY GENERATION
-            const visualEvidence = (node.photos || []).map(p => `
+            const visualEvidence = (node.photos || []).map(p => 
                 <div class="relative group cursor-zoom-in">
                     <img src="${p.src}" class="w-24 h-24 rounded-3xl border-2 border-white/5 object-cover hover:border-orange-500 transition-all" onclick="openNodeLightbox('${p.src}')">
                 </div>
-            `).join('');
+            ).join('');
 
             // 6.4.3 STAKEHOLDER MATRIX HUB (OWNER + OPERATIONS)
             // FIX: Ensuring WhatsApp and Phone are always visible
             const primaryNum = node.ownerWa || node.ownerPhone || node.phone || 'NOT_DECLARED';
             const secondaryNum = node.mgrWa || node.mgrPhone || 'PENDING_LINK';
 
-            const stakeholderHtml = `
+            const stakeholderHtml = 
                 <div class="flex flex-col gap-5">
                     <div class="p-6 bg-white/5 rounded-[30px] border border-white/5">
                         <p class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-2">Primary Entity Owner</p>
@@ -642,17 +643,17 @@
                         <p class="text-[12px] font-bold text-slate-500 mt-2">Direct Contact: ${secondaryNum}</p>
                     </div>
                 </div>
-            `;
+            ;
 
             // 6.4.4 FLEET SPECIFICATION (FULL NAMES)
-            const fleetMasterList = Object.entries(node.fleet || {}).filter(([_, qty]) => qty > 0).map(([type, qty]) => `
+            const fleetMasterList = Object.entries(node.fleet || {}).filter(([_, qty]) => qty > 0).map(([type, qty]) => 
                 <div class="bg-blue-600/20 px-6 py-3 rounded-2xl text-[13px] font-black text-blue-300 border border-blue-500/30 shadow-2xl">
                     ${type.toUpperCase()}: ${qty}
                 </div>
-            `).join('') || '<p class="text-xs text-slate-700 font-black">ZERO_LOGISTICS_CAPACITY</p>';
+            ).join('') || '<p class="text-xs text-slate-700 font-black">ZERO_LOGISTICS_CAPACITY</p>';
 
             // 6.4.5 NODE ROW COMPILATION
-            explorerTable.innerHTML += `
+            explorerTable.innerHTML += 
                 <tr class="group hover:bg-white/5 transition-all">
                     <td>
                         <div class="font-black text-white text-4xl tracking-tighter uppercase group-hover:text-orange-500 transition">${node.firm || 'UNNAMED_ENTITY'}</div>
@@ -688,7 +689,7 @@
                             <button onclick="terminateNodeProtocol('${node.source}', '${node.uuid}', '${node.firm}')" class="w-full py-6 rounded-[28px] bg-red-600/10 text-red-500 text-[14px] font-black uppercase hover:bg-red-600 hover:text-white transition-all">TERMINATE</button>
                         </div>
                     </td>
-                </tr>`;
+                </tr>;
         });
     }
 
@@ -696,12 +697,12 @@
      * 6.5 ADMINISTRATIVE SECURITY ACTION: PURGE
      */
     function terminateNodeProtocol(sourceOrigin, nodeUuid, firmName) {
-        const secureChallenge = prompt(`CRITICAL ACCESS ALERT\nTo permanently wipe node "${firmName.toUpperCase()}", type "EXECUTE PURGE":`);
+        const secureChallenge = prompt(CRITICAL ACCESS ALERT\nTo permanently wipe node "${firmName.toUpperCase()}", type "EXECUTE PURGE":);
         
         if (secureChallenge === "EXECUTE PURGE") {
             const dbRefPath = sourceOrigin === 'PARTNER_APP' ? 'supplier_onboarding' : 'surveys';
             
-            rtdb.ref(`${dbRefPath}/${nodeUuid}`).remove()
+            rtdb.ref(${dbRefPath}/${nodeUuid}).remove()
                 .then(() => {
                     alert("PROTOCOL EXECUTED: NODE PURGED FROM CLOUD");
                 })
@@ -729,7 +730,7 @@
             if(agentMode.includes('Hold')) modePillClass = 'status-pending';
             if(agentMode.includes('Removed')) modePillClass = 'status-inactive';
 
-            rbacGrid.innerHTML += `
+            rbacGrid.innerHTML += 
                 <tr class="hover:bg-blue-600/10 transition-all">
                     <td>
                         <div class="font-black text-white text-3xl uppercase tracking-tighter">${agentData.name || 'GUEST_OPERATOR'}</div>
@@ -747,7 +748,7 @@
                             <button onclick="authorizeAccessMode('${userNode.key}', '${agentRole}')" class="bg-slate-700 text-white text-[11px] font-black px-10 py-5 rounded-2xl shadow-4xl hover:bg-slate-600 transition-all">MODE</button>
                         </div>
                     </td>
-                </tr>`; 
+                </tr>; 
         });
     }
 
@@ -761,14 +762,14 @@
         else if(levelCode == "3") targetRole = "field_survey_staff";
         
         if(targetRole) {
-            await rtdb.ref(`users/${uid}/role`).set(targetRole);
+            await rtdb.ref(users/${uid}/role).set(targetRole);
             console.log("[SECURITY] Level protocol updated for UID:", uid);
         }
     }
 
     async function authorizeAccessMode(uid, currentRole) {
         const prefix = currentRole.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        const modeCode = prompt(`AUTHORIZE ACCESS MODE FOR ${prefix}:\n1. Level Access\n2. Access Hold\n3. Access Removed`);
+        const modeCode = prompt(AUTHORIZE ACCESS MODE FOR ${prefix}:\n1. Level Access\n2. Access Hold\n3. Access Removed);
         let targetMode = "";
         
         if(modeCode == "1") targetMode = prefix + " Leval Access";
@@ -776,7 +777,7 @@
         else if(modeCode == "3") targetMode = prefix + " Access Removed";
         
         if(targetMode) {
-            await rtdb.ref(`users/${uid}/accessStatus`).set(targetMode);
+            await rtdb.ref(users/${uid}/accessStatus).set(targetMode);
             console.log("[SECURITY] Mode protocol updated for UID:", uid);
         }
     }
@@ -805,16 +806,16 @@
                 const colorHex = node.source === 'PARTNER_APP' ? '#10b981' : '#ff7a00';
                 const mapMarker = L.marker([node.location.lat, node.location.lng]).addTo(markersLayer);
                 
-                const popupBox = `
+                const popupBox = 
                     <div class="w-80 p-8 bg-slate-900 text-white rounded-[40px] border-2 border-white/10 shadow-4xl">
                         <h4 class="text-3xl font-black italic tracking-tighter" style="color:${colorHex}">${node.firm}</h4>
                         <p class="text-[12px] font-black uppercase text-slate-500 mt-4 tracking-[8px]">${node.source}</p>
                         <hr class="my-8 border-white/5">
                         <p class="text-[14px] font-bold text-slate-300 leading-relaxed mb-6">${node.address || 'COORDINATES_VERIFIED'}</p>
                         <div class="flex gap-4 overflow-x-auto pb-4">
-                            ${(node.photos || []).map(img => `<img src="${img.src}" class="w-20 h-20 rounded-2xl object-cover border border-white/10">`).join('')}
+                            ${(node.photos || []).map(img => <img src="${img.src}" class="w-20 h-20 rounded-2xl object-cover border border-white/10">).join('')}
                         </div>
-                    </div>`;
+                    </div>;
                 mapMarker.bindPopup(popupBox);
             }
         });
@@ -829,7 +830,7 @@
         let registryCountTotal = 0;
 
         snap.forEach(categoryNode => {
-            let classBlockHtml = `
+            let classBlockHtml = 
                 <div class="glass-card p-24 border-t-[25px] border-orange-500 shadow-5xl relative overflow-hidden">
                     <div class="flex justify-between items-center mb-24 pb-16 border-b-2 border-white/10">
                         <div>
@@ -837,25 +838,25 @@
                             <h4 class="text-[40px] lg:text-[100px] font-black text-white uppercase mt-10 tracking-tighter leading-none">${categoryNode.key}</h4>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-10 lg:gap-20">`;
+                    <div class="grid grid-cols-1 gap-10 lg:gap-20">;
             
             categoryNode.forEach(varietyNode => {
                 registryCountTotal++;
                 const varData = varietyNode.val();
                 const brands = varData.brands || [];
                 
-                classBlockHtml += `
+                classBlockHtml += 
                     <div class="p-10 lg:p-20 bg-slate-900/80 rounded-[40px] lg:rounded-[80px] border-2 border-white/10 transition-all hover:border-orange-500/60 shadow-5xl">
                         <div class="mb-10 lg:mb-16">
                             <div class="interactive-tab variety-tab shadow-4xl p-4 lg:p-6 text-sm lg:text-lg">⚒️ NODE_VAR: ${varietyNode.key}</div>
                         </div>
                         <div class="flex flex-wrap gap-6 lg:gap-12 items-center">
-                            ${brands.map(b => `<div class="interactive-tab brand-tab shadow-3xl p-3 lg:p-5 text-xs lg:text-md">🏷️ ${b}</div>`).join('')}
+                            ${brands.map(b => <div class="interactive-tab brand-tab shadow-3xl p-3 lg:p-5 text-xs lg:text-md">🏷️ ${b}</div>).join('')}
                         </div>
-                    </div>`;
+                    </div>;
             });
             
-            classBlockHtml += `</div></div>`;
+            classBlockHtml += </div></div>;
             registryPortal.innerHTML += classBlockHtml;
         });
         
@@ -875,7 +876,7 @@
             const worksheet = XLSX.utils.json_to_sheet(dataRows); 
             const workbook = XLSX.utils.book_new(); 
             XLSX.utils.book_append_sheet(workbook, worksheet, "Audit_Logs"); 
-            XLSX.writeFile(workbook, `NS_AUDIT_LOG_${Date.now()}.xlsx`); 
+            XLSX.writeFile(workbook, NS_AUDIT_LOG_${Date.now()}.xlsx); 
         }
     };
 
@@ -901,165 +902,13 @@
     async function updateSupplierStatusProtocol(source, uid, nextState) {
         if(!nextState) return;
         const targetNode = source === 'PARTNER_APP' ? 'supplier_onboarding' : 'surveys';
-        await rtdb.ref(`${targetNode}/${uid}/status`).set(nextState);
+        await rtdb.ref(${targetNode}/${uid}/status).set(nextState);
         console.log("[ADMIN] Supplier status synchronized to:", nextState);
     }
     
     function logout() { auth.signOut(); }
-    <script>
-// ============================================================
-// 🔐 ENTERPRISE SECURITY + EXPORT EXTENSION MODULE (ADD-ONLY)
-// VERSION: InfraEXT_SECURE_v1
-// ============================================================
-
-// =======================
-// 🔒 ENHANCED LOGOUT
-// =======================
-function logout() {
-    const confirmExit = confirm("⚠️ TERMINATE SECURE SESSION?\n\nAll tokens & memory will be wiped.");
-
-    if (!confirmExit) return;
-
-    console.log("[SECURITY] Full Logout Initiated");
-
-    try {
-        localStorage.clear();
-        sessionStorage.clear();
-    } catch(e) {
-        console.warn("Storage cleanup skipped");
-    }
-
-    auth.signOut()
-        .then(() => {
-            console.log("[AUTH] Logout success");
-            window.location.replace("../index.html");
-        })
-        .catch(err => {
-            console.error("[AUTH ERROR]:", err.message);
-            alert("Logout Failed: " + err.message);
-        });
-}
-
-
-// =======================
-// 🔐 SECURE EXPORT ENGINE
-// =======================
-const SecureExportEngine = {
-
-    MASTER_KEY: "NS-ADMIN-SECURE-2026",
-
-    validateAccess() {
-        const key = prompt("🔐 ENTER ADMIN EXPORT KEY:");
-        if (!key) return false;
-
-        if (key !== this.MASTER_KEY) {
-            alert("❌ ACCESS DENIED");
-            return false;
-        }
-        return true;
-    },
-
-    // =======================
-    // 📊 SECURE EXCEL
-    // =======================
-    toSecureExcel() {
-        if (!this.validateAccess()) return;
-
-        console.log("[EXPORT] Secure Excel Triggered");
-
-        const dataRows = globalSurveyData.map(n => ({
-            Source: n.source,
-            Firm: n.firm,
-            Tracking_ID: n.trackingId,
-            Owner: n.ownerName || n.owner,
-            Mobile: n.ownerWa || n.phone,
-            Manager: n.mgrName,
-            Manager_Contact: n.mgrWa || n.mgrPhone,
-            Address: n.address,
-            Status: n.status,
-            Timestamp: n.timestamp ? new Date(n.timestamp).toLocaleString() : ''
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(dataRows);
-        const workbook = XLSX.utils.book_new();
-
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Secure_Audit");
-
-        XLSX.writeFile(workbook, `NS_SECURE_${Date.now()}.xlsx`);
-    },
-
-    // =======================
-    // 📄 SECURE PDF
-    // =======================
-    toSecurePDF() {
-        if (!this.validateAccess()) return;
-
-        console.log("[EXPORT] Secure PDF Triggered");
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF("l", "mm", "a3");
-
-        const columns = [
-            "Source","Firm","Tracking ID","Owner",
-            "Mobile","Manager","Address","Status"
-        ];
-
-        const rows = [];
-
-        globalSurveyData.forEach(n => {
-            rows.push([
-                n.source,
-                n.firm,
-                n.trackingId,
-                n.ownerName || n.owner,
-                n.ownerWa || n.phone,
-                n.mgrName,
-                n.address,
-                n.status
-            ]);
-        });
-
-        doc.text("NIRMANSUTRA SECURE AUDIT REPORT", 14, 15);
-
-        doc.autoTable({
-            head: [columns],
-            body: rows,
-            startY: 25,
-            styles: { fontSize: 8 }
-        });
-
-        doc.save(`NS_SECURE_${Date.now()}.pdf`);
-    }
-};
-
-
-// =======================
-// 🎯 UI BUTTON INJECTION (AUTO)
-// =======================
-document.addEventListener("DOMContentLoaded", () => {
-
-    const exportContainer = document.querySelector("#tab-explorer .flex");
-
-    if (!exportContainer) return;
-
-    const btnExcel = document.createElement("button");
-    btnExcel.innerText = "🔐 Secure Excel";
-    btnExcel.className = "bg-blue-600 text-white px-10 py-6 rounded-[25px] font-black uppercase hover:bg-blue-500 shadow-4xl transition-all";
-    btnExcel.onclick = () => SecureExportEngine.toSecureExcel();
-
-    const btnPDF = document.createElement("button");
-    btnPDF.innerText = "🔐 Secure PDF";
-    btnPDF.className = "bg-purple-600 text-white px-10 py-6 rounded-[25px] font-black uppercase hover:bg-purple-500 shadow-4xl transition-all";
-    btnPDF.onclick = () => SecureExportEngine.toSecurePDF();
-
-    exportContainer.appendChild(btnExcel);
-    exportContainer.appendChild(btnPDF);
-
-    console.log("[UI] Secure Export Buttons Injected");
-});
-
 </script>
-</script>
+
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
