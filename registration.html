@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
         
-        /* 1. IDENTITY GATE ARCHITECTURE */
         .auth-gate { 
             position: fixed; 
             inset: 0; 
@@ -65,7 +64,6 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 2. DESIGN SYSTEM (CARDS & INPUTS) */
         .card { 
             background: var(--card); 
             border-radius: 45px; 
@@ -133,7 +131,6 @@
             letter-spacing: 2px;
         }
 
-        /* 3. INTERACTIVE COMPONENTS (CHIPS & GRID) */
         .mat-item { 
             background: var(--primary); 
             color: white; 
@@ -187,7 +184,6 @@
             box-shadow: 0 20px 30px rgba(16,185,129,0.3); 
         }
 
-        /* 4. FLEET MATRIX & PHOTO GRID */
         .fleet-unit { 
             background: #f8fafc; 
             padding: 30px; 
@@ -236,7 +232,6 @@
             line-height: 1.8; 
         }
 
-        /* 5. ACTION BAR & GLOBAL UI */
         .action-bar { 
             position: fixed; 
             bottom: 0; left: 0; right: 0; 
@@ -267,7 +262,6 @@
         .hidden { display: none; }
         .step-inactive { opacity: 0.02; pointer-events: none; filter: grayscale(1); }
 
-        /* MOBILE OVERRIDES (NEW ADDITIVE CSS) */
         @media (max-width: 640px) {
             .gate-card { padding: 40px 20px; border-radius: 30px; }
             .card { padding: 30px 20px; border-radius: 35px; }
@@ -423,7 +417,6 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database(), auth = firebase.auth();
 
-    // SYSTEM STATE ARCHITECTURE
     window.Survey = {
         state: { 
             location: null, mat: null, varieties: [], brands: [], 
@@ -440,7 +433,6 @@
         }
     };
 
-    // IDENTITY & SECURITY GATE
     window.AuthManager = {
         userData: null,
         login() {
@@ -467,7 +459,6 @@
         }
     };
 
-    // GEOSPATIAL SPATIAL LOCK
     window.Geo = {
         map: null, marker: null,
         init() {
@@ -492,7 +483,6 @@
         }
     };
 
-    // EVIDENCE CANVAS SYSTEM
     window.Evidence = {
         handle(input) {
             if(!Survey.state.location) return alert("📍 Verify Spatial Lock first.");
@@ -507,7 +497,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, 1200, 900);
                     
-                    // META STAMPING ENGINE
                     ctx.fillStyle = "rgba(0,0,0,0.7)";
                     ctx.fillRect(0, 800, 1200, 100);
                     ctx.fillStyle = "#10b981";
@@ -533,7 +522,6 @@
         remove(idx) { if(confirm("Discard Evidence Frame?")) { Survey.state.photos.splice(idx,1); this.render(); } }
     };
 
-    // CONTACT VALIDATION LOGIC
     window.Validation = {
         phone(input, waId) {
             let val = input.value.trim().replace(/\D/g, '');
@@ -550,7 +538,6 @@
         }
     };
 
-    // MATERIAL & BRAND INTELLIGENCE
     function syncRegistry() {
         rtdb.ref('registry/materials').on('value', snap => {
             const cont = document.getElementById('matSelector'); if(!cont) return; cont.innerHTML = "";
@@ -602,14 +589,12 @@
         idx > -1 ? Survey.state.brands.splice(idx, 1) : Survey.state.brands.push(b); 
     };
 
-    // FLEET MATRIX
     window.fleetStep = function(t, v) { 
         if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0; 
         Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); 
         document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; 
     };
 
-    // PERSISTENCE & SUBMISSION
     window.Draft = { save() { localStorage.setItem('ns_p_final_v46', JSON.stringify(Survey.state)); alert("💾 Local state secured."); } };
 
     window.RegistrationEngine = {
