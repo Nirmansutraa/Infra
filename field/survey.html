@@ -26,7 +26,6 @@
             -webkit-font-smoothing: antialiased; 
         }
         
-        /* Modernized Responsive Card System */
         .card { 
             background: var(--card); 
             border-radius: 35px; 
@@ -52,7 +51,6 @@
             display: block; 
         }
 
-        /* Digital Identity Box */
         .id-box { 
             background: var(--primary); 
             color: #10b981; 
@@ -68,7 +66,6 @@
             text-shadow: 0 0 20px rgba(16,185,129,0.5);
         }
 
-        /* Mobile-First Inputs */
         input, select, textarea { 
             width: 100%; 
             background: #f1f5f9; 
@@ -94,7 +91,6 @@
             padding-left: 8px; 
         }
 
-        /* Material Category Interactive Items */
         .mat-item { 
             background: var(--primary); 
             color: white; 
@@ -115,7 +111,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
-        /* INDIVIDUAL VARIETY TAB GRID */
         .tab-grid { 
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
@@ -146,10 +141,9 @@
             color: white; 
             border-color: var(--accent); 
             transform: translateY(-4px); 
-            box-shadow: 0 12px 20px rgba(255,122,0,0.2); 
+            box-shadow: 0 12px 20px rgba(255,122,0,0.25); 
         }
 
-        /* 6-VEHICLE LOGISTICS MATRIX */
         .fleet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .fleet-unit { 
             background: #f8fafc; 
@@ -177,7 +171,6 @@
         }
         .circle-btn:active { transform: scale(0.85); }
 
-        /* PHOTO EVIDENCE WITH META-STAMPS */
         .photo-slot { 
             aspect-ratio: 1; 
             background: #f1f5f9; 
@@ -203,7 +196,6 @@
             line-height: 1.6; 
         }
 
-        /* PERSISTENT ACTION BAR */
         .action-bar { 
             position: fixed; 
             bottom: 0; 
@@ -350,9 +342,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    /**
-     * CORE SYNC ENGINE (v75.0) - ALIGNED WITH DASHBOARD v90.0
-     */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -382,7 +371,6 @@
 
             const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
             
-            // PAYLOAD ALIGNMENT WITH DASHBOARD
             const payload = { 
                 ...this.state, 
                 firm: firm, 
@@ -401,7 +389,6 @@
                 status: 'live'
             };
 
-            // NEW: Role Specific Data Enrichment
             if(this.state.role === 'field_staff') payload.audit = document.getElementById('inspectionNotes').value;
             if(this.state.role === 'supplier') payload.gst = document.getElementById('gstNumber').value;
 
@@ -533,29 +520,16 @@
         const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
         document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `<div class="fleet-unit"><span class="text-[11px] font-black text-slate-500 uppercase">${t}</span><div class="flex items-center gap-6"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}" class="font-black text-sm w-[25px] text-center">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join('');
         
-        // ENHANCED SECURITY HANDSHAKE
         auth.onAuthStateChanged(async u => { 
             if(u) {
                 document.getElementById('agentIdentity').innerText = "AGENT: " + u.email.toUpperCase();
-                
-                // Fetch User Role for RBAC
                 const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
                 const role = snap.val();
                 Survey.state.role = role || 'guest';
-
                 const badge = document.getElementById('roleBadge');
-                if(badge) {
-                    badge.classList.remove('hidden');
-                    badge.innerText = role ? role.toUpperCase() : 'NO ROLE';
-                }
-
-                // UI Visibility Protection
-                if (role === 'field_staff' || role === 'admin' || role === 'super_admin') {
-                    document.getElementById('staffSection').classList.remove('hidden');
-                } 
-                if (role === 'supplier' || role === 'admin' || role === 'super_admin') {
-                    document.getElementById('supplierSection').classList.remove('hidden');
-                }
+                if(badge) { badge.classList.remove('hidden'); badge.innerText = role ? role.toUpperCase() : 'NO ROLE'; }
+                if (role === 'field_staff' || role === 'admin' || role === 'super_admin') { document.getElementById('staffSection').classList.remove('hidden'); } 
+                if (role === 'supplier' || role === 'admin' || role === 'super_admin') { document.getElementById('supplierSection').classList.remove('hidden'); }
             } else { location.href="../index.html"; }
         });
     };
