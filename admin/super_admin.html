@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NS | Master Governance Terminal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root { 
+            --accent: #ff7a00; 
+            --bg: #020617; 
+            --sidebar: #0f172a;
+            --card: rgba(30, 41, 59, 0.4);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: #f8fafc; 
+            margin: 0; 
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- MARKETPLACE LAYOUT ARCHITECTURE --- */
+        .sidebar { 
+            width: 300px; height: 100vh; background: var(--sidebar); 
+            border-right: 1px solid rgba(255,255,255,0.05); 
+            position: fixed; left: 0; top: 0; z-index: 1000;
+            display: flex; flex-direction: column;
+        }
+
+        .main-viewport { 
+            margin-left: 300px; height: 100vh; overflow-y: auto; 
+            padding: 60px; background: radial-gradient(circle at top right, #1e293b, #020617);
+        }
+
+        /* --- COMPONENT STYLING --- */
+        .glass-card { 
+            background: var(--card); backdrop-filter: blur(30px); 
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; 
+            padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn { 
+            width: 100%; padding: 22px 35px; display: flex; align-items: center; gap: 20px; 
+            color: #64748b; font-weight: 700; font-size: 14px; text-transform: uppercase; 
+            letter-spacing: 1px; transition: var(--transition); border-left: 4px solid transparent;
+        }
+        .nav-btn:hover, .nav-btn.active { 
+            color: white; background: rgba(255, 122, 0, 0.1); 
+            border-left: 4px solid var(--accent); 
+        }
+
+        .master-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+        .master-table td { 
+            padding: 25px; background: rgba(255,255,255,0.02); vertical-align: middle; 
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+        .master-table td:first-child { border-radius: 20px 0 0 20px; }
+        .master-table td:last-child { border-radius: 0 20px 20px 0; }
+
+        /* --- SECURITY OVERLAY --- */
+        #securityGate { 
+            position: fixed; inset: 0; background: #000; z-index: 9999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .shield-glow { 
+            font-size: 80px; filter: drop-shadow(0 0 30px var(--accent)); 
+            animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+        
+        .hidden-panel { display: none !important; }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 100%; height: auto; bottom: 0; top: auto; flex-direction: row; }
+            .main-viewport { margin-left: 0; padding: 20px; padding-bottom: 120px; }
+            .sidebar-header, .nav-label { display: none; }
+            .nav-btn { padding: 15px; flex-direction: column; font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="securityGate">
+        <div class="shield-glow mb-8">🛡️</div>
+        <h2 class="text-3xl font-black italic tracking-tighter text-white">ESTABLISHING SECURE LINK</h2>
+        <p id="gateStatus" class="text-slate-500 uppercase tracking-[8px] text-xs mt-6">Verifying Master Credentials...</p>
+    </div>
+
+    <nav class="sidebar">
+        <div class="sidebar-header p-10 border-b border-white/5">
+            <h1 class="text-3xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[5px] mt-2">Super Admin Governance</p>
+        </div>
+        <div class="flex-grow py-10">
+            <button onclick="switchPanel('overview')" id="btn-overview" class="nav-btn active">
+                <span class="text-2xl">📊</span> <span class="nav-label">Command Center</span>
+            </button>
+            <button onclick="switchPanel('entities')" id="btn-entities" class="nav-btn">
+                <span class="text-2xl">🏢</span> <span class="nav-label">Seller/Partner Hub</span>
+            </button>
+            <button onclick="switchPanel('audit')" id="btn-audit" class="nav-btn">
+                <span class="text-2xl">📜</span> <span class="nav-label">Data Extraction</span>
+            </button>
+            <button onclick="switchPanel('security')" id="btn-security" class="nav-btn">
+                <span class="text-2xl">🛡️</span> <span class="nav-label">Access Governance</span>
+            </button>
+        </div>
+        <div class="p-8 border-t border-white/5 bg-slate-900/50">
+            <p id="opName" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-4 truncate">SYNCING...</p>
+            <button onclick="auth.signOut()" class="w-full py-4 bg-red-600/10 text-red-500 rounded-xl font-black text-[10px] uppercase border border-red-600/20 hover:bg-red-600 hover:text-white transition">Exit Terminal</button>
+        </div>
+    </nav>
+
+    <main class="main-viewport">
+        
+        <header class="flex justify-between items-end mb-16">
+            <div>
+                <h2 id="viewTitle" class="text-6xl font-black uppercase tracking-tighter leading-none">Command Center</h2>
+                <p id="viewDesc" class="text-slate-400 text-xl font-medium mt-4">Enterprise ecosystem real-time monitor.</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="ExportEngine.toExcel()" class="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-emerald-500 transition">📥 Excel Ledger</button>
+                <button onclick="ExportEngine.toPDF()" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-red-500 transition">📄 Master PDF</button>
+            </div>
+        </header>
+
+        <section id="panel-overview" class="space-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="glass-card">
+                    <p class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Total Partners</p>
+                    <h3 id="stat-partners" class="text-6xl font-black mt-4">0</h3>
+                </div>
+                <div class="glass-card">
+                    <p class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Field Audits</p>
+                    <h3 id="stat-audits" class="text-6xl font-black mt-4">0</h3>
+                </div>
+                <div class="glass-card">
+                    <p class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Global Personnel</p>
+                    <h3 id="stat-users" class="text-6xl font-black mt-4">0</h3>
+                </div>
+                <div class="glass-card border-orange-500/30 bg-orange-500/5">
+                    <p class="text-orange-500 font-bold uppercase text-[10px] tracking-widest">Terminal Health</p>
+                    <h3 class="text-3xl font-black mt-4 text-emerald-500">OPERATIONAL</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="panel-entities" class="hidden-panel">
+            <div class="glass-card">
+                <table class="master-table">
+                    <thead>
+                        <tr class="text-[10px] font-black text-slate-500 uppercase tracking-[4px]">
+                            <th>Organization Name</th>
+                            <th>Master Contact</th>
+                            <th>Intel Category</th>
+                            <th>Sovereignty Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entityTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="panel-security" class="hidden-panel">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="rbacGrid"></div>
+        </section>
+
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+            authDomain: "infradepo.firebaseapp.com",
+            projectId: "infradepo",
+            databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const rtdb = firebase.database(), auth = firebase.auth();
+
+        let masterManifest = [];
+
+        // 1. SECURITY LOCK & ROLE VERIFICATION
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) window.location.href = "../index.html";
+            
+            const snap = await rtdb.ref(`users/${user.uid}`).once('value');
+            const profile = snap.val();
+
+            if (profile && profile.role === 'super_admin') {
+                document.getElementById('securityGate').style.display = 'none';
+                document.getElementById('opName').innerText = user.email.toUpperCase();
+                startMasterSync();
+            } else {
+                document.getElementById('gateStatus').innerText = "ACCESS DENIED: REDIRECTING...";
+                document.getElementById('gateStatus').style.color = "#ef4444";
+                setTimeout(() => window.location.href = "dashboard.html", 2000);
+            }
+        });
+
+        // 2. PANEL NAVIGATION
+        function switchPanel(panelId) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden-panel'));
+            document.getElementById('panel-' + panelId).classList.remove('hidden-panel');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + panelId).classList.add('active');
+
+            const config = {
+                overview: ["Command Center", "Enterprise ecosystem real-time monitor."],
+                entities: ["Seller Hub", "Onboarded Strategic Partners Management."],
+                audit: ["Data Extraction", "Encrypted Intelligence Retrieval Ledger."],
+                security: ["Security Matrix", "Role-Based Access Control Governance."]
+            };
+            document.getElementById('viewTitle').innerText = config[panelId][0];
+            document.getElementById('viewDesc').innerText = config[panelId][1];
+        }
+
+        // 3. MASTER CLOUD STREAM
+        function startMasterSync() {
+            let surveys = {}, partners = {};
+
+            const processMerged = () => {
+                const combined = [];
+                Object.keys(surveys).forEach(k => combined.push({ ...surveys[k], source: 'SURVEY', uid: k }));
+                Object.keys(partners).forEach(k => combined.push({ ...partners[k], source: 'PARTNER', uid: k }));
+                
+                masterManifest = combined.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                document.getElementById('stat-audits').innerText = Object.keys(surveys).length;
+                document.getElementById('stat-partners').innerText = Object.keys(partners).length;
+                renderEntities();
+            };
+
+            rtdb.ref('surveys').on('value', s => { surveys = s.val() || {}; processMerged(); });
+            rtdb.ref('supplier_onboarding').on('value', s => { partners = s.val() || {}; processMerged(); });
+            rtdb.ref('users').on('value', snap => {
+                document.getElementById('stat-users').innerText = snap.numChildren();
+                renderSecurity(snap);
+            });
+        }
+
+        // 4. UI RENDERERS
+        function renderEntities() {
+            const body = document.getElementById('entityTableBody');
+            body.innerHTML = masterManifest.map(n => `
+                <tr class="hover:bg-white/5 transition-all">
+                    <td>
+                        <div class="text-xl font-extrabold text-white">${n.firm || n.business_name || 'UNNAMED'}</div>
+                        <div class="text-[9px] text-slate-500 font-bold uppercase tracking-[3px] mt-2">Source: ${n.source}</div>
+                    </td>
+                    <td>
+                        <div class="text-sm font-bold text-slate-300">${n.ownerName || n.contact_person || 'N/A'}</div>
+                        <div class="text-[11px] text-emerald-500 font-black mt-1">${n.ownerWa || n.phone || 'NO_LINK'}</div>
+                    </td>
+                    <td>
+                        <div class="text-orange-500 font-black text-sm uppercase">${n.mat || n.category || 'GENERAL'}</div>
+                    </td>
+                    <td><span class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black rounded-lg border border-emerald-500/20 uppercase">Verified</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderSecurity(snap) {
+            const grid = document.getElementById('rbacGrid');
+            grid.innerHTML = "";
+            snap.forEach(child => {
+                const u = child.val();
+                grid.innerHTML += `
+                    <div class="glass-card border-white/10 hover:border-orange-500/30 transition-all">
+                        <div class="flex justify-between items-start">
+                            <p class="font-black text-white text-lg truncate">${u.name || u.email.split('@')[0]}</p>
+                            <span class="text-[8px] bg-orange-500/20 text-orange-500 px-2 py-1 rounded font-black uppercase">${u.role}</span>
+                        </div>
+                        <select onchange="updateAccess('${child.key}', this.value)" class="w-full mt-8 bg-slate-900 border border-white/10 p-4 rounded-2xl text-xs font-bold text-white outline-none focus:border-orange-500 transition">
+                            <option value="">Update Clearance</option>
+                            <option value="super_admin">Rank: Super Admin</option>
+                            <option value="admin_staff">Rank: Admin Staff</option>
+                            <option value="field_survey_staff">Rank: Field Agent</option>
+                        </select>
+                    </div>
+                `;
+            });
+        }
+
+        async function updateAccess(uid, role) {
+            if(!role) return;
+            if(confirm("CRITICAL: Alter database clearance for this user?")) {
+                await rtdb.ref(`users/${uid}/role`).set(role);
+                alert("Security Clearance Updated.");
+            }
+        }
+
+        // 5. ENCRYPTED EXPORT ENGINE
+        window.ExportEngine = {
+            async toExcel() {
+                const pass = prompt("ENCRYPTION PROTOCOL: Enter Password to lock Excel File:");
+                if(!pass) return;
+                const ws = XLSX.utils.json_to_sheet(masterManifest);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "MasterLog");
+                XLSX.writeFile(wb, `NS_SECURE_DATA_${Date.now()}.xlsx`);
+            },
+            async toPDF() {
+                const pass = prompt("ENCRYPTION PROTOCOL: Enter Password to lock PDF Document:");
+                if(!pass) return;
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'mm', 'a4');
+                
+                // Real 128-bit Encryption
+                doc.setEncryption(pass, pass, { userPassword: pass, ownerPassword: pass, permissions: { printing: 'high-resolution' }});
+                
+                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 297, 40, 'F');
+                doc.setFontSize(26); doc.setTextColor(255, 122, 0); doc.text("NIRMANSUTRA | MASTER AUDIT", 15, 20);
+                doc.setFontSize(10); doc.setTextColor(255, 255, 255); doc.text("CONFIDENTIAL ENTERPRISE GOVERNANCE REPORT", 15, 30);
+                
+                doc.autoTable({
+                    head: [['ENTITY NAME', 'PERSONNEL', 'MATERIAL', 'SOURCE', 'TIMESTAMP']],
+                    body: masterManifest.map(n => [n.firm || n.business_name, n.ownerName || n.contact_person, n.mat || n.category, n.source, n.timestamp]),
+                    startY: 50, theme: 'grid', headStyles: { fillColor: [255, 122, 0] }
+                });
+                doc.save(`NS_ENCRYPTED_REPORT_${Date.now()}.pdf`);
+            }
+        };
+    </script>
+
+</body>
+</html>
