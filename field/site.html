@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Global Field Intelligence v2.2</title>
+    <title>Nirmansutra | Global Field Intelligence v2.3</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -157,7 +157,23 @@
     </div>
 
     <div class="card">
-        <span class="section-label">02. Entity & Contact Matrix</span>
+        <span class="section-label">02. Site Progress Stage</span>
+        <label>Current Construction Stage</label>
+        <select id="constructionStage">
+            <option value="Excavation">Excavation & Earthwork</option>
+            <option value="Foundation">Foundation / Plinth Beam</option>
+            <option value="Columns">Column & Lintel Casting</option>
+            <option value="Slab">Slab / Roof Casting</option>
+            <option value="Brickwork">Brickwork & Masonry</option>
+            <option value="Plastering">Internal / External Plastering</option>
+            <option value="Flooring">Flooring & Tiling</option>
+            <option value="Finishing">Painting & Finishing</option>
+        </select>
+        <textarea id="stageNotes" class="mt-4" placeholder="Stage specific observations..."></textarea>
+    </div>
+
+    <div class="card">
+        <span class="section-label">03. Entity & Contact Matrix</span>
         <input id="projectName" placeholder="Project / Site Name" class="mb-4">
         <input id="clientName" placeholder="Owner / Builder Legal Name">
         
@@ -180,7 +196,7 @@
     </div>
 
     <div class="card">
-        <span class="section-label">03. Material Demand Forecast</span>
+        <span class="section-label">04. Material Demand Forecast</span>
         
         <div class="mat-card">
             <div class="flex justify-between items-center mb-4">
@@ -194,11 +210,7 @@
                 </select>
                 <input id="val_sand" type="number" placeholder="Input Value" oninput="SiteIntel.calc('sand')">
             </div>
-            <select id="brand_sand">
-                <option value="Local">Local Generic</option>
-                <option value="Banas">Banas Sand</option>
-                <option value="M-Sand">Manufactured Sand (M-Sand)</option>
-            </select>
+            <select id="brand_sand"><option value="Local">Local Generic</option><option value="Banas">Banas Sand</option><option value="M-Sand">M-Sand</option></select>
         </div>
 
         <div class="mat-card">
@@ -214,23 +226,34 @@
                 </select>
                 <input id="val_bricks" type="number" placeholder="Input Value" oninput="SiteIntel.calc('bricks')">
             </div>
-            <select id="brand_bricks">
-                <option value="Red">Red Clay Bricks</option>
-                <option value="AAC">AAC Blocks</option>
-                <option value="FlyAsh">Fly Ash Bricks</option>
-            </select>
+            <select id="brand_bricks"><option value="Red">Red Clay Bricks</option><option value="AAC">AAC Blocks</option></select>
         </div>
 
         <div class="mat-card">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">3. Cement</span>
+                <span class="text-[13px] font-black uppercase tracking-widest">3. Aggregates (Gitti)</span>
+                <span id="calc_gitti" class="calc-badge">0.0 Tons</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <select id="unit_gitti" onchange="SiteIntel.calc('gitti')">
+                    <option value="18">10-Wheeler (18T)</option>
+                    <option value="1">Direct Tons</option>
+                </select>
+                <input id="val_gitti" type="number" placeholder="Input Value" oninput="SiteIntel.calc('gitti')">
+            </div>
+            <select id="grade_gitti"><option>20mm (Slabs)</option><option>40mm (Foundations)</option><option>60mm (Base)</option></select>
+        </div>
+
+        <div class="mat-card">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-[13px] font-black uppercase tracking-widest">4. Cement</span>
                 <span id="calc_cement" class="calc-badge">0 Bags</span>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <select id="unit_cement" onchange="SiteIntel.calc('cement')">
-                    <option value="1">Individual Bags</option>
+                    <option value="1">Bags</option>
                     <option value="40">Tempo (40 Bags)</option>
-                    <option value="300">Truck (300+ Bags)</option>
+                    <option value="300">Truck (300 Bags)</option>
                 </select>
                 <input id="val_cement" type="number" placeholder="Input Value" oninput="SiteIntel.calc('cement')">
             </div>
@@ -242,15 +265,15 @@
 
         <div class="mat-card">
             <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">4. TMT Steel (Sariya)</span>
+                <span class="text-[13px] font-black uppercase tracking-widest">5. TMT Steel (Sariya)</span>
                 <span id="calc_tmt" class="calc-badge">0.0 kg</span>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <select id="dia_tmt" onchange="SiteIntel.calc('tmt')">
-                    <option value="47">8mm (47kg/Bhadi)</option>
-                    <option value="50">10mm (50kg/Bhadi)</option>
-                    <option value="52">12mm (52kg/Bhadi)</option>
-                    <option value="55">16mm (55kg/Bhadi)</option>
+                    <option value="47">8mm (47kg)</option>
+                    <option value="50">10mm (50kg)</option>
+                    <option value="52">12mm (52kg)</option>
+                    <option value="55">16mm (55kg)</option>
                 </select>
                 <input id="val_tmt" type="number" placeholder="Bundles" oninput="SiteIntel.calc('tmt')">
             </div>
@@ -259,19 +282,33 @@
                 <option>Kamdhenu</option><option>Rathi</option><option>SRMB</option><option>Electrosteel</option><option>Gallantt</option>
             </select>
         </div>
+
+        <div class="mat-card">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-[13px] font-black uppercase tracking-widest">6. Masonry Stone / RMC</span>
+                <span id="calc_rmc" class="calc-badge">0.0 Units</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <select id="unit_rmc" onchange="SiteIntel.calc('rmc')">
+                    <option value="6.5">Transit Mixer (6.5m³)</option>
+                    <option value="1">Direct Tons (Stone)</option>
+                </select>
+                <input id="val_rmc" type="number" placeholder="Input Value" oninput="SiteIntel.calc('rmc')">
+            </div>
+        </div>
     </div>
 
     <div class="card">
-        <span class="section-label">04. Field Evidence Grid (Max 10)</span>
+        <span class="section-label">05. Field Evidence Grid (Max 10)</span>
         <div class="grid grid-cols-5 gap-4 mt-8" id="photoGrid">
             <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-50 transition-all">+</button>
         </div>
         <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="Evidence.process(this)">
-        <p class="text-[10px] font-black text-slate-400 mt-6 text-center uppercase tracking-widest italic">Live GPS Meta-Stamping Enabled (Limit 512KB)</p>
+        <p class="text-[10px] font-black text-slate-400 mt-6 text-center uppercase tracking-widest italic">Live GPS & Timestamp Enabled (Max 512KB)</p>
     </div>
 
     <div class="card">
-        <span class="section-label">05. GPS proofing & Spatial Trace</span>
+        <span class="section-label">06. GPS proofing & Spatial Trace</span>
         <div id="map" class="h-80 rounded-[40px] mb-8 border border-slate-200 shadow-inner"></div>
         <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[2px] mb-8 shadow-xl">📍 Capture Verified Location</button>
         <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync..." readonly></textarea>
@@ -316,22 +353,21 @@
             let label = "";
 
             if(item === 'tmt') {
-                const weightPerBhadi = parseFloat(document.getElementById('dia_tmt').value);
-                result = val * weightPerBhadi;
+                result = val * parseFloat(document.getElementById('dia_tmt').value);
                 label = result.toFixed(1) + " kg Total";
             } else {
-                const multiplier = parseFloat(document.getElementById(`unit_${item}`).value);
-                result = val * multiplier;
-                label = (item === 'bricks' || item === 'cement') ? result.toFixed(0) + " Units" : result.toFixed(1) + " Tons";
+                result = val * parseFloat(document.getElementById(`unit_${item}`).value);
+                label = (item === 'bricks' || item === 'cement') ? result.toFixed(0) + " Units" : result.toFixed(1) + " Tons/m³";
             }
 
             document.getElementById(`calc_${item}`).innerText = label;
-            this.state.forecast[item] = { total: result, brand: document.getElementById(`brand_${item}`).value };
+            const brandEl = document.getElementById(`brand_${item}`);
+            this.state.forecast[item] = { total: result, brand: brandEl ? brandEl.value : 'N/A' };
         },
 
         async sync() {
             const projectName = document.getElementById('projectName').value;
-            if(!this.state.location || !projectName) return alert("❌ Site protocol incomplete: Name & GPS required.");
+            if(!this.state.location || !projectName) return alert("❌ Missing Site Name or GPS.");
             const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
             
             const payload = {
@@ -339,19 +375,20 @@
                 client: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value,
                 whatsapp: document.getElementById('clientWa').value,
+                stage: document.getElementById('constructionStage').value,
+                notes: document.getElementById('stageNotes').value,
                 forecast: this.state.forecast,
                 photos: this.state.photos,
                 location: this.state.location,
                 address: document.getElementById('address').value,
                 agent: auth.currentUser.email,
-                agent_identity: auth.currentUser.email.split('@')[0].toUpperCase(),
                 timestamp: Date.now(),
-                status: 'site_audit'
+                status: 'construction_audit'
             };
 
             try {
-                await rtdb.ref('site_audits_v3').push(payload);
-                alert("✅ SITE DATA SYNCED: Terminal integrated.");
+                await rtdb.ref('site_audits_v4').push(payload);
+                alert("✅ SYNC SUCCESS");
                 location.reload();
             } catch(e) { alert("❌ Sync Fault: " + e.message); btn.innerText = "🚀 Finalize Site Sync"; }
         }
@@ -359,8 +396,8 @@
 
     window.Evidence = {
         process(input) {
-            if(SiteIntel.state.photos.length >= 10) return alert("Maximum 10 Evidence slots filled.");
-            if(!SiteIntel.state.location) return alert("📍 Verify Spatial Lock first for Meta-Stamping.");
+            if(SiteIntel.state.photos.length >= 10) return alert("Max 10 Photos allowed.");
+            if(!SiteIntel.state.location) return alert("📍 Capture GPS first for tagging.");
 
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -394,17 +431,13 @@
             const addBtn = grid.querySelector('button');
             grid.innerHTML = ""; grid.appendChild(addBtn);
             SiteIntel.state.photos.forEach(p => {
-                grid.innerHTML += `
-                    <div class="photo-slot">
-                        <img src="${p.src}" class="w-full h-full object-cover">
-                        <div class="stamp-overlay">${p.time}<br>GPS: ${p.gps}</div>
-                    </div>`;
+                grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">${p.time}<br>GPS: ${p.gps}</div></div>`;
             });
         }
     };
 
     window.Geo = {
-        lat: null, lng: null, map: null, marker: null,
+        map: null, marker: null,
         init() {
             this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
@@ -426,9 +459,8 @@
     window.onload = () => { 
         Geo.init(); 
         auth.onAuthStateChanged(u => { 
-            if(u) {
-                document.getElementById('agentIdentity').innerText = "AUDITOR: " + u.email.toUpperCase();
-            } else { location.href="../index.html"; }
+            if(u) { document.getElementById('agentIdentity').innerText = "AUDITOR: " + u.email.toUpperCase(); } 
+            else { location.href="../index.html"; }
         }); 
     };
 </script>
