@@ -27,7 +27,7 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
-            line-height: 1.6; /* Improved Readability */
+            line-height: 1.6;
         }
 
         /* --- HERO MODULE --- */
@@ -45,12 +45,11 @@
             line-height: 1.05; 
             font-weight: 800; 
             letter-spacing: -0.03em; 
-            /* High Contrast Solid White */
             color: #ffffff;
             margin-bottom: 2.5rem;
         }
 
-        /* --- IDENTITY DOCK (ENHANCED READABILITY) --- */
+        /* --- IDENTITY DOCK --- */
         .identity-dock {
             position: fixed; bottom: 30px; right: 30px; width: 340px;
             background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(30px);
@@ -60,6 +59,22 @@
         }
         .dock-minimized { transform: translateY(calc(100% - 75px)); opacity: 0.95; }
         .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 25px; color: var(--accent); font-weight: 800; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- SEGMENT PORTAL STYLING (NEW ADDITION) --- */
+        .segment-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 35px;
+            text-align: center;
+            transition: var(--transition-main);
+            cursor: pointer;
+        }
+        .segment-card:hover {
+            border-color: var(--accent);
+            background: rgba(255, 122, 0, 0.05);
+            transform: translateY(-5px);
+        }
 
         /* --- CONTENT SCALING --- */
         .scaled-section { padding-top: 120px; padding-bottom: 120px; padding-left: 8%; padding-right: 8%; }
@@ -86,10 +101,6 @@
         }
         .contact-tile:hover { border-color: var(--accent); background: #1e293b; }
 
-        /* --- HIDDEN SECTIONS --- */
-        .hidden-internal { display: none !important; }
-
-        /* --- LEGAL OVERLAY --- */
         .legal-overlay { 
             display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); 
             z-index: 9999; padding: 40px; backdrop-filter: blur(25px); overflow-y: auto;
@@ -99,16 +110,11 @@
             border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); 
             box-shadow: 0 50px 100px rgba(0,0,0,0.5);
         }
-        .legal-content-box h2 { color: var(--accent); font-weight: 800; font-size: 2.5rem; margin-bottom: 25px; text-transform: uppercase; }
-        .legal-content-box h3 { color: white; font-weight: 800; font-size: 1.3rem; margin: 35px 0 15px 0; border-left: 4px solid var(--accent); padding-left: 15px; }
-        .legal-content-box p, .legal-content-box li { color: #cbd5e1; line-height: 1.8; margin-bottom: 15px; font-size: 1.1rem; }
 
         @media (max-width: 768px) {
             .hero-matrix { padding: 140px 25px 80px; text-align: center; justify-content: center; }
             .kinetic-title { font-size: 4rem; }
-            .scaled-title { font-size: 3rem; }
             .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; }
-            .legal-content-box { padding: 40px 25px; }
         }
     </style>
 </head>
@@ -165,17 +171,35 @@
     </header>
 
     <main class="hero-matrix">
-        <div class="max-w-6xl">
-            <div class="inline-block px-8 py-3 bg-orange-500/10 border border-orange-500/20 rounded-full mb-10">
-                <span class="text-orange-500 font-black uppercase tracking-[8px] text-xs">Strategic Access Node 2026</span>
+        <div class="max-w-6xl w-full">
+            <div id="segmentPortal" class="hidden mb-20 animate-pulse">
+                <span class="text-orange-500 font-black uppercase tracking-[8px] text-xs block mb-8">Access Authorized: Select Operational Path</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div onclick="window.location.href='field/survey.html'" class="segment-card">
+                        <span class="text-4xl block mb-4">🏪</span>
+                        <h4 class="text-xl font-black text-white uppercase tracking-widest">Supplier Matrix</h4>
+                        <p class="text-xs text-slate-400 mt-2 font-bold uppercase">Launch survey.html</p>
+                    </div>
+                    <div onclick="window.location.href='field/site.html'" class="segment-card">
+                        <span class="text-4xl block mb-4">🏗️</span>
+                        <h4 class="text-xl font-black text-white uppercase tracking-widest">Site Intelligence</h4>
+                        <p class="text-xs text-slate-400 mt-2 font-bold uppercase">Launch site.html</p>
+                    </div>
+                </div>
             </div>
-            <h2 class="kinetic-title italic">Building the<br>Foundations of<br><span class="text-orange-500">Certainty.</span></h2>
-            <p class="text-slate-300 text-2xl md:text-4xl leading-snug max-w-4xl font-medium mb-16">
-                NirmanSutra transforms fragmented field data into structured, verified material intelligence. Build with absolute confidence.
-            </p>
-            <div class="flex flex-wrap gap-8">
-                <a href="#about" class="bg-orange-500 text-white px-14 py-7 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl hover:scale-105 transition-all duration-500">Explore Matrix</a>
-                <a href="#contact" class="border-2 border-white/20 px-14 py-7 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-white/5 transition-all">Request Demo</a>
+
+            <div id="heroContent">
+                <div class="inline-block px-8 py-3 bg-orange-500/10 border border-orange-500/20 rounded-full mb-10">
+                    <span class="text-orange-500 font-black uppercase tracking-[8px] text-xs">Strategic Access Node 2026</span>
+                </div>
+                <h2 class="kinetic-title italic">Building the<br>Foundations of<br><span class="text-orange-500">Certainty.</span></h2>
+                <p class="text-slate-300 text-2xl md:text-4xl leading-snug max-w-4xl font-medium mb-16">
+                    NirmanSutra transforms fragmented field data into structured, verified material intelligence. Build with absolute confidence.
+                </p>
+                <div class="flex flex-wrap gap-8">
+                    <a href="#about" class="bg-orange-500 text-white px-14 py-7 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl hover:scale-105 transition-all duration-500">Explore Matrix</a>
+                    <a href="#contact" class="border-2 border-white/20 px-14 py-7 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-white/5 transition-all">Request Demo</a>
+                </div>
             </div>
         </div>
     </main>
@@ -224,9 +248,6 @@
             </div>
         </div>
     </section>
-
-    <section id="features" class="hidden-internal"></section>
-    <section id="protocol" class="hidden-internal"></section>
 
     <section id="leadership" class="scaled-section bg-slate-950">
         <div class="max-w-5xl mx-auto text-center flex flex-col items-center">
@@ -315,7 +336,8 @@
         function openLegal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
         function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); document.body.style.overflow = 'auto'; }
 
-        const ROLE_ROUTES = { 'super_admin': 'admin/dashboard.html', 'admin_staff': 'admin/dashboard.html', 'field_survey_staff': 'field/survey.html' };
+        // UPDATED ROLE ROUTE LOGIC: Instead of immediate redirect, show Segment Selection for Field Staff
+        const ROLE_ROUTES = { 'super_admin': 'admin/dashboard.html', 'admin_staff': 'admin/dashboard.html' };
 
         async function unifiedLogin() {
             if (!document.getElementById("consentCheckbox").checked) { alert("Protocol Protocol: Accept Legal Terms to proceed."); return; }
@@ -332,8 +354,17 @@
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             const role = snap.val();
             if (!role) { alert("Access Unauthorized: No personnel mapping found."); return; }
-            const target = ROLE_ROUTES[role];
-            if (target) window.location.replace(target);
+
+            // NEW: If Field Staff, show buttons instead of redirecting
+            if (role === 'field_survey_staff') {
+                document.getElementById('heroContent').classList.add('hidden');
+                document.getElementById('segmentPortal').classList.remove('hidden');
+                document.getElementById('terminalDock').classList.add('dock-minimized');
+                console.log("Field Personnel Identity Verified.");
+            } else {
+                const target = ROLE_ROUTES[role];
+                if (target) window.location.replace(target);
+            }
         }
 
         function forceReg() { auth.signOut(); window.location.href = "registration.html?mode=new_partner"; }
