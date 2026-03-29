@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Construction Site Intelligence</title>
+    <title>Nirmansutra | Site Intelligence v2.1</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +13,7 @@
         :root { 
             --bg: #f8fafc; 
             --card: #ffffff; 
-            --accent: #0284c7; /* Professional Blue for Construction */
+            --accent: #0284c7; 
             --primary: #0f172a; 
             --text-dim: #64748b; 
         }
@@ -29,11 +29,10 @@
         .card { 
             background: var(--card); 
             border-radius: 35px; 
-            padding: 40px; 
-            margin-bottom: 30px; 
+            padding: 30px; 
+            margin-bottom: 25px; 
             border: 1px solid #e2e8f0; 
             box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
-            transition: 0.4s ease; 
         }
         
         .section-label { 
@@ -42,7 +41,7 @@
             color: var(--accent); 
             text-transform: uppercase; 
             letter-spacing: 3px; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             display: block; 
         }
 
@@ -50,9 +49,9 @@
             background: var(--primary); 
             color: #38bdf8; 
             text-align: center; 
-            padding: 30px; 
-            border-radius: 25px; 
-            font-size: 24px; 
+            padding: 25px; 
+            border-radius: 20px; 
+            font-size: 22px; 
             font-weight: 900; 
             font-family: monospace; 
             letter-spacing: 4px; 
@@ -62,55 +61,50 @@
             width: 100%; 
             background: #f1f5f9; 
             border: 1px solid transparent; 
-            padding: 18px 24px; 
-            border-radius: 16px; 
-            font-size: 15px; 
+            padding: 14px 18px; 
+            border-radius: 12px; 
+            font-size: 14px; 
             font-weight: 600;
-            margin-top: 10px; 
             outline: none; 
             transition: 0.3s ease; 
         }
         
-        input:focus { border-color: var(--accent); background: #fff; }
-        
-        label { 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: var(--text-dim); 
-            text-transform: uppercase; 
-            margin-top: 15px; 
-            display: block; 
-            padding-left: 8px; 
-        }
+        input:focus, select:focus { border-color: var(--accent); background: #fff; }
 
-        .stage-chip { 
-            background: #f1f5f9; 
-            padding: 15px; 
-            border-radius: 18px; 
-            font-size: 12px; 
-            font-weight: 800; 
-            color: #475569; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            text-align: center; 
-            border: 2px solid transparent;
-        }
-        
-        .stage-chip.active { 
-            background: var(--accent); 
-            color: white; 
-            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2); 
-        }
-
-        .mat-row {
-            display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 12px;
+        .mat-card {
             background: #f8fafc;
-            padding: 15px;
-            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 24px;
+            margin-bottom: 15px;
+        }
+
+        .mat-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-label {
+            font-size: 9px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .calc-badge {
+            font-size: 10px;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 8px;
         }
 
         .action-bar { 
@@ -125,73 +119,172 @@
         }
         
         .btn { flex: 1; padding: 20px; border-radius: 18px; font-weight: 900; font-size: 13px; text-transform: uppercase; }
-        .btn-green { background: #10b981; color: white; }
+        .btn-green { background: #10b981; color: white; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-6 flex justify-between items-center rounded-b-[40px] border-b mb-8">
+<nav class="bg-white p-6 flex justify-between items-center rounded-b-[40px] border-b mb-6 shadow-sm">
     <div>
         <h1 class="text-xl font-black italic tracking-tighter">NIRMAN<span class="text-sky-600">SUTRA</span></h1>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="agentIdentity">SITE AUDIT MODE</p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Brand Intelligence v2.1</p>
     </div>
 </nav>
 
 <div class="max-w-2xl mx-auto px-6">
     <div class="card">
-        <span class="section-label">01. Site Protocol ID</span>
+        <span class="section-label">01. Site Protocol</span>
         <div id="trackId" class="id-box">SITE-UDR-000</div>
     </div>
 
     <div class="card">
-        <span class="section-label">02. Project Stakeholders</span>
-        <label>Client Category</label>
-        <select id="clientType">
-            <option value="Home Owner">Individual Home Owner</option>
-            <option value="Builder">Professional Builder</option>
-            <option value="Contractor">Contractor</option>
-        </select>
-
-        <input id="projectName" placeholder="Project / Site Name" class="mt-6">
-        <input id="clientName" placeholder="Client Legal Name">
-        
-        <div class="grid grid-cols-2 gap-4">
-            <div><label>Phone</label><input id="clientPhone" type="tel" placeholder="+91"></div>
-            <div><label>WhatsApp</label><input id="clientWa" type="tel" placeholder="+91"></div>
+        <span class="section-label">02. Site Details</span>
+        <input id="projectName" placeholder="Project / Plot Name" class="mb-4">
+        <input id="clientName" placeholder="Owner / Builder Name">
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            <input id="clientPhone" type="tel" placeholder="Phone">
+            <input id="clientWa" type="tel" placeholder="WhatsApp">
         </div>
     </div>
 
     <div class="card">
-        <span class="section-label">03. Construction Lifecycle Stage</span>
-        <div class="grid grid-cols-2 gap-3" id="stageGrid">
+        <span class="section-label">03. Material & Brand Intelligence</span>
+        
+        <div class="mat-card">
+            <div class="mat-title">1. Sand (Ret) <span id="calc_sand" class="calc-badge">0 Tons</span></div>
+            <div class="grid grid-cols-2 gap-3">
+                <select onchange="SiteIntel.calc('sand')" id="unit_sand">
+                    <option value="3.5">Tractor (3.5T)</option>
+                    <option value="1">Direct Tons</option>
+                </select>
+                <input type="number" placeholder="Qty" oninput="SiteIntel.calc('sand')" id="val_sand">
             </div>
-        <textarea id="stageNotes" class="mt-4 h-24" placeholder="Specific technical observations at this stage..."></textarea>
-    </div>
+            <label class="brand-label">Preferred Source/Quality</label>
+            <select id="brand_sand">
+                <option value="Local/Generic">Local / Generic</option>
+                <option value="Banas Sand">Banas (Premium)</option>
+                <option value="M-Sand">Manufactured Sand (M-Sand)</option>
+                <option value="Crush Sand">Crush Sand</option>
+            </select>
+        </div>
 
-    <div class="card">
-        <span class="section-label">04. Material Demand Forecast</span>
-        <p class="text-[11px] font-bold text-slate-400 mb-4 italic">Specify quantity required for next 15-30 days</p>
-        
-        <div id="materialDemand">
-            <div class="mat-row"><span>Sand (Coarse/Fine)</span><input type="number" placeholder="Qty" id="req_sand"></div>
-            <div class="mat-row"><span>Cement (OPC/PPC)</span><input type="number" placeholder="Bags" id="req_cement"></div>
-            <div class="mat-row"><span>Aggregate (Stone)</span><input type="number" placeholder="Qty" id="req_stone"></div>
-            <div class="mat-row"><span>Bricks / Blocks</span><input type="number" placeholder="Units" id="req_bricks"></div>
-            <div class="mat-row"><span>TMT Steel</span><input type="number" placeholder="Tons" id="req_tmt"></div>
-            <div class="mat-row"><span>Stone Dust</span><input type="number" placeholder="Qty" id="req_dust"></div>
+        <div class="mat-card">
+            <div class="mat-title">2. Bricks (Int) <span id="calc_bricks" class="calc-badge">0 Units</span></div>
+            <div class="grid grid-cols-2 gap-3">
+                <select onchange="SiteIntel.calc('bricks')" id="unit_bricks">
+                    <option value="3500">Med Truck (3.5k)</option>
+                    <option value="6500">Lrg Truck (6.5k)</option>
+                    <option value="1000">Per 1000 Units</option>
+                </select>
+                <input type="number" placeholder="Qty" oninput="SiteIntel.calc('bricks')" id="val_bricks">
+            </div>
+            <label class="brand-label">Brick Variety</label>
+            <select id="brand_bricks">
+                <option value="First Class Red">First Class Red Bricks</option>
+                <option value="Fly Ash">Fly Ash Bricks</option>
+                <option value="AAC Blocks">AAC Blocks (Ultratech/JK)</option>
+                <option value="Wirecut">Wirecut Bricks</option>
+            </select>
+        </div>
+
+        <div class="mat-card">
+            <div class="mat-title">3. Aggregates (Gitti) <span id="calc_gitti" class="calc-badge">0 Tons</span></div>
+            <select class="mb-3" id="grade_gitti">
+                <option>20mm (Slabs)</option>
+                <option>40mm (Foundations)</option>
+                <option>60mm (Base/WMM)</option>
+            </select>
+            <div class="grid grid-cols-2 gap-3">
+                <select onchange="SiteIntel.calc('gitti')" id="unit_gitti">
+                    <option value="18">Dumper (18T)</option>
+                    <option value="1">Direct Tons</option>
+                </select>
+                <input type="number" placeholder="Qty" oninput="SiteIntel.calc('gitti')" id="val_gitti">
+            </div>
+        </div>
+
+        <div class="mat-card">
+            <div class="mat-title">4. Cement <span id="calc_cement" class="calc-badge">0 Bags</span></div>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <select onchange="SiteIntel.calc('cement')" id="unit_cement">
+                    <option value="1">Bags</option>
+                    <option value="40">Tempo (40B)</option>
+                    <option value="300">Truck (300B)</option>
+                </select>
+                <input type="number" placeholder="Qty" oninput="SiteIntel.calc('cement')" id="val_cement">
+            </div>
+            <label class="brand-label">Top 10 Brands</label>
+            <select id="brand_cement">
+                <option value="UltraTech">UltraTech Cement</option>
+                <option value="ACC">ACC Limited</option>
+                <option value="Ambuja">Ambuja Cement</option>
+                <option value="JK Lakshmi">JK Lakshmi Cement</option>
+                <option value="Shree">Shree Cement</option>
+                <option value="Dalmia">Dalmia Bharat</option>
+                <option value="Birla">Birla Corporation</option>
+                <option value="Ramco">Ramco Cements</option>
+                <option value="Wonder">Wonder Cement</option>
+                <option value="Binani">Binani Cement</option>
+            </select>
+        </div>
+
+        <div class="mat-card">
+            <div class="mat-title">5. TMT Steel (Sariya) <span id="calc_tmt" class="calc-badge">0 kg</span></div>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <select id="dia_tmt" onchange="SiteIntel.calc('tmt')">
+                    <option value="47">8mm (47kg/Bdl)</option>
+                    <option value="50">10mm (50kg/Bdl)</option>
+                    <option value="52">12mm (52kg/Bdl)</option>
+                    <option value="55">16mm (55kg/Bdl)</option>
+                </select>
+                <input type="number" placeholder="Bundles" oninput="SiteIntel.calc('tmt')" id="val_tmt">
+            </div>
+            <label class="brand-label">Primary Brands</label>
+            <select id="brand_tmt">
+                <option value="Tata Tiscon">Tata Tiscon</option>
+                <option value="JSW Neosteel">JSW Neosteel</option>
+                <option value="SAIL">SAIL TMT</option>
+                <option value="Vizag Steel">Vizag Steel (RINL)</option>
+                <option value="Jindal Panther">Jindal Panther</option>
+                <option value="Kamdhenu">Kamdhenu NXT</option>
+                <option value="Rathi">Rathi TMT</option>
+                <option value="SRMB">SRMB Srijan</option>
+                <option value="Electrosteel">Electrosteel (ESL)</option>
+                <option value="Gallantt">Gallantt Advance</option>
+            </select>
+        </div>
+
+        <div class="mat-card">
+            <div class="mat-title">6. RMC / Ready Mix <span id="calc_rmc" class="calc-badge">0 m³</span></div>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <select onchange="SiteIntel.calc('rmc')" id="unit_rmc">
+                    <option value="6.5">Mixer (6.5m³)</option>
+                    <option value="1">Direct m³</option>
+                </select>
+                <input type="number" placeholder="Qty" oninput="SiteIntel.calc('rmc')" id="val_rmc">
+            </div>
+            <label class="brand-label">Top RMC Suppliers</label>
+            <select id="brand_rmc">
+                <option value="UltraTech RMC">UltraTech RMC</option>
+                <option value="ACC Concrete">ACC Concrete</option>
+                <option value="Ambuja RMC">Ambuja RMC</option>
+                <option value="Prism RMC">Prism RMC</option>
+                <option value="Godrej Construction">Godrej Construction</option>
+                <option value="Local RMC">Local Certified Plant</option>
+            </select>
         </div>
     </div>
 
     <div class="card">
-        <span class="section-label">05. Spatial Lock & Visuals</span>
-        <div id="map" class="h-60 rounded-[30px] mb-4 border border-slate-200"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-5 rounded-xl font-black text-[13px] uppercase mb-4">📍 Verify Site Location</button>
-        <textarea id="address" class="text-[12px] text-slate-500 bg-transparent border-none" readonly placeholder="Address Sync..."></textarea>
+        <span class="section-label">04. Spatial Lock</span>
+        <div id="map" class="h-48 rounded-[25px] mb-4 border border-slate-200"></div>
+        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-4 rounded-xl font-bold text-[12px] uppercase">📍 Capture Verified Location</button>
+        <textarea id="address" class="mt-4 text-[12px] text-slate-500 bg-transparent border-none h-16" readonly placeholder="Address Sync..."></textarea>
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="SiteSurvey.sync()" id="sBtn" class="btn btn-green">🚀 Sync Site Data</button>
+    <button onclick="SiteIntel.sync()" id="sBtn" class="btn btn-green">🚀 Finalize Site Sync</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -210,90 +303,80 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database(), auth = firebase.auth();
 
-    const stages = ["Excavation", "Foundation/Plinth", "Column/Lintel", "Slab Casting", "Brickwork", "Plastering", "Finishing"];
+    window.SiteIntel = {
+        calculations: {},
 
-    window.SiteSurvey = {
-        state: { stage: "", location: null },
-        
-        init() {
-            const grid = document.getElementById('stageGrid');
-            stages.forEach(s => {
-                grid.innerHTML += `<div class="stage-chip" onclick="SiteSurvey.selectStage('${s}', this)">${s}</div>`;
-            });
-            Geo.init();
-        },
+        calc(item) {
+            const val = parseFloat(document.getElementById(`val_${item}`).value) || 0;
+            let result = 0;
+            let unitLabel = "";
 
-        selectStage(stage, el) {
-            document.querySelectorAll('.stage-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            this.state.stage = stage;
+            if (item === 'tmt') {
+                const weightPerBundle = parseFloat(document.getElementById('dia_tmt').value);
+                result = val * weightPerBundle;
+                unitLabel = "kg Total";
+            } else {
+                const multiplier = parseFloat(document.getElementById(`unit_${item}`).value);
+                result = val * multiplier;
+                unitLabel = (item === 'bricks' || item === 'cement') ? " Units" : " Tons/m³";
+            }
+
+            document.getElementById(`calc_${item}`).innerText = `${result.toFixed(1)}${unitLabel}`;
+            this.calculations[item] = { total: result, brand: document.getElementById(`brand_${item}`) ? document.getElementById(`brand_${item}`).value : 'N/A' };
         },
 
         async sync() {
-            if(!this.state.stage || !this.state.location) return alert("Select Stage & Capture Location");
-            
+            const projectName = document.getElementById('projectName').value;
+            if(!projectName || !Geo.lat) return alert("❌ Project Name and GPS required.");
+
             const btn = document.getElementById('sBtn');
-            btn.innerText = "SYNCING...";
+            btn.innerText = "TRANSMITTING...";
 
             const payload = {
-                projectName: document.getElementById('projectName').value,
+                project: projectName,
                 client: document.getElementById('clientName').value,
                 phone: document.getElementById('clientPhone').value,
-                stage: this.state.stage,
-                notes: document.getElementById('stageNotes').value,
-                location: this.state.location,
+                forecast: this.calculations,
+                location: { lat: Geo.lat, lng: Geo.lng },
                 address: document.getElementById('address').value,
-                demands: {
-                    sand: document.getElementById('req_sand').value,
-                    cement: document.getElementById('req_cement').value,
-                    stone: document.getElementById('req_stone').value,
-                    bricks: document.getElementById('req_bricks').value,
-                    tmt: document.getElementById('req_tmt').value,
-                    dust: document.getElementById('req_dust').value
-                },
                 agent: auth.currentUser.email,
                 timestamp: Date.now()
             };
 
             try {
-                await rtdb.ref('construction_sites').push(payload);
-                alert("Site Successfully Synced!");
+                await rtdb.ref('site_audits_v2').push(payload);
+                alert("✅ SITE DATA SYNCED: Construction Node integrated.");
                 location.reload();
             } catch(e) {
-                alert("Error: " + e.message);
-                btn.innerText = "🚀 Sync Site Data";
+                alert("Sync Error: " + e.message);
+                btn.innerText = "🚀 Finalize Site Sync";
             }
         }
     };
 
     window.Geo = {
-        map: null, marker: null,
+        lat: null, lng: null, map: null,
         init() {
             this.map = L.map('map', { zoomControl: false }).setView([24.58, 73.71], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
         },
         capture() {
             navigator.geolocation.getCurrentPosition(async p => {
-                const { latitude, longitude } = p.coords;
-                SiteSurvey.state.location = { lat: latitude, lng: longitude };
-                this.map.setView([latitude, longitude], 15);
-                if (this.marker) this.map.removeLayer(this.marker);
-                this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                this.lat = p.coords.latitude; this.lng = p.coords.longitude;
+                this.map.setView([this.lat, this.lng], 16);
+                L.marker([this.lat, this.lng]).addTo(this.map);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${this.lat}&lon=${this.lng}`);
                 const data = await res.json();
                 document.getElementById('address').value = data.display_name;
             });
         }
     };
 
-    window.onload = () => {
-        SiteSurvey.init();
-        auth.onAuthStateChanged(u => {
-            if(u) document.getElementById('agentIdentity').innerText = "AUDITOR: " + u.email.split('@')[0].toUpperCase();
-            else location.href = "../index.html";
-        });
+    window.onload = () => { 
+        Geo.init();
+        auth.onAuthStateChanged(u => { if(!u) location.href="../index.html"; });
     };
 </script>
+
 </body>
 </html>
