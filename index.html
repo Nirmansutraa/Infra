@@ -9,9 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* ===========================================================
-        SECTION 1: GLOBAL ARCHITECTURAL STYLING
-        =========================================================== */
         :root { 
             --accent: #ff7a00; 
             --bg-deep: #020617; 
@@ -48,85 +45,50 @@
             -webkit-text-fill-color: transparent; 
         }
 
-        /* IDENTITY DOCK (ULTRA COMPACT) */
+        /* ACCESS TERMINAL STYLING (MODAL BASED) */
         .identity-dock {
-            position: fixed; bottom: 25px; right: 25px; width: 280px;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px);
-            padding: 22px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed; bottom: 25px; right: 25px; width: 320px;
+            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(30px);
+            padding: 25px; border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 30px 60px rgba(0,0,0,0.8); z-index: 5000;
             transition: var(--transition-main);
         }
         .dock-minimized { transform: translateY(calc(100% - 60px)); opacity: 0.9; }
-        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 15px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
+        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 20px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
 
-        /* LEGAL MODAL SYSTEM (RELIABLE OVERLAY) */
-        .legal-overlay { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
-            z-index: 9999; padding: 20px; backdrop-filter: blur(20px); overflow-y: auto;
-        }
-        .legal-content-box { 
-            max-width: 900px; margin: 40px auto; background: #0f172a; padding: 60px; 
-            border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
-        }
-        .legal-content-box h2 { color: var(--accent); font-weight: 900; font-size: 2.2rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -1px; }
-        .legal-content-box h3 { color: white; font-weight: 800; font-size: 1.1rem; margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
-        .legal-content-box p, .legal-content-box li { color: #94a3b8; line-height: 1.8; margin-bottom: 15px; font-size: 0.95rem; }
-        .legal-content-box ul { padding-left: 20px; list-style-type: square; }
+        .auth-option { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 20px; border-radius: 20px; margin-top: 15px; }
+        .btn-google { background: white; color: #0f172a; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 11px; margin-top: 12px; cursor: pointer; }
+        .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; font-size: 11px; margin-top: 12px; cursor: pointer; }
+        
+        input { width: 100%; background: #020617; border: 1px solid #334155; padding: 12px; border-radius: 10px; color: white; margin-top: 8px; outline: none; text-align: center; font-size: 13px; }
+        input:focus { border-color: var(--accent); }
+        .status-msg { margin-top: 15px; padding: 10px; border-radius: 10px; font-size: 10px; font-weight: 800; display: none; text-transform: uppercase; text-align: center; }
 
-        .contact-tile { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); padding: 2.5rem; border-radius: 32px; transition: 0.3s; text-align: center; }
-        .contact-tile:hover { border-color: var(--accent); transform: translateY(-5px); }
+        /* LEGAL MODALS */
+        .legal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; padding: 20px; backdrop-filter: blur(20px); overflow-y: auto; }
+        .legal-content-box { max-width: 800px; margin: 40px auto; background: #0f172a; padding: 50px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); }
+        .legal-content-box h2 { color: var(--accent); font-weight: 900; font-size: 2rem; margin-bottom: 20px; }
+        .legal-content-box p { color: #94a3b8; line-height: 1.8; margin-bottom: 15px; font-size: 0.95rem; }
 
-        @media (max-width: 768px) {
-            .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; }
-            .legal-content-box { padding: 35px 25px; margin: 10px; }
-            .kinetic-title { font-size: 3.2rem; }
-        }
+        @media (max-width: 768px) { .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; } }
     </style>
 </head>
 <body>
 
     <div id="modalPrivacy" class="legal-overlay">
         <div class="legal-content-box">
-            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
+            <button onclick="closeLegal()" class="float-right text-slate-500 font-black">CLOSE [X]</button>
             <h2>Privacy Policy</h2>
-            <p><strong>Last Updated: March 28, 2026</strong></p>
-            <p>NirmanSutra ("we", "our", "us") is committed to protecting your privacy in compliance with the Information Technology Act, 2000 and the Digital Personal Data Protection Act, 2023.</p>
-            
-            <h3>1. Data Collection</h3>
-            <p>We collect personal identifiers (Name, Email, Mobile Number) and technical field data (GPS Coordinates, Device Metadata, Survey Responses) essential for the operational integrity of our infrastructure intelligence network.</p>
-            
-            <h3>2. Purpose of Processing</h3>
-            <ul>
-                <li>Verification of raw material supply nodes.</li>
-                <li>Fraud prevention in field reporting.</li>
-                <li>Strategic analytics for enterprise construction execution.</li>
-            </ul>
-
-            <h3>3. Data Security</h3>
-            <p>Your information is stored in high-security encrypted environments within Indian jurisdictions. We strictly do NOT sell or trade user data to third-party marketing entities.</p>
-            
-            <p class="mt-10 pt-6 border-t border-white/5 text-[10px] text-slate-500 font-bold uppercase">Contact: info@nirmansutra.in for data requests.</p>
+            <p><strong>Effective Date: March 29, 2026</strong></p>
+            <p>NirmanSutra collects personal data (Name, Email, Mobile) and field data (GPS, Device Metadata) for verification purposes. Data is stored securely in Indian jurisdictions.</p>
         </div>
     </div>
 
     <div id="modalTerms" class="legal-overlay">
         <div class="legal-content-box">
-            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
+            <button onclick="closeLegal()" class="float-right text-slate-500 font-black">CLOSE [X]</button>
             <h2>Terms of Service</h2>
-            <p><strong>Effective Date: March 28, 2026</strong></p>
-            
-            <h3>1. Operational Access</h3>
-            <p>By accessing the NirmanSutra Unified Terminal, you acknowledge that you are an authorized agent or strategic partner. Unauthorized access is subject to legal action under the IT Act.</p>
-            
-            <h3>2. Data Authenticity</h3>
-            <p>Users are legally obligated to provide authentic ground reality data. Submission of intentionally falsified material variety, brand, or location data will result in immediate session termination and account blacklisting.</p>
-
-            <h3>3. Intellectual Property</h3>
-            <p>All structured intelligence, UI frameworks, and proprietary algorithms within the NirmanSutra Matrix remain the exclusive property of NirmanSutra Private Limited.</p>
-
-            <h3>4. Jurisdiction</h3>
-            <p>These terms are governed by the laws of India. Any disputes arising shall be subject to the exclusive jurisdiction of the courts in Jodhpur, Rajasthan.</p>
+            <p>By accessing this terminal, you agree to provide authentic field data. Fraudulent reporting will lead to immediate account termination.</p>
         </div>
     </div>
 
@@ -143,79 +105,71 @@
         <div class="max-w-6xl">
             <h2 class="kinetic-title italic mb-10">Building the<br>Foundations of<br><span class="text-orange-500">Certainty.</span></h2>
             <p class="text-slate-400 text-xl md:text-3xl leading-relaxed max-w-4xl font-medium mb-14">
-                NirmanSutra bridges the gap between field reality and strategic execution. We transform fragmented data into structured intelligence.
+                NirmanSutra bridges the gap between field reality and strategic execution.
             </p>
             <a href="#about" class="bg-orange-500 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 inline-block transition">Explore Matrix</a>
         </div>
     </main>
 
     <section id="about" class="py-24 px-10 md:px-32 bg-[#010411]">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center text-center md:text-left">
             <div>
-                <h3 class="text-5xl font-black mb-8 leading-tight italic">Intelligence Behind Decision.</h3>
-                <p class="text-slate-400 text-lg mb-10">NirmanSutra is a next-generation platform designed to bring clarity and precision to the construction ecosystem.</p>
-                <div class="space-y-6">
-                    <div class="border-l-4 border-orange-500 pl-8">
-                        <h4 class="text-white font-black uppercase text-xs mb-2">Our Mission</h4>
-                        <p class="text-slate-500 text-sm italic">Empowering the industry with authentic, real-time intelligence.</p>
-                    </div>
-                </div>
+                <h3 class="text-5xl font-black mb-8 italic">Verified Accuracy.</h3>
+                <p class="text-slate-400 text-lg mb-10">India’s gold standard for construction intelligence.</p>
             </div>
-            <div class="bg-slate-900/40 rounded-[60px] border border-white/5 p-16 text-center backdrop-blur-xl">
-                <div class="text-orange-500 text-8xl font-black mb-4 tracking-tighter italic">100%</div>
-                <p class="text-slate-400 uppercase font-black tracking-[10px] text-xs">Verified Accuracy</p>
+            <div class="bg-slate-900/40 rounded-[60px] border border-white/5 p-16">
+                <div class="text-orange-500 text-8xl font-black italic">100%</div>
+                <p class="text-slate-400 uppercase font-black tracking-[10px] text-xs">Trust Matrix</p>
             </div>
-        </div>
-    </section>
-
-    <section id="leadership" class="py-24 px-10 md:px-32 text-center">
-        <div class="w-40 h-40 bg-slate-800 rounded-full mx-auto mb-8 shadow-4xl border-4 border-orange-500/30 flex items-center justify-center text-5xl">👨‍💼</div>
-        <h3 class="text-5xl font-black mb-2 tracking-tighter uppercase italic">Vijay Bhati</h3>
-        <p class="text-orange-500 font-black uppercase tracking-[5px] text-[11px] mb-8">Founder & Chief Architect</p>
-        <p class="text-slate-400 text-xl italic max-w-3xl mx-auto leading-relaxed">"We are building the data-driven foundations of tomorrow's India."</p>
-    </section>
-
-    <section id="contact" class="py-24 px-10 md:px-32 bg-slate-950">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <a href="mailto:info@nirmansutra.in" class="contact-tile block">
-                <div class="text-3xl mb-6">📧</div>
-                <p class="text-slate-500 text-[11px] font-black uppercase mb-3">Email Identity</p>
-                <p class="text-2xl font-bold italic">info@nirmansutra.in</p>
-            </a>
-            <a href="https://wa.me/919414370806" target="_blank" class="contact-tile block">
-                <div class="text-3xl mb-6">💬</div>
-                <p class="text-slate-500 text-[11px] font-black uppercase mb-3">Instant Protocol</p>
-                <p class="text-2xl font-bold italic">+91 9414370806</p>
-            </a>
         </div>
     </section>
 
     <div id="terminalDock" class="identity-dock dock-minimized">
-        <div class="dock-toggle" onclick="toggleDock()">▲ Open Secure Terminal</div>
+        <div class="dock-toggle" onclick="toggleDock()">▲ UNIFIED ACCESS TERMINAL</div>
+        
         <div id="dockContent">
-            <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-6">Unified Terminal</h3>
-            <div class="mb-6 flex gap-3 items-start cursor-pointer">
-                <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500 rounded bg-slate-900 border-white/10">
-                <label for="consentCheckbox" class="text-[10px] text-slate-400 font-bold leading-tight">
-                    I agree to the <span onclick="openLegal('modalPrivacy')" class="text-white underline cursor-pointer">Privacy Policy</span> and 
-                    <span onclick="openLegal('modalTerms')" class="text-white underline cursor-pointer">Terms</span>.
+            <div class="mb-4 flex gap-3 items-start cursor-pointer px-2">
+                <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500">
+                <label for="consentCheckbox" class="text-[9px] text-slate-400 font-bold leading-tight">
+                    I agree to <span onclick="openLegal('modalPrivacy')" class="text-white underline">Privacy</span> & 
+                    <span onclick="openLegal('modalTerms')" class="text-white underline">Terms</span>.
                 </label>
             </div>
-            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 shadow-2xl hover:bg-orange-500 hover:text-white transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Identity Access
-            </button>
-            <div class="border-t border-white/5 mt-6 pt-6 text-center">
-                <div onclick="forceReg()" class="text-orange-500 font-black text-[10px] uppercase cursor-pointer italic">➜ Partner Registration</div>
+
+            <div class="auth-option">
+                <p class="text-[9px] text-orange-500 font-black uppercase tracking-widest">Corporate Access</p>
+                <button onclick="loginWithGoogle()" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"> Gmail Login
+                </button>
             </div>
+
+            <div class="auth-option">
+                <p class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Partner Network</p>
+                <div id="phoneInputArea">
+                    <input type="tel" id="phoneNumber" placeholder="+91 9876543210">
+                    <button onclick="sendOTP()" class="btn-whatsapp">Verify WhatsApp OTP</button>
+                </div>
+                <div id="otpInputArea" class="hidden">
+                    <input type="number" id="otpCode" placeholder="6-Digit OTP">
+                    <button onclick="verifyOTP()" class="btn-whatsapp">Login to Terminal</button>
+                </div>
+                <div id="recaptcha-container"></div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-white/5 text-center">
+                <div onclick="forceReg()" class="text-slate-500 font-black text-[9px] uppercase cursor-pointer hover:text-orange-500 transition">➜ New Partner? Register</div>
+            </div>
+            
+            <div id="msg" class="status-msg"></div>
         </div>
     </div>
 
-    <footer class="p-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-        <div class="text-[12px] font-black text-slate-500 uppercase italic">NIRMAN<span class="text-orange-500">SUTRA</span></div>
-        <div class="flex gap-12 text-[10px] font-black uppercase text-slate-500">
-            <span onclick="openLegal('modalPrivacy')" class="hover:text-white cursor-pointer transition-colors">Privacy</span>
-            <span onclick="openLegal('modalTerms')" class="hover:text-white cursor-pointer transition-colors">Terms</span>
-            <span class="text-slate-600 tracking-[2px]">© 2026 NirmanSutra Pvt Ltd</span>
+    <footer class="p-20 border-t border-white/5 text-center">
+        <div class="text-[12px] font-black text-slate-500 uppercase italic mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></div>
+        <div class="flex gap-10 justify-center text-[10px] font-black uppercase text-slate-600">
+            <span onclick="openLegal('modalPrivacy')" class="cursor-pointer">Privacy</span>
+            <span onclick="openLegal('modalTerms')" class="cursor-pointer">Terms</span>
+            <span>© 2026 Pvt Ltd</span>
         </div>
     </footer>
 
@@ -233,37 +187,77 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), rtdb = firebase.database();
 
+        // 1. UI HELPERS
         function toggleDock() {
             const dock = document.getElementById('terminalDock');
             const toggle = document.querySelector('.dock-toggle');
             dock.classList.toggle('dock-minimized');
-            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ Open Secure Terminal" : "▼ Minimize Terminal";
+            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ UNIFIED ACCESS TERMINAL" : "▼ MINIMIZE TERMINAL";
         }
-
-        // Master Legal Logic
         function openLegal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
         function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); document.body.style.overflow = 'auto'; }
+        function updateUI(text, type) {
+            const m = document.getElementById('msg');
+            m.innerText = text; m.style.display = 'block';
+            m.className = `status-msg ${type === 'err' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400 animate-pulse'}`;
+        }
 
-        const ROLE_ROUTES = { 'super_admin': 'admin/dashboard.html', 'admin_staff': 'admin/dashboard.html', 'field_survey_staff': 'field/survey.html' };
+        // 2. AUTH LOGIC
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
 
-        async function unifiedLogin() {
-            if (!document.getElementById("consentCheckbox").checked) { alert("Accept legal terms to proceed."); return; }
+        async function loginWithGoogle() {
+            if (!document.getElementById("consentCheckbox").checked) return alert("Accept Legal Terms.");
             try {
+                updateUI("Authenticating Staff...", "warn");
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                if (res.user) {
-                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({ email: res.user.email, consent: true, timestamp: new Date().toISOString() });
-                    executeRouting(res.user);
+                routeUser(res.user);
+            } catch (e) { updateUI(e.message, "err"); }
+        }
+
+        let confirmationResult = null;
+        async function sendOTP() {
+            if (!document.getElementById("consentCheckbox").checked) return alert("Accept Legal Terms.");
+            const num = document.getElementById('phoneNumber').value;
+            if (!num.startsWith('+')) return alert("Include country code (+91)");
+            updateUI("Requesting OTP...", "warn");
+            try {
+                confirmationResult = await auth.signInWithPhoneNumber(num, window.recaptchaVerifier);
+                document.getElementById('phoneInputArea').classList.add('hidden');
+                document.getElementById('otpInputArea').classList.remove('hidden');
+                updateUI("OTP Sent to WhatsApp", "success");
+            } catch (e) { updateUI(e.message, "err"); }
+        }
+
+        async function verifyOTP() {
+            const code = document.getElementById('otpCode').value;
+            try {
+                updateUI("Verifying...", "warn");
+                const res = await confirmationResult.confirm(code);
+                routeUser(res.user);
+            } catch (e) { updateUI("Invalid Code", "err"); }
+        }
+
+        // 3. ROUTING ENGINE
+        async function routeUser(user) {
+            try {
+                const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
+                const role = snap.val();
+                if (!role) {
+                    updateUI("Denied: Unregistered", "err");
+                    setTimeout(() => auth.signOut(), 2000);
+                    return;
                 }
-            } catch (e) { console.error(e); }
+                const path = {
+                    'super_admin': 'admin/dashboard.html',
+                    'admin': 'admin/dashboard.html',
+                    'field_staff': 'field/survey.html',
+                    'supplier': 'field/survey.html'
+                }[role.toLowerCase().trim()];
+                if (path) window.location.href = path;
+            } catch (e) { updateUI("System Error", "err"); }
         }
 
-        async function executeRouting(user) {
-            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
-            const role = snap.val();
-            if (role && ROLE_ROUTES[role]) window.location.replace(ROLE_ROUTES[role]);
-        }
-
-        function forceReg() { auth.signOut(); window.location.href = "registration.html?mode=new_partner"; }
+        function forceReg() { auth.signOut(); window.location.href = "onboarding/index.html"; }
     </script>
 </body>
 </html>
