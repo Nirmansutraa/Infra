@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NS | Master Governance Terminal</title>
+    <title>NS | Master Governance Terminal v10.0</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -13,18 +13,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        /* ===========================================================
-        SECTION 1: GLOBAL GOVERNANCE STYLING (VERBOSE DESCRIPTORS)
-        =========================================================== */
+        /* ==========================================================================
+        SECTION 2: GLOBAL ARCHITECTURAL STYLING (VERBOSE)
+        ==========================================================================
+        */
         :root { 
             --accent: #ff7a00; 
             --bg-deep: #020617; 
             --sidebar-bg: #0f172a; 
             --card-glass: rgba(30, 41, 59, 0.45); 
-            --success-glow: rgba(16, 185, 129, 0.2);
-            --danger-glow: rgba(239, 68, 68, 0.2);
-            --transition-master: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            --border-standard: 1px solid rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+            --border-glow: rgba(255, 122, 0, 0.15);
+            --transition-main: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body { 
@@ -34,34 +35,33 @@
             margin: 0; 
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
-            letter-spacing: -0.01em;
-            line-height: 1.6;
+            text-rendering: optimizeLegibility;
         }
 
-        /* --- MARKETPLACE LAYOUT CORE ARCHITECTURE --- */
+        /* --- SIDEBAR ARCHITECTURE --- */
         .sidebar { 
-            width: 320px; 
+            width: 340px; 
             height: 100vh; 
             background: var(--sidebar-bg); 
-            border-right: var(--border-standard); 
+            border-right: 1px solid rgba(255, 255, 255, 0.05); 
             position: fixed; 
             left: 0; 
             top: 0; 
             z-index: 1000;
             display: flex; 
             flex-direction: column;
-            box-shadow: 25px 0 60px rgba(0,0,0,0.6);
-            transition: var(--transition-master);
+            box-shadow: 25px 0 80px rgba(0,0,0,0.7);
+            transition: var(--transition-main);
         }
 
         .sidebar-header {
-            padding: 50px 40px;
-            text-align: center;
+            padding: 60px 45px;
+            text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.03);
         }
 
         .main-viewport { 
-            margin-left: 320px; 
+            margin-left: 340px; 
             height: 100vh; 
             overflow-y: auto; 
             padding: 80px; 
@@ -73,231 +73,178 @@
         /* --- COMPONENT DESIGN SYSTEM --- */
         .glass-card { 
             background: var(--card-glass); 
-            backdrop-filter: blur(40px); 
-            border: var(--border-standard); 
-            border-radius: 40px; 
-            padding: 55px; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-            transition: var(--transition-master);
+            backdrop-filter: blur(50px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 45px; 
+            padding: 60px; 
+            box-shadow: 0 50px 120px rgba(0,0,0,0.6);
+            transition: var(--transition-main);
         }
-        .glass-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+        .glass-card:hover { 
+            transform: translateY(-12px); 
+            border-color: var(--accent); 
+            box-shadow: 0 60px 150px rgba(255, 122, 0, 0.1);
+        }
 
-        .nav-btn { 
+        .nav-link-master { 
             width: 100%; 
-            padding: 24px 45px; 
+            padding: 26px 50px; 
             display: flex; 
             align-items: center; 
-            gap: 22px; 
+            gap: 25px; 
             color: #64748b; 
             font-weight: 800; 
-            font-size: 14px; 
+            font-size: 15px; 
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            transition: var(--transition-master); 
-            border-left: 6px solid transparent;
+            letter-spacing: 3px; 
+            transition: var(--transition-main); 
+            border-left: 8px solid transparent;
             text-align: left;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
-        .nav-btn:hover, .nav-btn.active { 
+        .nav-link-master:hover, .nav-link-master.active { 
             color: white; 
-            background: rgba(255, 122, 0, 0.1); 
-            border-left: 6px solid var(--accent); 
+            background: rgba(255, 122, 0, 0.12); 
+            border-left: 8px solid var(--accent); 
         }
 
-        /* --- DATA INPUT ARCHITECTURE --- */
-        .admin-input {
+        /* --- INPUT & FORM ARCHITECTURE --- */
+        .master-input {
             background: #0f172a; 
             border: 2px solid #1e293b; 
-            padding: 22px;
-            border-radius: 20px; 
+            padding: 24px;
+            border-radius: 22px; 
             color: white; 
             width: 100%; 
-            font-weight: 600;
+            font-weight: 700;
             outline: none; 
-            transition: var(--transition-master);
-            font-size: 15px;
+            transition: var(--transition-main);
+            font-size: 16px;
         }
-        .admin-input:focus { border-color: var(--accent); box-shadow: 0 0 40px rgba(255, 122, 0, 0.15); }
+        .master-input:focus { border-color: var(--accent); box-shadow: 0 0 50px var(--border-glow); }
 
-        .tag-pill {
+        .intel-tag {
             background: rgba(255, 122, 0, 0.1); 
             color: var(--accent);
-            padding: 10px 20px; 
-            border-radius: 14px; 
-            font-size: 11px;
+            padding: 12px 24px; 
+            border-radius: 16px; 
+            font-size: 12px;
             font-weight: 900; 
             text-transform: uppercase; 
-            border: 1px solid rgba(255, 122, 0, 0.2);
+            border: 1px solid rgba(255, 122, 0, 0.3);
             display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
 
-        /* --- SECURITY GUARDRAIL KEYFRAMES --- */
-        #securityGate { 
-            position: fixed; 
-            inset: 0; 
-            background: #000; 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
+        /* --- SECURITY GUARDRAIL --- */
+        #masterGate { 
+            position: fixed; inset: 0; background: #000; z-index: 10000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
-        .shield-icon { 
-            font-size: 100px; 
-            filter: drop-shadow(0 0 50px var(--accent)); 
-            animation: pulseGate 2.5s infinite ease-in-out; 
+        .security-shield { 
+            font-size: 120px; filter: drop-shadow(0 0 60px var(--accent)); 
+            animation: pulseShield 3s infinite ease-in-out; 
         }
-        @keyframes pulseGate { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+        @keyframes pulseShield { 0%, 100% { opacity: 0.3; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.15); } }
         
-        /* --- UTILITY CLASSES --- */
-        .hidden-panel { display: none !important; }
-        .btn-export {
-            padding: 20px 40px;
-            border-radius: 22px;
-            font-weight: 900;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.4s;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .btn-export:active { transform: scale(0.95); }
+        .hidden-section { display: none !important; }
 
         /* --- TABLE SYSTEM --- */
-        .master-table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
-        .master-table th { padding: 0 30px 20px; text-align: left; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 5px; color: #475569; }
-        .master-table td { padding: 30px; background: rgba(255, 255, 255, 0.02); vertical-align: middle; border-top: 1px solid rgba(255, 255, 255, 0.04); transition: 0.3s; }
-        .master-table tr:hover td { background: rgba(255, 255, 255, 0.05); }
-        .master-table td:first-child { border-radius: 25px 0 0 25px; }
-        .master-table td:last-child { border-radius: 0 25px 25px 0; }
+        .governance-table { width: 100%; border-collapse: separate; border-spacing: 0 18px; }
+        .governance-table th { padding: 0 40px 25px; text-align: left; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 6px; color: #475569; }
+        .governance-table td { padding: 35px; background: rgba(255, 255, 255, 0.02); vertical-align: middle; border-top: 1px solid rgba(255, 255, 255, 0.05); transition: 0.4s; }
+        .governance-table tr:hover td { background: rgba(255, 255, 255, 0.06); }
+        .governance-table td:first-child { border-radius: 30px 0 0 30px; }
+        .governance-table td:last-child { border-radius: 0 30px 30px 0; }
 
         @media (max-width: 1024px) {
-            .sidebar { width: 100%; height: auto; bottom: 0; top: auto; flex-direction: row; border-right: none; border-top: var(--border-standard); }
-            .main-viewport { margin-left: 0; padding: 30px; padding-bottom: 150px; }
+            .sidebar { width: 100%; height: auto; bottom: 0; top: auto; flex-direction: row; border-right: none; }
+            .main-viewport { margin-left: 0; padding: 40px; padding-bottom: 180px; }
             .sidebar-header, .nav-text { display: none; }
-            .nav-btn { padding: 22px; flex-direction: column; font-size: 10px; border-left: none; border-top: 5px solid transparent; }
-            .nav-btn.active { border-top: 5px solid var(--accent); }
+            .nav-link-master { padding: 25px; flex-direction: column; font-size: 11px; border-left: none; border-top: 6px solid transparent; }
+            .nav-link-master.active { border-top: 6px solid var(--accent); }
         }
     </style>
 </head>
 <body>
 
-    <div id="securityGate">
-        <div class="shield-icon mb-12">🛡️</div>
-        <h2 class="text-4xl font-black italic tracking-tighter text-white uppercase">Sovereignty Protocol</h2>
-        <p id="gateMessage" class="text-slate-500 uppercase tracking-[12px] text-xs mt-10">Initializing Administrative Handshake...</p>
+    <div id="masterGate">
+        <div class="security-shield mb-16">🛡️</div>
+        <h2 class="text-5xl font-black italic tracking-tighter text-white uppercase">Sovereignty Protocol</h2>
+        <p id="authMessage" class="text-slate-500 uppercase tracking-[15px] text-sm mt-12">Establishing Secure Master Handshake...</p>
     </div>
 
     <nav class="sidebar">
         <div class="sidebar-header">
-            <h1 class="text-4xl font-black italic tracking-tighter text-white leading-none">MASTER<span class="text-orange-500">GOV</span></h1>
-            <p class="text-[10px] font-extrabold text-slate-600 uppercase tracking-[8px] mt-6">Enterprise Node v8.0</p>
+            <h1 class="text-5xl font-black italic tracking-tighter text-white leading-none">MASTER<span class="text-orange-500">GOV</span></h1>
+            <p class="text-[11px] font-extrabold text-slate-600 uppercase tracking-[10px] mt-8">Node v10.0 Monolith</p>
         </div>
         
-        <div class="flex-grow py-12">
-            <button onclick="switchPanel('dash')" id="btn-dash" class="nav-btn active">
-                <span class="text-3xl">📊</span> <span class="nav-text">Command Center</span>
-            </button>
-            <button onclick="switchPanel('hub')" id="btn-hub" class="nav-btn">
-                <span class="text-3xl">🏢</span> <span class="nav-text">Supplier Hub</span>
-            </button>
-            <button onclick="switchPanel('registry')" id="btn-registry" class="nav-btn">
-                <span class="text-3xl">⚒️</span> <span class="nav-text">Intel Registry</span>
-            </button>
-            <button onclick="switchPanel('rbac')" id="btn-rbac" class="nav-btn">
-                <span class="text-3xl">🛡️</span> <span class="nav-text">Access Matrix</span>
-            </button>
+        <div class="flex-grow py-16">
+            <button onclick="changeView('dash')" id="nav-dash" class="nav-link-master active">📊 <span class="nav-text">Command Center</span></button>
+            <button onclick="changeView('hub')" id="nav-hub" class="nav-link-master">🏢 <span class="nav-text">Supplier Hub</span></button>
+            <button onclick="changeView('intel')" id="nav-intel" class="nav-link-master">⚒️ <span class="nav-text">Intel Registry</span></button>
+            <button onclick="changeView('rbac')" id="nav-rbac" class="nav-link-master">🛡️ <span class="nav-text">Access Matrix</span></button>
         </div>
 
-        <div class="p-12 border-t border-white/5 bg-slate-900/40">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-2 w-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <p id="adminTag" class="text-[11px] font-black text-orange-500 uppercase tracking-widest truncate">SYNCING_IDENTITY...</p>
-            </div>
-            <button onclick="auth.signOut()" class="w-full py-6 bg-red-600/10 text-red-500 rounded-2xl font-black text-[11px] uppercase border border-red-600/20 hover:bg-red-600 hover:text-white transition shadow-4xl">🔒 Terminate Session</button>
+        <div class="p-16 border-t border-white/5 bg-slate-900/60">
+            <p id="adminIdentity" class="text-[12px] font-black text-orange-500 uppercase tracking-widest truncate mb-6 italic">ID_SYNCING...</p>
+            <button onclick="auth.signOut()" class="w-full py-6 bg-red-600/10 text-red-500 rounded-2xl font-black text-[12px] uppercase border border-red-600/20 hover:bg-red-600 hover:text-white transition-all shadow-4xl">🔒 Logout</button>
         </div>
     </nav>
 
     <main class="main-viewport">
         
-        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-24 gap-12">
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-32 gap-16">
             <div>
-                <h2 id="viewHeader" class="text-7xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h2>
-                <p id="viewSubtext" class="text-slate-400 text-3xl font-medium mt-8">Real-time enterprise monitor.</p>
+                <h2 id="pageTitle" class="text-8xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h2>
+                <p id="pageDesc" class="text-slate-400 text-3xl font-medium mt-10">Enterprise real-time infrastructure monitor.</p>
             </div>
-            <div class="flex flex-wrap gap-8">
-                <button onclick="ExportEngine.toExcel()" class="btn-export bg-emerald-600 text-white hover:bg-emerald-500 transition">📥 Export Ledger</button>
-                <button onclick="ExportEngine.toPDF()" class="btn-export bg-red-600 text-white hover:bg-red-500 transition">📄 Secure Audit</button>
+            <div class="flex flex-wrap gap-10">
+                <button onclick="MasterExport.toExcel()" class="px-12 py-6 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-4xl hover:bg-emerald-500 transition-all">📥 Excel Ledger</button>
+                <button onclick="MasterExport.toPDF()" class="px-12 py-6 bg-red-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-4xl hover:bg-red-500 transition-all">📄 Secure PDF</button>
             </div>
         </header>
 
-        <section id="panel-dash" class="space-y-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                <div class="glass-card">
-                    <p class="text-slate-500 font-black uppercase text-[12px] tracking-widest">Total Stakeholders</p>
-                    <h3 id="count-partners" class="text-8xl font-black mt-8 text-white leading-none">0</h3>
-                </div>
-                <div class="glass-card">
-                    <p class="text-slate-500 font-black uppercase text-[12px] tracking-widest">Verified Audits</p>
-                    <h3 id="count-surveys" class="text-8xl font-black mt-8 text-white leading-none">0</h3>
-                </div>
-                <div class="glass-card">
-                    <p class="text-slate-500 font-black uppercase text-[12px] tracking-widest">Global Personnel</p>
-                    <h3 id="count-users" class="text-8xl font-black mt-8 text-white leading-none">0</h3>
-                </div>
-                <div class="glass-card border-orange-500/20 bg-orange-500/5">
-                    <p class="text-orange-500 font-black uppercase text-[12px] tracking-widest">Handshake</p>
-                    <h3 class="text-3xl font-black mt-8 text-emerald-500">SYNCHRONIZED</h3>
-                </div>
+        <section id="view-dash" class="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="glass-card"><p class="text-slate-500 font-black uppercase text-[13px] tracking-widest">Stakeholders</p><h3 id="stat-partners" class="text-9xl font-black mt-10 text-white leading-none">0</h3></div>
+            <div class="glass-card"><p class="text-slate-500 font-black uppercase text-[13px] tracking-widest">Verified Audits</p><h3 id="stat-audits" class="text-9xl font-black mt-10 text-white leading-none">0</h3></div>
+            <div class="glass-card"><p class="text-slate-500 font-black uppercase text-[13px] tracking-widest">Database Users</p><h3 id="stat-users" class="text-9xl font-black mt-10 text-white leading-none">0</h3></div>
+            <div class="glass-card border-orange-500/20 bg-orange-500/5"><p class="text-orange-500 font-black uppercase text-[13px] tracking-widest">Cloud Health</p><h3 class="text-4xl font-black mt-10 text-emerald-500">OPTIMIZED</h3></div>
+        </section>
+
+        <section id="view-hub" class="hidden-section">
+            <div class="glass-card overflow-x-auto">
+                <table class="governance-table">
+                    <thead>
+                        <tr>
+                            <th>Organization</th>
+                            <th>Owner Intel</th>
+                            <th>Manager Intel</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hubBody"></tbody>
+                </table>
             </div>
         </section>
 
-        <section id="panel-registry" class="hidden-panel space-y-16">
+        <section id="view-intel" class="hidden-section space-y-16">
             <div class="glass-card">
-                <h3 class="text-4xl font-black uppercase tracking-tighter mb-12">Deploy Intelligence Node</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div>
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Material Class</label>
-                        <input type="text" id="reg-cat" class="admin-input" placeholder="e.g. CEMENT, STEEL">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Variety Node</label>
-                        <input type="text" id="reg-var" class="admin-input" placeholder="e.g. OPC 53, TMT 500D">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Brand Cluster</label>
-                        <input type="text" id="reg-brands" class="admin-input" placeholder="e.g. Brand A, Brand B">
-                    </div>
+                <h3 class="text-5xl font-black uppercase tracking-tighter mb-16">Deploy Intelligence Node</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <input type="text" id="reg-cat" class="master-input" placeholder="Material Class (e.g. CEMENT)">
+                    <input type="text" id="reg-var" class="master-input" placeholder="Variety Node (e.g. OPC 53)">
+                    <input type="text" id="reg-brands" class="master-input" placeholder="Brands (Comma Separated)">
                 </div>
-                <button onclick="RegistryEngine.deploy()" class="mt-12 bg-orange-500 text-white px-20 py-7 rounded-2xl font-black uppercase tracking-widest shadow-4xl hover:bg-orange-600 transition-all hover:scale-105">Execute Protocol Deployment</button>
+                <button onclick="RegistryControl.deploy()" class="mt-16 bg-orange-500 text-white px-24 py-8 rounded-3xl font-black uppercase tracking-widest shadow-4xl hover:scale-105 transition-all">Execute Node Deployment</button>
             </div>
-
-            <div id="registryDisplay" class="space-y-12">
-                </div>
+            <div id="registryList" class="space-y-16"></div>
         </section>
 
-        <section id="panel-hub" class="hidden-panel">
-            <div class="glass-card">
-                <div class="overflow-x-auto">
-                    <table class="master-table">
-                        <thead>
-                            <tr class="text-[11px] font-black text-slate-500 uppercase tracking-[6px]">
-                                <th>Entity Architecture</th>
-                                <th>Representative Node</th>
-                                <th>Intelligence Class</th>
-                                <th>Status Protocol</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hubTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="panel-rbac" class="hidden-panel">
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12" id="rbacGrid">
-                </div>
-        </section>
+        <section id="view-rbac" class="hidden-section grid grid-cols-1 md:grid-cols-3 gap-12" id="rbacGrid">
+            </section>
 
     </main>
 
@@ -307,9 +254,11 @@
 
     <script>
         /**
-         * MASTER GOVERNANCE TERMINAL ENGINE v8.0
-         * NIRMANSUTRA PRIVATE LIMITED
+         * NIRMANSUTRA MASTER TERMINAL v10.0 MONOLITH
+         * AUTHOR: GENERATIVE ARCHITECT
+         * DATE: 2026-03-29
          */
+
         const firebaseConfig = {
             apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
             authDomain: "infradepo.firebaseapp.com",
@@ -320,202 +269,219 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database(), auth = firebase.auth();
 
-        let globalMasterManifest = [];
+        let globalMasterBuffer = [];
 
-        // 🛡️ SECURITY GATEKEEPER IMPLEMENTATION
-        auth.onAuthStateChanged(async (user) => {
-            if (!user) { window.location.href = "../index.html"; return; }
+        // 1. ADVANCED SECURITY HANDSHAKE
+        auth.onAuthStateChanged(async (u) => {
+            if (!u) { window.location.href = "../index.html"; return; }
             
             try {
-                const snap = await rtdb.ref(`users/${user.uid}`).once('value');
-                const data = snap.val() || {};
+                const snap = await rtdb.ref(`users/${u.uid}`).once('value');
+                const meta = snap.val() || {};
+                const authRole = (meta.role || "").toLowerCase();
+                const authStatus = (meta.accessStatus || "").toLowerCase();
 
-                const roleStr = (data.role || "").toLowerCase();
-                const statusStr = (data.accessStatus || "").toLowerCase();
-                const isAuthorized = roleStr.includes('super') || statusStr.includes('super');
-
-                if (isAuthorized) {
+                if (authRole.includes('super') || authStatus.includes('super')) {
                     setTimeout(() => {
-                        document.getElementById('securityGate').style.opacity = "0";
-                        setTimeout(() => document.getElementById('securityGate').style.display = "none", 600);
-                    }, 1200);
-                    document.getElementById('adminTag').innerText = user.email.toUpperCase();
-                    initializeGlobalPipeline();
+                        document.getElementById('masterGate').style.opacity = "0";
+                        setTimeout(() => document.getElementById('masterGate').style.display = "none", 800);
+                    }, 1500);
+                    document.getElementById('adminIdentity').innerText = u.email.toUpperCase();
+                    initializeExecutiveSync();
                 } else {
-                    document.getElementById('gateMessage').innerText = "ACCESS DENIED: RE-ROUTING...";
-                    document.getElementById('gateMessage').style.color = "#ef4444";
+                    document.getElementById('authMessage').innerText = "ACCESS DENIED: RE-ROUTING...";
+                    document.getElementById('authMessage').style.color = "#ef4444";
                     setTimeout(() => window.location.href = "dashboard.html", 2500);
                 }
-            } catch (error) {
-                console.error("[CRITICAL_FAULT]", error.message);
-                alert("Cloud Protocol Error. Contact Architect.");
+            } catch (err) {
+                console.error("[CRITICAL_FAULT]", err.message);
             }
         });
 
-        // UI PANEL ROUTING ENGINE
-        function switchPanel(panelKey) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden-panel'));
-            document.getElementById('panel-' + panelKey).classList.remove('hidden-panel');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + panelKey).classList.add('active');
+        // 2. VIEW CONTROLLER
+        function changeView(id) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden-section'));
+            document.getElementById('view-' + id).classList.remove('hidden-section');
+            document.querySelectorAll('.nav-link-master').forEach(b => b.classList.remove('active'));
+            document.getElementById('nav-' + id).classList.add('active');
 
-            const headerConfig = {
+            const headers = { 
                 dash: ["Command Center", "Real-time enterprise monitor."],
-                hub: ["Supplier Hub", "Strategic partner governance node."],
-                registry: ["Intel Registry", "Global material node management."],
-                rbac: ["Access Matrix", "Clearance level governance."]
+                hub: ["Supplier Hub", "Verified partner governance node."],
+                intel: ["Intel Registry", "Material catalog management."],
+                rbac: ["Access Matrix", "Security clearance governance."]
             };
-            document.getElementById('viewHeader').innerText = headerConfig[panelKey][0];
-            document.getElementById('viewSubtext').innerText = headerConfig[panelKey][1];
+            document.getElementById('pageTitle').innerText = headers[id][0];
+            document.getElementById('pageDesc').innerText = headers[id][1];
         }
 
-        // GLOBAL DATA AGGREGATION PIPELINE
-        function initializeGlobalPipeline() {
-            let surveys = {}, onboard = {};
-
-            const executeUnifiedMerge = () => {
-                const buffer = [];
-                Object.keys(surveys).forEach(k => buffer.push({ ...surveys[k], _src: 'FIELD_SURVEY', _id: k }));
-                Object.keys(onboard).forEach(k => buffer.push({ ...onboard[k], _src: 'PARTNER_REG', _id: k }));
-                
-                globalMasterManifest = buffer.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                document.getElementById('count-surveys').innerText = Object.keys(surveys).length;
-                document.getElementById('count-partners').innerText = Object.keys(onboard).length;
+        // 3. CLOUD SYNC ENGINE
+        function initializeExecutiveSync() {
+            let surveys = {}, partners = {};
+            const reflow = () => {
+                const arr = [];
+                Object.keys(surveys).forEach(k => arr.push({ ...surveys[k], _id: k, _source: 'SURVEY' }));
+                Object.keys(partners).forEach(k => arr.push({ ...partners[k], _id: k, _source: 'PARTNER' }));
+                globalMasterBuffer = arr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                document.getElementById('stat-partners').innerText = Object.keys(partners).length;
+                document.getElementById('stat-audits').innerText = Object.keys(surveys).length;
                 renderHubMatrix();
             };
-
-            rtdb.ref('surveys').on('value', s => { surveys = s.val() || {}; executeUnifiedMerge(); });
-            rtdb.ref('supplier_onboarding').on('value', s => { onboard = s.val() || {}; executeUnifiedMerge(); });
-            rtdb.ref('users').on('value', snap => {
-                document.getElementById('count-users').innerText = snap.numChildren();
-                renderRBACMatrix(snap);
+            rtdb.ref('surveys').on('value', s => { surveys = s.val() || {}; reflow(); });
+            rtdb.ref('supplier_onboarding').on('value', s => { partners = s.val() || {}; reflow(); });
+            rtdb.ref('users').on('value', s => {
+                document.getElementById('stat-users').innerText = s.numChildren();
+                renderRBACMatrix(s);
             });
             rtdb.ref('registry/materials').on('value', renderMaterialRegistry);
         }
 
-        // MATERIAL INTELLIGENCE ENGINE
-        function renderMaterialRegistry(snap) {
-            const display = document.getElementById('registryDisplay');
-            display.innerHTML = "";
-            snap.forEach(categoryNode => {
-                let html = `
-                    <div class="glass-card p-12 border-t-8 border-orange-500">
-                        <div class="flex justify-between items-center mb-12 border-b border-white/5 pb-8">
-                            <h4 class="text-5xl font-black text-white italic tracking-tighter">${categoryNode.key}</h4>
-                            <button onclick="RegistryEngine.wipeNode('${categoryNode.key}')" class="text-red-500 font-bold text-[10px] uppercase tracking-widest hover:text-white transition">Terminate Class</button>
-                        </div><div class="grid gap-8">`;
-                categoryNode.forEach(varietyNode => {
-                    const brands = varietyNode.val().brands || [];
-                    html += `
-                        <div class="bg-white/5 p-8 rounded-3xl border border-white/5 group hover:border-orange-500/30 transition-all">
-                            <p class="text-sm font-black text-orange-500 uppercase tracking-[4px] mb-6 italic">${varietyNode.key}</p>
-                            <div class="flex flex-wrap gap-4">${brands.map(b => `<span class="tag-pill">${b}</span>`).join('')}</div>
-                        </div>`;
-                });
-                html += `</div></div>`;
-                display.innerHTML += html;
-            });
-        }
-
-        window.RegistryEngine = {
-            async deploy() {
-                const c = document.getElementById('reg-cat').value.toUpperCase().trim();
-                const v = document.getElementById('reg-var').value.trim();
-                const b = document.getElementById('reg-brands').value.split(',').map(x => x.trim());
-                if(!c || !v || b.length === 0) return alert("Validation Failed: All nodes required.");
-                await rtdb.ref(`registry/materials/${c}/${v}/brands`).set(b);
-                alert("Protocol Stream Deployed.");
-                document.getElementById('reg-cat').value = ""; document.getElementById('reg-var').value = ""; document.getElementById('reg-brands').value = "";
-            },
-            async wipeNode(key) {
-                if(confirm("Confirm: Wipe material class from global registry?")) await rtdb.ref(`registry/materials/${key}`).remove();
-            }
-        };
-
-        // RENDER: MASTER SUPPLIER HUB
+        // 4. UI RENDERERS
         function renderHubMatrix() {
-            const body = document.getElementById('hubTableBody');
-            body.innerHTML = globalMasterManifest.map(n => `
-                <tr class="bg-white/5 hover:bg-white/10 transition-all">
+            const body = document.getElementById('hubBody');
+            body.innerHTML = globalMasterBuffer.map(n => `
+                <tr class="hover:bg-white/5 transition-all">
                     <td>
-                        <div class="text-3xl font-black text-white uppercase leading-none italic">${n.firm || n.business_name || 'UNID_ENTITY'}</div>
-                        <div class="text-[10px] text-slate-500 font-bold uppercase mt-4 tracking-[4px]">Verified via ${n._src}</div>
+                        <div class="text-3xl font-black text-white uppercase italic">${n.firm || n.business_name || 'UNID'}</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase mt-4 tracking-[4px]">Source: ${n._source}</div>
                     </td>
                     <td>
                         <div class="text-lg font-black text-slate-300">${n.ownerName || n.contact_person || 'N/A'}</div>
-                        <div class="text-[13px] text-emerald-500 font-black mt-3 italic">${n.ownerWa || n.phone || 'PENDING'}</div>
+                        <div class="text-[13px] text-emerald-500 font-bold mt-3">WA: ${n.ownerWa || n.phone || 'N/A'}</div>
                     </td>
-                    <td><div class="text-orange-500 font-black text-sm uppercase tracking-[3px]">${n.mat || n.category || 'INTEL_GENERAL'}</div></td>
-                    <td><span class="px-5 py-2 bg-emerald-500/10 text-emerald-500 text-[11px] font-black rounded-xl border border-emerald-500/20 uppercase tracking-[2px]">SOVEREIGN_AUTH</span></td>
+                    <td>
+                        <div class="text-lg font-black text-slate-300">${n.managerName || 'N/A'}</div>
+                        <div class="text-[13px] text-emerald-500 font-bold mt-3">WA: ${n.managerWa || 'N/A'}</div>
+                    </td>
+                    <td><span class="px-6 py-3 bg-emerald-500/10 text-emerald-500 text-[11px] font-black rounded-2xl uppercase border border-emerald-500/30">AUTHENTICATED</span></td>
                 </tr>
             `).join('');
         }
 
-        // RENDER: SECURITY RBAC MATRIX
-        function renderRBACMatrix(snap) {
-            const grid = document.getElementById('rbacGrid');
-            grid.innerHTML = "";
-            snap.forEach(userNode => {
-                const u = userNode.val();
-                grid.innerHTML += `
-                    <div class="glass-card p-12 border-white/5 hover:border-orange-500/40 transition-all group">
-                        <div class="flex justify-between items-center mb-8">
-                            <p class="font-black text-white text-2xl uppercase tracking-tighter group-hover:text-orange-500 transition">${u.name || 'ANON_AGENT'}</p>
-                            <span class="text-[10px] bg-orange-500/20 text-orange-500 px-4 py-2 rounded-full font-black uppercase">${u.role}</span>
-                        </div>
-                        <p class="text-[13px] text-slate-500 mb-10 font-bold italic">${u.email}</p>
-                        <select onchange="updateMasterAccess('${userNode.key}', this.value)" class="w-full bg-slate-900 border border-white/10 p-6 rounded-2xl text-[11px] font-black text-white outline-none focus:border-orange-500 transition shadow-2xl">
-                            <option value="">RECLASSIFY RANK</option>
-                            <option value="super_admin">LEVEL: SUPER ADMIN</option>
-                            <option value="admin_staff">LEVEL: ADMIN STAFF</option>
-                            <option value="field_survey_staff">LEVEL: FIELD AGENT</option>
-                        </select>
-                    </div>
-                `;
+        function renderMaterialRegistry(snap) {
+            const list = document.getElementById('registryList'); list.innerHTML = "";
+            snap.forEach(cat => {
+                let html = `<div class="glass-card p-12 border-t-8 border-orange-500"><h4 class="text-5xl font-black text-white italic mb-12 pb-8 border-b border-white/10 uppercase">${cat.key}</h4><div class="grid gap-10">`;
+                cat.forEach(vari => {
+                    const brands = vari.val().brands || [];
+                    html += `<div class="bg-white/5 p-10 rounded-3xl border border-white/5 hover:border-orange-500/20 transition-all">
+                        <p class="text-sm font-black text-orange-500 uppercase tracking-[5px] mb-8">${vari.key}</p>
+                        <div class="flex flex-wrap gap-5">${brands.map(b => `<span class="intel-tag">${b}</span>`).join('')}</div>
+                    </div>`;
+                });
+                list.innerHTML += html + `</div></div>`;
             });
         }
 
-        async function updateMasterAccess(uid, role) {
-            if(!role || !confirm("CRITICAL: Reclassify database rank?")) return;
-            await rtdb.ref(`users/${uid}/role`).set(role);
-            alert("Registry Synchronized Successfully.");
+        function renderRBACMatrix(snap) {
+            const grid = document.getElementById('view-rbac'); grid.innerHTML = "";
+            snap.forEach(un => {
+                const u = un.val();
+                grid.innerHTML += `<div class="glass-card p-12 border-white/5 group hover:border-orange-500/30 transition-all">
+                    <div class="flex justify-between items-center mb-8">
+                        <p class="font-black text-white text-3xl uppercase tracking-tighter">${u.name || 'ANON'}</p>
+                        <span class="text-[10px] bg-orange-500/20 text-orange-500 px-5 py-2 rounded-full font-black uppercase">${u.role}</span>
+                    </div>
+                    <p class="text-[14px] text-slate-500 mb-12 font-bold italic">${u.email}</p>
+                    <select onchange="updateAccess('${un.key}', this.value)" class="w-full bg-slate-900 border border-white/10 p-6 rounded-2xl text-[11px] font-black text-white outline-none focus:border-orange-500 transition">
+                        <option value="">REASSIGN RANK</option>
+                        <option value="super_admin">SUPER ADMIN</option>
+                        <option value="admin_staff">ADMIN STAFF</option>
+                        <option value="field_survey_staff">FIELD AGENT</option>
+                    </select>
+                </div>`;
+            });
         }
 
-        // --- ENCRYPTED GOVERNANCE EXPORT SYSTEM ---
-        window.ExportEngine = {
+        async function updateAccess(uid, role) { if(role && confirm("CRITICAL: Reassign Database Rank?")) await rtdb.ref(`users/${uid}/role`).set(role); }
+
+        window.RegistryControl = {
+            async deploy() {
+                const c = document.getElementById('reg-cat').value.toUpperCase().trim();
+                const v = document.getElementById('reg-var').value.trim();
+                const b = document.getElementById('reg-brands').value.split(',').map(x => x.trim());
+                if(c && v && b.length > 0) {
+                    await rtdb.ref(`registry/materials/${c}/${v}/brands`).set(b);
+                    alert("Registry Deployed Successfully.");
+                    document.getElementById('reg-cat').value = ""; document.getElementById('reg-var').value = ""; document.getElementById('reg-brands').value = "";
+                }
+            }
+        };
+
+        // 5. MASTER EXPORT SUITE (V10.0 FIX)
+        window.MasterExport = {
             async toExcel() {
-                const pass = prompt("ENCRYPTION: Set Password for Excel Handshake:");
+                const pass = prompt("ENCRYPTION: Set Excel Access Password:");
                 if(!pass) return;
-                const rows = globalMasterManifest.map(n => ({
-                    Sovereignty_ID: n._id, Entity: n.firm || n.business_name, Lead: n.ownerName || n.contact_person, 
-                    Phone: n.ownerWa || n.phone, Intel: n.mat || n.category, Sync: n.timestamp
+                
+                const rows = globalMasterBuffer.map(n => ({
+                    Identity_Type: n._source,
+                    Firm_Name: n.firm || n.business_name || "N/A",
+                    Owner_Name: n.ownerName || n.contact_person || "N/A",
+                    Owner_Mobile: n.ownerPhone || "N/A",
+                    Owner_WA: n.ownerWa || n.phone || "N/A",
+                    Manager_Name: n.managerName || "N/A",
+                    Manager_Mobile: n.managerPhone || "N/A",
+                    Manager_WA: n.managerWa || "N/A",
+                    Full_Address: n.address || "N/A",
+                    Latitude: n.location?.lat || "N/A",
+                    Longitude: n.location?.lng || "N/A",
+                    Material_Intel: n.mat || n.category || "N/A",
+                    Fleet_Intel: n.fleet || "N/A"
                 }));
+
                 const ws = XLSX.utils.json_to_sheet(rows);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "MasterRegistry");
-                XLSX.writeFile(wb, `NS_GOV_LEDGER_${Date.now()}.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "MasterLog");
+                XLSX.writeFile(wb, `NS_Audit_Ledger_${Date.now()}.xlsx`);
             },
+            
             async toPDF() {
-                const pass = prompt("ENCRYPTION: Set Password for PDF Vault:");
+                const pass = prompt("ENCRYPTION: Set PDF Open Password:");
                 if(!pass) return;
+
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('l', 'mm', 'a4');
+
+                // Apply Security Encryption
                 doc.setEncryption(pass, pass, { userPassword: pass, ownerPassword: pass, permissions: { printing: 'high-resolution' }});
-                doc.setFillColor(15, 23, 42); doc.rect(0, 0, 297, 50, 'F');
-                doc.setFontSize(30); doc.setTextColor(255, 122, 0); doc.text("NIRMANSUTRA | MASTER GOVERNANCE", 15, 25);
-                doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text("OFFICIAL ENTERPRISE DATA ARCHIVE - SOVEREIGN LEVEL", 15, 38);
+
+                // Header Header Logic
+                doc.setFillColor(15, 23, 42); 
+                doc.rect(0, 0, 297, 50, 'F');
+                doc.setFontSize(28); 
+                doc.setTextColor(255, 122, 0); 
+                doc.text("NIRMANSUTRA | SECURE INTELLIGENCE AUDIT", 15, 25);
+                doc.setFontSize(10); 
+                doc.setTextColor(255, 255, 255); 
+                doc.text("OFFICIAL SOVEREIGN LEVEL ENTERPRISE DATA - STRICTLY CONFIDENTIAL", 15, 38);
+
+                const tableData = globalMasterBuffer.map(n => [
+                    n._source,
+                    n.firm || n.business_name,
+                    n.ownerName || n.contact_person,
+                    n.ownerWa || n.phone,
+                    n.managerName || "N/A",
+                    n.mat || n.category,
+                    n.location ? `${n.location.lat}, ${n.location.lng}` : "N/A"
+                ]);
+
                 doc.autoTable({
-                    head: [['ENTITY NAME', 'PERSONNEL', 'INTELLIGENCE', 'SOURCE', 'TIMESTAMP']],
-                    body: globalMasterManifest.map(n => [n.firm || n.business_name, n.ownerName || n.contact_person, n.mat || n.category, n._src, n.timestamp]),
-                    startY: 60, theme: 'grid', headStyles: { fillColor: [255, 122, 0] }, styles: { fontSize: 10, cellPadding: 5 }
+                    head: [['TYPE', 'FIRM', 'OWNER', 'WA', 'MANAGER', 'MATERIAL', 'COORDINATES']],
+                    body: tableData,
+                    startY: 60,
+                    theme: 'grid',
+                    headStyles: { fillColor: [255, 122, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    styles: { fontSize: 9, cellPadding: 6, font: 'helvetica' },
+                    alternateRowStyles: { fillColor: [240, 240, 240] }
                 });
-                doc.save(`NS_ENCRYPTED_AUDIT_${Date.now()}.pdf`);
+
+                doc.save(`NS_Encrypted_Audit_${Date.now()}.pdf`);
+                alert("Secure PDF Generated Successfully.");
             }
         };
     </script>
     
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
