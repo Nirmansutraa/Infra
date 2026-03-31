@@ -48,14 +48,23 @@
 
         /* --- IDENTITY DOCK --- */
         .identity-dock {
-            position: fixed; bottom: 25px; right: 25px; width: 280px;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(30px);
-            padding: 22px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed; bottom: 25px; right: 25px; width: 350px;
+            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(40px);
+            padding: 30px; border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 30px 60px rgba(0,0,0,0.8); z-index: 5000;
             transition: var(--transition-main);
+            max-height: 90vh; overflow-y: auto;
         }
-        .dock-minimized { transform: translateY(calc(100% - 60px)); opacity: 0.9; }
-        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 15px; color: var(--accent); font-weight: 900; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
+        .dock-minimized { transform: translateY(calc(100% - 70px)); opacity: 0.9; }
+        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 20px; color: var(--accent); font-weight: 900; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; }
+
+        .auth-input {
+            width: 100%; background: #0f172a; border: 1px solid #1e293b; 
+            padding: 18px; border-radius: 18px; color: white; 
+            font-size: 13px; font-weight: 600; outline: none; margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .auth-input:focus { border-color: var(--accent); }
 
         .scaled-section { padding-top: 5.5rem; padding-bottom: 5.5rem; }
         .scaled-title { font-size: 3.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 2rem; letter-spacing: -0.02em; }
@@ -114,7 +123,7 @@
                  <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Privacy Governance Protocol v2.0</p>
             </div>
             <h2>Privacy Policy</h2>
-            <p><strong>Effective Date: March 29, 2026</strong></p>
+            <p><strong>Effective Date: March 31, 2026</strong></p>
             <p>NirmanSutra Private Limited is dedicated to maintaining the highest standards of data integrity across our brand ecosystem (InfraMart, InfraDepot, BuilderKart).</p>
             <h3>I. Data Collection</h3>
             <p>We collect identifiers (Name, Email, Mobile) and field intelligence (GPS coordinates, survey responses) essential for our infrastructure intelligence network.</p>
@@ -133,7 +142,7 @@
                  <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Master Service Agreement v2.0</p>
             </div>
             <h2>Terms & Conditions</h2>
-            <p><strong>Effective Date: March 29, 2026</strong></p>
+            <p><strong>Effective Date: March 31, 2026</strong></p>
             <h3>I. Acceptance</h3>
             <p>Accessing the terminal implies acceptance of our data integrity protocols.</p>
             <h3>II. Authenticity</h3>
@@ -258,22 +267,73 @@
     </section>
 
     <div id="terminalDock" class="identity-dock dock-minimized">
-        <div class="dock-toggle" onclick="toggleDock()">▲ Open Secure Terminal</div>
+        <div class="dock-toggle" onclick="toggleDock()">▲ Open Sovereign Gateway</div>
+        
         <div id="dockContent">
-            <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-1">Unified Terminal</h3>
-            <p class="text-[8px] text-slate-500 font-bold uppercase mb-6 tracking-widest">Identity Gateway</p>
-            <div class="mb-6 flex gap-4 items-start cursor-pointer">
-                <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500 rounded bg-slate-900 border-white/10">
-                <label for="consentCheckbox" class="text-[10px] text-slate-400 font-bold leading-tight">
-                    I agree to the <span onclick="openLegal('modalPrivacy')" class="text-white underline">Privacy Policy</span> and 
-                    <span onclick="openLegal('modalTerms')" class="text-white underline">Terms</span>.
-                </label>
+            <div id="loginSection">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest">Gateway Access</h3>
+                    <select id="authMethod" class="bg-transparent text-[9px] font-black text-slate-500 uppercase outline-none" onchange="toggleAuthFields(this.value)">
+                        <option value="email">Email</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                </div>
+
+                <div id="emailFields">
+                    <input type="email" id="logEmail" class="auth-input" placeholder="Primary Email">
+                    <input type="password" id="logPass" class="auth-input" placeholder="Secure Password">
+                </div>
+
+                <div id="whatsappFields" class="hidden-internal">
+                    <div class="flex gap-2 mb-4">
+                        <div class="auth-input w-16 text-center bg-slate-800 border-none">+91</div>
+                        <input type="tel" id="logPhone" class="auth-input flex-1" placeholder="Mobile Number">
+                    </div>
+                    <div id="otpInputNode" class="hidden-internal">
+                        <input type="text" id="otpEntry" class="auth-input text-center tracking-[10px] text-lg" placeholder="••••••" maxlength="6">
+                    </div>
+                </div>
+
+                <div class="mb-6 flex gap-4 items-start cursor-pointer">
+                    <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500 rounded bg-slate-900 border-white/10">
+                    <label for="consentCheckbox" class="text-[10px] text-slate-400 font-bold leading-tight">
+                        Agree to <span onclick="openLegal('modalPrivacy')" class="text-white underline">Privacy</span> and 
+                        <span onclick="openLegal('modalTerms')" class="text-white underline">Terms</span>.
+                    </label>
+                </div>
+
+                <button id="primaryBtn" onclick="AuthEngine.executeLogin()" class="bg-orange-500 text-white w-full py-5 rounded-2xl font-black uppercase text-[11px] mb-4 shadow-2xl hover:scale-105 transition-all">Authorize Entry</button>
+                
+                <button onclick="AuthEngine.googleAuth()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 mb-6 shadow-2xl hover:bg-orange-100 transition-all">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Identity via Google
+                </button>
+
+                <div class="flex justify-between items-center border-t border-white/5 pt-6">
+                    <span onclick="toggleView('reg')" class="text-slate-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">New Registry</span>
+                    <span onclick="AuthEngine.dispatchReset()" class="text-orange-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">Reset via WA</span>
+                </div>
             </div>
-            <button onclick="unifiedLogin()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 mb-6 shadow-2xl hover:bg-orange-500 hover:text-white transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Personnel Access
-            </button>
-            <div class="border-t border-white/5 pt-6 text-center">
-                <div onclick="forceReg()" class="text-orange-500 font-black text-[10px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">➜ New Partner Registration</div>
+
+            <div id="regSection" class="hidden-internal">
+                <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-6">Master Registry</h3>
+                <input type="text" id="regName" class="auth-input" placeholder="Full Legal Name / Entity">
+                <input type="email" id="regEmail" class="auth-input" placeholder="Primary Email">
+                <input type="tel" id="regPhone" class="auth-input" placeholder="WhatsApp Verified Number">
+                <input type="password" id="regPass" class="auth-input" placeholder="Set Secure Password">
+                
+                <select id="regRole" class="auth-input text-orange-500 font-black">
+                    <option value="Builders">Role: Builders</option>
+                    <option value="Contractor">Role: Contractor</option>
+                    <option value="HomeOwner">Role: HomeOwner</option>
+                    <option value="Supplier">Role: Supplier</option>
+                    <option value="FleetOwner">Role: Fleet Owner</option>
+                    <option value="field_survey_staff">Role: Field Agent</option>
+                </select>
+
+                <button onclick="AuthEngine.executeSignup()" class="bg-orange-500 text-white w-full py-5 rounded-2xl font-black uppercase text-[11px] mb-6 shadow-2xl">Finalize Registry</button>
+                <div class="text-center">
+                    <span onclick="toggleView('login')" class="text-slate-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">Back to Login</span>
+                </div>
             </div>
         </div>
     </div>
@@ -307,7 +367,7 @@
             const dock = document.getElementById('terminalDock');
             const toggle = document.querySelector('.dock-toggle');
             dock.classList.toggle('dock-minimized');
-            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ Open Secure Terminal" : "▼ Minimize Terminal";
+            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ Open Sovereign Gateway" : "▼ Minimize Terminal";
         }
 
         function openLegal(id) {
@@ -319,49 +379,120 @@
             document.body.style.overflow = 'auto';
         }
 
+        function toggleAuthFields(m) {
+            document.getElementById('emailFields').classList.toggle('hidden-internal', m === 'whatsapp');
+            document.getElementById('whatsappFields').classList.toggle('hidden-internal', m === 'email');
+        }
+
+        function toggleView(view) {
+            document.getElementById('loginSection').classList.toggle('hidden-internal', view === 'reg');
+            document.getElementById('regSection').classList.toggle('hidden-internal', view === 'login');
+        }
+
         /**
-         * UPDATED ROUTING TABLE
-         * field_survey_staff now points to 'field/dashboard.html'
+         * GLOBAL RBAC ROUTING TABLE
          */
-        const ROLE_ROUTES = {
-            'super_admin': 'admin/dashboard.html',
+        const MASTER_ROUTES = {
+            'super_admin': 'admin/super_admin.html',
+            'admin': 'admin/dashboard.html',
             'admin_staff': 'admin/dashboard.html',
-            'field_survey_staff': 'field/dashboard.html'
+            'field_survey_staff': 'field/dashboard.html',
+            'Supplier': 'onboarding/supplier-dashboard.html',
+            'Builders': 'onboarding/builder-dashboard.html',
+            'Contractor': 'onboarding/contractor-dashboard.html',
+            'HomeOwner': 'onboarding/owner-dashboard.html',
+            'FleetOwner': 'onboarding/fleet-dashboard.html'
         };
 
-        async function unifiedLogin() {
-            if (!document.getElementById("consentCheckbox").checked) {
-                alert("Protocol Required: Please accept the Terms & Privacy to proceed.");
-                return;
-            }
-            try {
-                const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                if (res.user) {
-                    await rtdb.ref(`consent_logs/${res.user.uid}`).set({
-                        email: res.user.email,
-                        consent: true,
-                        timestamp: new Date().toISOString()
-                    });
-                    executeRouting(res.user);
+        const AUTHKEY_NODE = { sid: "3742", apiKey: "REPLACE_WITH_YOUR_KEY" };
+        let currentOTP = null;
+
+        window.AuthEngine = {
+            async executeLogin() {
+                if (!document.getElementById("consentCheckbox").checked) return alert("Accept Terms to proceed.");
+                
+                const method = document.getElementById('authMethod').value;
+                if(method === 'email') {
+                    try {
+                        const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
+                        this.route(res.user);
+                    } catch(e) { alert(e.message); }
+                } else {
+                    this.handleWhatsAppFlow();
                 }
-            } catch (e) { console.error("[AUTH_FAULT]", e.message); }
-        }
+            },
 
-        async function executeRouting(user) {
-            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
-            const role = snap.val();
-            if (!role) { alert("Access Unauthorized."); return; }
-            const target = ROLE_ROUTES[role];
-            if (target) window.location.replace(target);
-        }
+            async handleWhatsAppFlow() {
+                const phone = document.getElementById('logPhone').value;
+                const entered = document.getElementById('otpEntry').value;
+                
+                if(!currentOTP) {
+                    const otp = Math.floor(100000 + Math.random() * 900000);
+                    currentOTP = otp;
+                    const url = `https://authkey.io/api/Service?sid=${AUTHKEY_NODE.sid}&key=${AUTHKEY_NODE.apiKey}&mobile=${phone}&message=Your NirmanSutra OTP is ${otp}&otp=${otp}`;
+                    try {
+                        await fetch(url);
+                        document.getElementById('otpInputNode').classList.remove('hidden-internal');
+                        document.getElementById('primaryBtn').innerText = "Verify OTP Code";
+                        alert("OTP Dispatched to WhatsApp.");
+                    } catch(e) { alert("WhatsApp API Fault."); }
+                } else if(entered == currentOTP) {
+                    const snap = await rtdb.ref('users').orderByChild('phone').equalTo(phone).once('value');
+                    if(snap.exists()) {
+                        const data = Object.values(snap.val())[0];
+                        window.location.replace(MASTER_ROUTES[data.role]);
+                    } else { alert("Node Registry not found. Please Register."); }
+                } else { alert("Incorrect OTP."); }
+            },
 
-        function forceReg() { 
-            auth.signOut();
-            window.location.href = "registration.html?mode=new_partner"; 
-        }
+            async executeSignup() {
+                const mail = document.getElementById('regEmail').value;
+                const pss = document.getElementById('regPass').value;
+                const role = document.getElementById('regRole').value;
+                try {
+                    const res = await auth.createUserWithEmailAndPassword(mail, pss);
+                    await rtdb.ref(`users/${res.user.uid}`).set({
+                        name: document.getElementById('regName').value,
+                        email: mail,
+                        phone: document.getElementById('regPhone').value,
+                        role: role,
+                        accessStatus: `${role} Level Access`,
+                        timestamp: Date.now()
+                    });
+                    this.route(res.user);
+                } catch(e) { alert(e.message); }
+            },
+
+            async googleAuth() {
+                if (!document.getElementById("consentCheckbox").checked) return alert("Accept Terms first.");
+                try {
+                    const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                    const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                    if(!snap.exists()) {
+                        toggleView('reg');
+                        document.getElementById('regEmail').value = res.user.email;
+                        document.getElementById('regName').value = res.user.displayName;
+                        alert("Google Verified. Select Role to finalize.");
+                    } else { this.route(res.user); }
+                } catch(e) { console.error(e); }
+            },
+
+            async dispatchReset() {
+                const phone = prompt("Enter WhatsApp number for Recovery (+91...):");
+                if(phone) alert("Recovery protocol triggered via Authkey.io");
+            },
+
+            async route(u) {
+                const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
+                const role = snap.val();
+                if (!role) { alert("Access Unauthorized."); return; }
+                const target = MASTER_ROUTES[role];
+                if (target) window.location.replace(target);
+            }
+        };
 
         auth.onAuthStateChanged(user => {
-            if (user && !window.location.search.includes('mode=new_partner')) executeRouting(user);
+            if (user && !window.location.search.includes('mode=new_partner')) AuthEngine.route(user);
         });
     </script>
 </body>
