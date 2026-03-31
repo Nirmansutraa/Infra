@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nirmansutraa | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- KEEPING YOUR EXISTING STYLES --- */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* --- NEW MODULAR LOGIN STYLES (NON-BREAKING) --- */
+        #login-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 9999;
+            overflow-y: auto;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .back-button {
+            text-align: left;
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: block;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .login-header {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            color: #999;
+            text-decoration: none;
+            margin-top: 5px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 16px;
+            background-color: #007AFF; /* Bright blue from the UI */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .divider {
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #eee;
+            margin: 0 10px;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .register-text {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .register-text a {
+            color: #007AFF;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Demo Trigger Button */
+        .open-login-btn {
+            padding: 10px 20px;
+            margin: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-content">
+        <h1>Welcome to Nirmansutraa</h1>
+        <p>This is your existing production site content.</p>
+        <button class="open-login-btn" onclick="openLogin()">Login to Account</button>
+    </div>
+
+    <div id="login-overlay">
+        <div class="login-container">
+            <a href="#" class="back-button" onclick="closeLogin()">&larr;</a>
+
+            <div class="login-header">
+                <h1>Login</h1>
+                <p>Join our community and Experience a seamless finding your relationship</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); alert('Login Attempted!');">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter your password" required>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="btn-continue">Continue</button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <button class="social-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" width="18" alt="Apple">
+                Login with Apple
+            </button>
+
+            <button class="social-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="18" alt="Google">
+                Login with Google
+            </button>
+
+            <p class="register-text">
+                Haven't registered yet? <a href="#">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Simple functions to show/hide the login page
+        function openLogin() {
+            document.getElementById('login-overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Stop background scrolling
+        }
+
+        function closeLogin() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        }
+    </script>
+
+</body>
+</html>
