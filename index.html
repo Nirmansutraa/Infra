@@ -9,11 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
+        /* ==========================================================================
+        SECTION 2: GLOBAL ARCHITECTURAL STYLING (VERBOSE MONOLITH)
+        ==========================================================================
+        Defining the design tokens and high-impact visual identity for 
+        the NirmanSutra Sovereign Gateway.
+        */
         :root { 
             --accent: #ff7a00; 
             --bg-deep: #020617; 
             --card-glass: rgba(30, 41, 59, 0.45); 
             --transition-main: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-standard: 1px solid rgba(255, 255, 255, 0.1);
+            --glow-accent: 0 0 30px rgba(255, 122, 0, 0.2);
         }
         
         body { 
@@ -24,9 +32,10 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
-        /* --- HERO & LAYOUT --- */
+        /* --- MASTER LAYOUT ARCHITECTURE --- */
         .hero-matrix { 
             background: radial-gradient(circle at 80% 20%, #1e293b 0%, #020617 60%); 
             min-height: 100vh; 
@@ -46,70 +55,137 @@
             -webkit-text-fill-color: transparent; 
         }
 
-        /* --- IDENTITY DOCK --- */
+        /* --- IDENTITY DOCK COMPONENT --- */
         .identity-dock {
-            position: fixed; bottom: 25px; right: 25px; width: 350px;
-            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(40px);
-            padding: 30px; border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8); z-index: 5000;
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            width: 400px;
+            background: rgba(15, 23, 42, 0.98); 
+            backdrop-filter: blur(50px);
+            padding: 40px; 
+            border-radius: 45px; 
+            border: var(--border-standard);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9); 
+            z-index: 5000;
             transition: var(--transition-main);
-            max-height: 90vh; overflow-y: auto;
+            max-height: 85vh; 
+            overflow-y: auto;
         }
-        .dock-minimized { transform: translateY(calc(100% - 70px)); opacity: 0.9; }
-        .dock-toggle { cursor: pointer; text-align: center; padding-bottom: 20px; color: var(--accent); font-weight: 900; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; }
+        .dock-minimized { 
+            transform: translateY(calc(100% - 85px)); 
+            opacity: 0.9; 
+        }
+        .dock-toggle { 
+            cursor: pointer; 
+            text-align: center; 
+            padding-bottom: 30px; 
+            color: var(--accent); 
+            font-weight: 900; 
+            font-size: 12px; 
+            letter-spacing: 6px; 
+            text-transform: uppercase; 
+        }
 
+        /* --- AUTHENTICATION INPUT SYSTEM --- */
         .auth-input {
-            width: 100%; background: #0f172a; border: 1px solid #1e293b; 
-            padding: 18px; border-radius: 18px; color: white; 
-            font-size: 13px; font-weight: 600; outline: none; margin-bottom: 15px;
-            transition: 0.3s;
+            width: 100%; 
+            background: #0f172a; 
+            border: 2px solid #1e293b; 
+            padding: 22px; 
+            border-radius: 25px; 
+            color: white; 
+            font-size: 15px; 
+            font-weight: 600; 
+            outline: none; 
+            margin-bottom: 20px;
+            transition: var(--transition-main);
         }
-        .auth-input:focus { border-color: var(--accent); }
+        .auth-input:focus { 
+            border-color: var(--accent); 
+            box-shadow: var(--glow-accent); 
+        }
 
-        .scaled-section { padding-top: 5.5rem; padding-bottom: 5.5rem; }
-        .scaled-title { font-size: 3.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 2rem; letter-spacing: -0.02em; }
+        /* --- MULTI-CHANNEL REGISTRY BUTTONS --- */
+        .btn-reg-node {
+            width: 100%; 
+            padding: 20px; 
+            border-radius: 24px; 
+            font-weight: 900;
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            font-size: 11px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .btn-mobile { background: #1e293b; color: white; }
+        .btn-whatsapp { background: #075e54; color: white; }
+        .btn-google { background: #ffffff; color: #000000; }
+        .btn-reg-node:hover { 
+            transform: scale(1.05) translateY(-5px); 
+            filter: brightness(1.2); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* --- SCALED UI SECTIONS --- */
+        .scaled-section { padding-top: 7rem; padding-bottom: 7rem; }
+        .scaled-title { 
+            font-size: 4rem; 
+            font-weight: 900; 
+            line-height: 1; 
+            margin-bottom: 3rem; 
+            letter-spacing: -0.04em; 
+        }
         
         .brand-card { 
             background: rgba(255,255,255,0.02); 
             border: 1px solid rgba(255,255,255,0.06); 
-            padding: 3rem 2.5rem; 
-            border-radius: 35px; 
+            padding: 5rem 3.5rem; 
+            border-radius: 50px; 
             transition: var(--transition-main); 
             height: 100%;
         }
-        .brand-card:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(255,255,255,0.05); }
-        
-        .contact-tile { 
-            background: rgba(255,255,255,0.02); 
-            border: 1px solid rgba(255,255,255,0.08); 
-            padding: 2.2rem; 
-            border-radius: 32px; 
-            transition: 0.3s; 
+        .brand-card:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-15px); 
+            background: rgba(255,255,255,0.05); 
         }
-        .contact-tile:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
         .hidden-internal { display: none !important; }
 
-        /* --- LEGAL MODALS --- */
+        /* --- LEGAL LAYER MODALS --- */
         .legal-overlay { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
-            z-index: 9999; padding: 20px; backdrop-filter: blur(25px); overflow-y: auto;
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.98); 
+            z-index: 9999; 
+            padding: 30px; 
+            backdrop-filter: blur(40px); 
+            overflow-y: auto;
         }
         .legal-content-box { 
-            max-width: 900px; margin: 40px auto; background: #0f172a; padding: 60px; 
-            border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+            max-width: 1000px; 
+            margin: 60px auto; 
+            background: #0f172a; 
+            padding: 80px; 
+            border-radius: 60px; 
+            border: var(--border-standard); 
+            box-shadow: 0 80px 160px rgba(0,0,0,0.7);
         }
-        .legal-content-box h2 { color: var(--accent); font-weight: 900; font-size: 2.2rem; margin-bottom: 25px; text-transform: uppercase; letter-spacing: -1px; }
-        .legal-content-box h3 { color: white; font-weight: 800; font-size: 1.1rem; margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--accent); padding-left: 15px; }
-        .legal-content-box p, .legal-content-box li { color: #94a3b8; line-height: 1.8; margin-bottom: 15px; font-size: 0.95rem; }
-        .legal-content-box ul { padding-left: 20px; list-style-type: square; }
 
+        /* --- RESPONSIVE ADAPTATION --- */
         @media (max-width: 768px) {
-            .identity-dock { width: calc(100% - 40px); left: 20px; bottom: 20px; }
-            .kinetic-title { font-size: 3rem; }
-            .scaled-title { font-size: 2.5rem; }
-            .legal-content-box { padding: 30px; margin: 10px; }
+            .identity-dock { width: calc(100% - 50px); left: 25px; bottom: 25px; padding: 30px; }
+            .kinetic-title { font-size: 3.5rem; }
+            .scaled-title { font-size: 2.8rem; }
+            .legal-content-box { padding: 40px; margin: 20px; }
         }
     </style>
 </head>
@@ -117,280 +193,145 @@
 
     <div id="modalPrivacy" class="legal-overlay">
         <div class="legal-content-box">
-            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
-            <div class="mb-8 border-b border-white/10 pb-4">
-                 <h1 class="text-2xl font-black italic tracking-tighter text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-                 <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Privacy Governance Protocol v2.0</p>
+            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition-all uppercase tracking-widest text-xs">Close Protocol [X]</button>
+            <div class="mb-12 border-b border-white/10 pb-8">
+                 <h1 class="text-4xl font-black italic tracking-tighter text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+                 <p class="text-[11px] text-slate-500 font-bold uppercase tracking-[12px] mt-2">Privacy Governance v2.5</p>
             </div>
-            <h2>Privacy Policy</h2>
-            <p><strong>Effective Date: March 31, 2026</strong></p>
-            <p>NirmanSutra Private Limited is dedicated to maintaining the highest standards of data integrity across our brand ecosystem (InfraMart, InfraDepot, BuilderKart).</p>
-            <h3>I. Data Collection</h3>
-            <p>We collect identifiers (Name, Email, Mobile) and field intelligence (GPS coordinates, survey responses) essential for our infrastructure intelligence network.</p>
-            <h3>II. Purpose</h3>
-            <p>Processing is carried out for material verification, fraud prevention, and site-velocity analytics.</p>
-            <h3>III. Compliance</h3>
-            <p>We comply with the Indian DPDP Act 2023. Data remains stored within Indian jurisdictions.</p>
+            <h2 class="text-4xl text-orange-500 font-black uppercase mb-8">Data Privacy Protocol</h2>
+            <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                NirmanSutra Private Limited is committed to the absolute sovereignty of infrastructure data. Our systems are engineered to comply with the DPDP Act 2023, ensuring that every byte of field intelligence is handled with cryptographic integrity.
+            </p>
+            <p class="text-slate-500 text-sm italic border-l-4 border-orange-500 pl-6">Effective Revision: March 31, 2026</p>
         </div>
     </div>
 
-    <div id="modalTerms" class="legal-overlay">
-        <div class="legal-content-box">
-            <button onclick="closeLegal()" class="float-right text-slate-500 font-black hover:text-white transition">CLOSE [X]</button>
-            <div class="mb-8 border-b border-white/10 pb-4">
-                 <h1 class="text-2xl font-black italic tracking-tighter text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-                 <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Master Service Agreement v2.0</p>
-            </div>
-            <h2>Terms & Conditions</h2>
-            <p><strong>Effective Date: March 31, 2026</strong></p>
-            <h3>I. Acceptance</h3>
-            <p>Accessing the terminal implies acceptance of our data integrity protocols.</p>
-            <h3>II. Authenticity</h3>
-            <p>Submission of falsified ground-reality data results in immediate account termination and potential legal proceedings under the IT Act 2000.</p>
-            <h3>III. Intellectual Property</h3>
-            <p>All Matrix UI architecture and mapping algorithms are the property of NirmanSutra Private Limited.</p>
-        </div>
-    </div>
-
-    <header class="fixed top-0 w-full z-40 px-12 py-8 flex justify-between items-center backdrop-blur-lg border-b border-white/5">
+    <header class="fixed top-0 w-full z-40 px-14 py-12 flex justify-between items-center backdrop-blur-xl border-b border-white/5">
         <div class="flex flex-col">
-            <h1 class="text-3xl font-black italic tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <span class="text-[8px] font-bold text-slate-500 uppercase tracking-[4px] mt-1">Infrastructure Intelligence</span>
+            <h1 class="text-4xl font-black italic tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-[8px] mt-2">Infrastructure Intelligence</span>
         </div>
-        <nav class="hidden md:flex gap-12 text-[10px] font-black uppercase tracking-[3px]">
-            <a href="#about" class="hover:text-orange-500 transition-colors">About</a>
-            <a href="#brands" class="hover:text-orange-500 transition-colors">Brands</a>
-            <a href="#leadership" class="hover:text-orange-500 transition-colors">Leadership</a>
-            <a href="#contact" class="hover:text-orange-500 transition-colors">Contact</a>
+        <nav class="hidden lg:flex gap-16 text-[12px] font-black uppercase tracking-[5px]">
+            <a href="#about" class="hover:text-orange-500 transition-all">About</a>
+            <a href="#brands" class="hover:text-orange-500 transition-all">Brands</a>
+            <a href="#leadership" class="hover:text-orange-500 transition-all">Leadership</a>
+            <a href="#contact" class="hover:text-orange-500 transition-all">Contact</a>
         </nav>
     </header>
 
     <main class="hero-matrix">
-        <div class="max-w-6xl">
-            <div class="inline-block px-6 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-10">
-                <span class="text-orange-500 font-black uppercase tracking-[6px] text-[10px]">Strategic Access Node: March 2026</span>
+        <div class="max-w-6xl fade-in">
+            <div class="inline-block px-10 py-4 bg-orange-500/10 border border-orange-500/20 rounded-full mb-14">
+                <span class="text-orange-500 font-black uppercase tracking-[10px] text-[12px]">Strategic Access Node: 2026</span>
             </div>
-            <h2 class="kinetic-title italic mb-10">From Ground Reality<br>To Smart Decisions.</h2>
-            <p class="text-slate-400 text-xl md:text-3xl leading-relaxed max-w-4xl font-medium mb-14">
-                NirmanSutra transforms fragmented field data into structured, verified material intelligence. We empower the construction ecosystem to build with absolute confidence.
+            <h2 class="kinetic-title italic mb-14">From Ground Reality<br>To Smart Decisions.</h2>
+            <p class="text-slate-400 text-2xl md:text-5xl leading-tight max-w-5xl font-medium mb-20">
+                Revolutionizing the Indian construction landscape through structured, real-time material intelligence.
             </p>
-            <div class="flex flex-wrap gap-8">
-                <a href="#about" class="bg-orange-500 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition-transform duration-500">Initialize Exploration</a>
-                <a href="#contact" class="border border-slate-700 px-12 py-6 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white/5 transition-all">Request Executive Demo</a>
+            <div class="flex flex-wrap gap-10">
+                <a href="#about" class="bg-orange-500 px-16 py-8 rounded-3xl font-black uppercase text-sm tracking-[5px] shadow-4xl hover:scale-110 transition-all duration-700">Initialize Exploration</a>
             </div>
         </div>
     </main>
-
-    <section id="about" class="scaled-section px-10 md:px-32 bg-[#010411]">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-            <div>
-                <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-6 block">Building Trust</span>
-                <h3 class="scaled-title">Intelligence Behind Every Decision.</h3>
-                <p class="text-slate-400 text-lg mb-10 leading-relaxed">
-                    In an industry often governed by assumptions, NirmanSutra bridges the gap between ground reality and strategic execution.
-                </p>
-                <div class="border-l-4 border-orange-500 pl-8">
-                    <h4 class="text-white font-black uppercase text-[11px] mb-2 tracking-widest">Our Mission</h4>
-                    <p class="text-slate-500 text-sm italic">To empower the construction ecosystem with authentic, real-time intelligence, reducing risk and improving efficiency.</p>
-                </div>
-            </div>
-            <div class="relative">
-                <div class="bg-slate-900/40 rounded-[60px] border border-white/5 p-16 flex items-center justify-center text-center backdrop-blur-xl">
-                    <div>
-                        <div class="text-orange-500 text-8xl font-black mb-4 tracking-tighter italic">100%</div>
-                        <p class="text-slate-400 uppercase font-black tracking-[10px] text-xs">Verified Accuracy</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="brands" class="scaled-section px-10 md:px-32">
-        <div class="max-w-7xl mx-auto text-center">
-            <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-4 block">Brand Ecosystem</span>
-            <h3 class="scaled-title uppercase italic mb-16">The Power of Vertical Integration</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
-                <div class="brand-card">
-                    <h4 class="font-black text-2xl mb-4 text-white uppercase italic tracking-tighter">Infra<span class="text-orange-500">Mart</span></h4>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-6">The Strategic Marketplace</p>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        <strong>Philosophy:</strong> <span class="text-white">Radical Transparency.</span> Engineered to eliminate "information asymmetry" that inflates costs. We enable stakeholders to make procurement decisions based on cold, hard data.
-                    </p>
-                </div>
-                <div class="brand-card border-orange-500/30">
-                    <h4 class="font-black text-2xl mb-4 text-white uppercase italic tracking-tighter">Infra<span class="text-orange-500">Depot</span></h4>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-6">The Intelligence Vault</p>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        <strong>Philosophy:</strong> <span class="text-white">Absolute Verification.</span> The guardian of project integrity. A high-security repository ensuring field data is immutable, retrievable, and ready for audit.
-                    </p>
-                </div>
-                <div class="brand-card">
-                    <h4 class="font-black text-2xl mb-4 text-white uppercase italic tracking-tighter">Builder<span class="text-orange-500">Kart</span></h4>
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-6">The Execution Engine</p>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        <strong>Philosophy:</strong> <span class="text-white">Operational Velocity.</span> Where intelligence meets action. Designed to remove friction from the supply-to-site pipeline to ensure project momentum never falters.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="leadership" class="scaled-section px-10 md:px-32">
-        <div class="max-w-5xl mx-auto text-center flex flex-col items-center">
-            <span class="text-orange-500 font-black uppercase tracking-[8px] text-[11px] mb-8 block">Chief Architect</span>
-            <div class="w-40 h-40 bg-slate-800 rounded-full mb-8 shadow-4xl border-4 border-orange-500/30 flex items-center justify-center text-5xl relative">
-                👨‍💼
-                <div class="absolute bottom-0 right-0 bg-orange-500 w-10 h-10 rounded-full border-4 border-slate-950 flex items-center justify-center text-xs">✓</div>
-            </div>
-            <h3 class="text-5xl font-black mb-3 tracking-tighter">Vijay Bhati</h3>
-            <p class="text-orange-500 font-black uppercase tracking-[4px] text-[10px] mb-10">Founder & Chief Architect</p>
-            <p class="text-slate-400 text-xl italic max-w-3xl leading-relaxed">
-                "NirmanSutra was born from a singular vision: to eliminate the ambiguity and operational risk that plagues modern infrastructure. We are building the data-driven foundations of tomorrow's India."
-            </p>
-        </div>
-    </section>
-
-    <section id="contact" class="scaled-section px-10 md:px-32 bg-slate-950">
-        <div class="max-w-6xl mx-auto text-center">
-            <h3 class="scaled-title mb-4">Let's Build Smart.</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-                <a href="mailto:info@nirmansutra.in" class="contact-tile block">
-                    <p class="text-slate-500 text-[10px] font-black uppercase mb-3 tracking-widest">Email Identity</p>
-                    <p class="text-2xl font-bold text-white hover:text-orange-500 transition-colors">info@nirmansutra.in</p>
-                </a>
-                <a href="https://wa.me/919414370806" target="_blank" class="contact-tile block">
-                    <p class="text-slate-500 text-[10px] font-black uppercase mb-3 tracking-widest">WhatsApp Protocol</p>
-                    <p class="text-2xl font-bold text-white hover:text-orange-500 transition-colors">+91 9414370806</p>
-                </a>
-            </div>
-        </div>
-    </section>
 
     <div id="terminalDock" class="identity-dock dock-minimized">
         <div class="dock-toggle" onclick="toggleDock()">▲ Open Sovereign Gateway</div>
         
         <div id="dockContent">
-            <div id="loginSection">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest">Gateway Access</h3>
-                    <select id="authMethod" class="bg-transparent text-[9px] font-black text-slate-500 uppercase outline-none" onchange="toggleAuthFields(this.value)">
-                        <option value="email">Email</option>
-                        <option value="whatsapp">WhatsApp</option>
-                    </select>
-                </div>
-
-                <div id="emailFields">
-                    <input type="email" id="logEmail" class="auth-input" placeholder="Primary Email">
-                    <input type="password" id="logPass" class="auth-input" placeholder="Secure Password">
-                </div>
-
-                <div id="whatsappFields" class="hidden-internal">
-                    <div class="flex gap-2 mb-4">
-                        <div class="auth-input w-16 text-center bg-slate-800 border-none">+91</div>
-                        <input type="tel" id="logPhone" class="auth-input flex-1" placeholder="Mobile Number">
-                    </div>
-                    <div id="otpInputNode" class="hidden-internal">
-                        <input type="text" id="otpEntry" class="auth-input text-center tracking-[10px] text-lg" placeholder="••••••" maxlength="6">
-                    </div>
-                </div>
-
-                <div class="mb-6 flex gap-4 items-start cursor-pointer">
-                    <input type="checkbox" id="consentCheckbox" class="mt-1 w-5 h-5 accent-orange-500 rounded bg-slate-900 border-white/10">
-                    <label for="consentCheckbox" class="text-[10px] text-slate-400 font-bold leading-tight">
-                        Agree to <span onclick="openLegal('modalPrivacy')" class="text-white underline">Privacy</span> and 
-                        <span onclick="openLegal('modalTerms')" class="text-white underline">Terms</span>.
-                    </label>
-                </div>
-
-                <button id="primaryBtn" onclick="AuthEngine.executeLogin()" class="bg-orange-500 text-white w-full py-5 rounded-2xl font-black uppercase text-[11px] mb-4 shadow-2xl hover:scale-105 transition-all">Authorize Entry</button>
+            
+            <div id="viewSelection">
+                <h3 class="text-[13px] font-black text-orange-500 uppercase tracking-[6px] mb-10 text-center">Identity Authentication</h3>
                 
-                <button onclick="AuthEngine.googleAuth()" class="bg-white text-black w-full py-5 rounded-2xl font-black uppercase text-[11px] flex items-center justify-center gap-3 mb-6 shadow-2xl hover:bg-orange-100 transition-all">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Identity via Google
-                </button>
+                <div id="loginForm">
+                    <input type="email" id="logEmail" class="auth-input" placeholder="Registered Personnel Email">
+                    <input type="password" id="logPass" class="auth-input" placeholder="Master Password">
+                    
+                    <div class="mb-10 flex gap-5 items-start cursor-pointer group">
+                        <input type="checkbox" id="consentCheckbox" class="mt-1 w-7 h-7 accent-orange-500 rounded bg-slate-900 border-white/10 transition-all group-hover:scale-110">
+                        <label for="consentCheckbox" class="text-[12px] text-slate-400 font-bold leading-relaxed">
+                            I accept the NirmanSutra <span onclick="openLegal('modalPrivacy')" class="text-white underline hover:text-orange-500">Privacy Policy</span> and <span class="text-white underline hover:text-orange-500">Master Terms</span>.
+                        </label>
+                    </div>
 
-                <div class="flex justify-between items-center border-t border-white/5 pt-6">
-                    <span onclick="toggleView('reg')" class="text-slate-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">New Registry</span>
-                    <span onclick="AuthEngine.dispatchReset()" class="text-orange-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">Reset via WA</span>
+                    <button onclick="AuthEngine.executeEmailLogin()" class="bg-orange-500 text-white w-full py-7 rounded-3xl font-black uppercase text-[13px] mb-10 shadow-4xl hover:scale-105 transition-all tracking-[4px]">Authorize Entry</button>
+                </div>
+
+                <div class="flex items-center gap-8 py-6 opacity-20 mb-8">
+                    <div class="h-[1px] bg-white flex-1"></div>
+                    <span class="text-[10px] font-black uppercase tracking-[4px]">Registry Nodes</span>
+                    <div class="h-[1px] bg-white flex-1"></div>
+                </div>
+
+                <div class="space-y-5">
+                    <div onclick="AuthUI.showRegistry('mobile')" class="btn-reg-node btn-mobile">
+                        <span class="text-xl">📱</span> Register by Mobile SMS
+                    </div>
+                    <div onclick="AuthUI.showRegistry('whatsapp')" class="btn-reg-node btn-whatsapp">
+                        <span class="text-xl">💬</span> Register WhatsApp OTP
+                    </div>
+                    <div onclick="AuthEngine.executeGoogleAuth()" class="btn-reg-node btn-google">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22"> Register by Google Mail
+                    </div>
                 </div>
             </div>
 
-            <div id="regSection" class="hidden-internal">
-                <h3 class="text-[11px] font-black text-orange-500 uppercase tracking-widest mb-6">Master Registry</h3>
-                <input type="text" id="regName" class="auth-input" placeholder="Full Legal Name / Entity">
-                <input type="email" id="regEmail" class="auth-input" placeholder="Primary Email">
-                <input type="tel" id="regPhone" class="auth-input" placeholder="WhatsApp Verified Number">
-                <input type="password" id="regPass" class="auth-input" placeholder="Set Secure Password">
+            <div id="viewRegistry" class="hidden-internal">
+                <h3 id="regTitle" class="text-[13px] font-black text-orange-500 uppercase tracking-[8px] mb-10 text-center italic">New Registry Node</h3>
                 
-                <select id="regRole" class="auth-input text-orange-500 font-black">
-                    <option value="Builders">Role: Builders</option>
-                    <option value="Contractor">Role: Contractor</option>
-                    <option value="HomeOwner">Role: HomeOwner</option>
-                    <option value="Supplier">Role: Supplier</option>
-                    <option value="FleetOwner">Role: Fleet Owner</option>
-                    <option value="field_survey_staff">Role: Field Agent</option>
-                </select>
+                <div id="otpInputNode" class="hidden-internal mb-8">
+                    <p class="text-[11px] text-slate-500 font-black uppercase mb-6 text-center tracking-[4px]">Enter Cryptographic Code</p>
+                    <input type="text" id="otpValue" class="auth-input text-center tracking-[20px] text-3xl font-black" placeholder="••••••" maxlength="6">
+                </div>
 
-                <button onclick="AuthEngine.executeSignup()" class="bg-orange-500 text-white w-full py-5 rounded-2xl font-black uppercase text-[11px] mb-6 shadow-2xl">Finalize Registry</button>
-                <div class="text-center">
-                    <span onclick="toggleView('login')" class="text-slate-500 font-black text-[9px] uppercase cursor-pointer hover:text-white transition-colors tracking-widest">Back to Login</span>
+                <div id="registryFields">
+                    <input type="text" id="regName" class="auth-input" placeholder="Full Legal/Entity Name">
+                    <input type="email" id="regEmail" class="auth-input" placeholder="Primary Email">
+                    <input type="tel" id="regPhone" class="auth-input" placeholder="Mobile Node (+91...)">
+                    <input type="password" id="regPass" class="auth-input" placeholder="Establish Secure Password">
+                    
+                    <p class="text-[9px] text-slate-600 font-black uppercase tracking-[5px] mb-4 px-4">Select Operational Clearance</p>
+                    <select id="regRole" class="auth-input text-orange-500 font-black appearance-none">
+                        <option value="Builders">Operational: Builder</option>
+                        <option value="Contractor">Operational: Contractor</option>
+                        <option value="HomeOwner">Operational: HomeOwner</option>
+                        <option value="Supplier">Operational: Supplier</option>
+                        <option value="field_survey_staff">Operational: Field Agent</option>
+                    </select>
+                </div>
+
+                <div id="recaptcha-container"></div>
+                <button id="regActionBtn" onclick="AuthEngine.executeRegistryFlow()" class="bg-orange-500 text-white w-full py-7 rounded-3xl font-black uppercase text-[13px] shadow-4xl tracking-[4px] hover:bg-orange-600 transition-all">Initialize Node</button>
+                
+                <div class="text-center mt-12">
+                    <span onclick="AuthUI.show('selection')" class="text-slate-600 font-black text-[11px] uppercase cursor-pointer hover:text-white transition-all tracking-[8px]">➜ Back to Gateway</span>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="p-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10 bg-[#010411]">
-        <div class="flex flex-col items-center md:items-start">
-            <div class="text-[11px] font-black text-slate-500 uppercase tracking-[6px]">© 2026 NirmanSutra Private Limited</div>
-            <span class="text-[9px] text-slate-700 uppercase mt-2 font-black tracking-[4px]">Smart Data. Strong Foundations.</span>
-        </div>
-        <div class="flex gap-12 text-[10px] font-black uppercase tracking-widest text-slate-500">
-            <span onclick="openLegal('modalPrivacy')" class="hover:text-white cursor-pointer transition-colors">Privacy</span>
-            <span onclick="openLegal('modalTerms')" class="hover:text-white cursor-pointer transition-colors">Terms</span>
-        </div>
-    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
     <script>
+        /**
+         * NIRMANSUTRA MASTER CLOUD CONFIGURATION
+         * Version: 20.0 (Grand Monolith Edition)
+         */
         const firebaseConfig = {
             apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
             authDomain: "infradepo.firebaseapp.com",
             projectId: "infradepo",
             databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
+        
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(), rtdb = firebase.database();
-
-        function toggleDock() {
-            const dock = document.getElementById('terminalDock');
-            const toggle = document.querySelector('.dock-toggle');
-            dock.classList.toggle('dock-minimized');
-            toggle.innerText = dock.classList.contains('dock-minimized') ? "▲ Open Sovereign Gateway" : "▼ Minimize Terminal";
-        }
-
-        function openLegal(id) {
-            document.getElementById(id).style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        function closeLegal() {
-            document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none');
-            document.body.style.overflow = 'auto';
-        }
-
-        function toggleAuthFields(m) {
-            document.getElementById('emailFields').classList.toggle('hidden-internal', m === 'whatsapp');
-            document.getElementById('whatsappFields').classList.toggle('hidden-internal', m === 'email');
-        }
-
-        function toggleView(view) {
-            document.getElementById('loginSection').classList.toggle('hidden-internal', view === 'reg');
-            document.getElementById('regSection').classList.toggle('hidden-internal', view === 'login');
-        }
+        const auth = firebase.auth();
+        const rtdb = firebase.database();
 
         /**
-         * GLOBAL RBAC ROUTING TABLE
+         * GLOBAL RBAC ROUTING DIRECTORY
+         * Maps database roles to physical server directories.
          */
         const MASTER_ROUTES = {
             'super_admin': 'admin/super_admin.html',
@@ -404,96 +345,158 @@
             'FleetOwner': 'onboarding/fleet-dashboard.html'
         };
 
-        const AUTHKEY_NODE = { sid: "3742", apiKey: "REPLACE_WITH_YOUR_KEY" };
-        let currentOTP = null;
+        // Runtime State Buffers
+        let activeRegMode = null;
+        let smsConfirmResult = null;
+        let whatsappOTP = null;
 
-        window.AuthEngine = {
-            async executeLogin() {
-                if (!document.getElementById("consentCheckbox").checked) return alert("Accept Terms to proceed.");
+        /**
+         * INTERFACE MANAGEMENT (AuthUI)
+         */
+        window.AuthUI = {
+            showRegistry(mode) {
+                console.log("[SYSTEM] Switching to Registry Mode:", mode);
+                activeRegMode = mode;
+                document.getElementById('viewSelection').classList.add('hidden-internal');
+                document.getElementById('viewRegistry').classList.remove('hidden-internal');
+                document.getElementById('regTitle').innerText = `Protocol Registry: ${mode.toUpperCase()}`;
                 
-                const method = document.getElementById('authMethod').value;
-                if(method === 'email') {
+                // Initialize Recaptcha for Mobile SMS path
+                if(mode === 'mobile') {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
+                        'size': 'invisible' 
+                    });
+                }
+            },
+            show(view) {
+                document.getElementById('viewSelection').classList.toggle('hidden-internal', view === 'reg');
+                document.getElementById('viewRegistry').classList.toggle('hidden-internal', view === 'selection');
+                // Reset State
+                smsConfirmResult = null; 
+                whatsappOTP = null;
+                document.getElementById('otpInputNode').classList.add('hidden-internal');
+            }
+        };
+
+        /**
+         * CORE AUTHENTICATION LOGIC (AuthEngine)
+         */
+        window.AuthEngine = {
+            async executeRegistryFlow() {
+                const phoneInput = document.getElementById('regPhone').value;
+                const otpInput = document.getElementById('otpValue').value;
+
+                // 6.1. MOBILE SMS CHANNEL
+                if(activeRegMode === 'mobile') {
                     try {
-                        const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
-                        this.route(res.user);
-                    } catch(e) { alert(e.message); }
-                } else {
-                    this.handleWhatsAppFlow();
+                        if(!smsConfirmResult) {
+                            smsConfirmResult = await auth.signInWithPhoneNumber(phoneInput, window.recaptchaVerifier);
+                            document.getElementById('otpInputNode').classList.remove('hidden-internal');
+                            document.getElementById('registryFields').classList.add('hidden-internal');
+                            alert("SMS Cryptographic Code Dispatched.");
+                        } else {
+                            const result = await smsConfirmResult.confirm(otpInput);
+                            this.finalizeNode(result.user);
+                        }
+                    } catch(e) { alert("Mobile Verification Fault: " + e.message); }
+                } 
+                
+                // 6.2. WHATSAPP OTP CHANNEL (Authkey.io)
+                else if(activeRegMode === 'whatsapp') {
+                    if(!whatsappOTP) {
+                        whatsappOTP = Math.floor(100000 + Math.random() * 900000);
+                        // Authkey.io Strategic API Integration
+                        const authkeyUrl = `https://authkey.io/api/Service?sid=3742&key=YOUR_API_KEY&mobile=${phoneInput}&message=Your NirmanSutra Registry OTP is ${whatsappOTP}&otp=${whatsappOTP}`;
+                        try {
+                            await fetch(authkeyUrl);
+                            document.getElementById('otpInputNode').classList.remove('hidden-internal');
+                            document.getElementById('registryFields').classList.add('hidden-internal');
+                            alert("WhatsApp OTP Dispatched.");
+                        } catch(e) { alert("WhatsApp API Unreachable."); }
+                    } else if(otpInput == whatsappOTP) {
+                        this.executeEmailSignup();
+                    } else {
+                        alert("OTP Signature Mismatch.");
+                    }
                 }
             },
 
-            async handleWhatsAppFlow() {
-                const phone = document.getElementById('logPhone').value;
-                const entered = document.getElementById('otpEntry').value;
-                
-                if(!currentOTP) {
-                    const otp = Math.floor(100000 + Math.random() * 900000);
-                    currentOTP = otp;
-                    const url = `https://authkey.io/api/Service?sid=${AUTHKEY_NODE.sid}&key=${AUTHKEY_NODE.apiKey}&mobile=${phone}&message=Your NirmanSutra OTP is ${otp}&otp=${otp}`;
-                    try {
-                        await fetch(url);
-                        document.getElementById('otpInputNode').classList.remove('hidden-internal');
-                        document.getElementById('primaryBtn').innerText = "Verify OTP Code";
-                        alert("OTP Dispatched to WhatsApp.");
-                    } catch(e) { alert("WhatsApp API Fault."); }
-                } else if(entered == currentOTP) {
-                    const snap = await rtdb.ref('users').orderByChild('phone').equalTo(phone).once('value');
-                    if(snap.exists()) {
-                        const data = Object.values(snap.val())[0];
-                        window.location.replace(MASTER_ROUTES[data.role]);
-                    } else { alert("Node Registry not found. Please Register."); }
-                } else { alert("Incorrect OTP."); }
+            async executeEmailSignup() {
+                const email = document.getElementById('regEmail').value;
+                const pass = document.getElementById('regPass').value;
+                try {
+                    const result = await auth.createUserWithEmailAndPassword(email, pass);
+                    this.finalizeNode(result.user);
+                } catch(e) { alert("Registry Fault: " + e.message); }
             },
 
-            async executeSignup() {
-                const mail = document.getElementById('regEmail').value;
-                const pss = document.getElementById('regPass').value;
-                const role = document.getElementById('regRole').value;
+            async executeEmailLogin() {
+                if (!document.getElementById("consentCheckbox").checked) {
+                    alert("Protocol Violation: Consent Required.");
+                    return;
+                }
+                const email = document.getElementById('logEmail').value;
+                const pass = document.getElementById('logPass').value;
                 try {
-                    const res = await auth.createUserWithEmailAndPassword(mail, pss);
-                    await rtdb.ref(`users/${res.user.uid}`).set({
-                        name: document.getElementById('regName').value,
-                        email: mail,
-                        phone: document.getElementById('regPhone').value,
-                        role: role,
-                        accessStatus: `${role} Level Access`,
-                        timestamp: Date.now()
-                    });
+                    const res = await auth.signInWithEmailAndPassword(email, pass);
                     this.route(res.user);
-                } catch(e) { alert(e.message); }
+                } catch(e) { alert("Authentication Failed."); }
             },
 
-            async googleAuth() {
-                if (!document.getElementById("consentCheckbox").checked) return alert("Accept Terms first.");
+            async finalizeNode(user) {
+                const role = document.getElementById('regRole').value;
+                console.log("[SYSTEM] Finalizing Database Registry for Role:", role);
+                await rtdb.ref(`users/${user.uid}`).set({
+                    name: document.getElementById('regName').value,
+                    email: user.email || document.getElementById('regEmail').value,
+                    phone: document.getElementById('regPhone').value,
+                    role: role,
+                    timestamp: Date.now(),
+                    accessStatus: `${role} Standard Clearance`
+                });
+                window.location.replace(MASTER_ROUTES[role]);
+            },
+
+            async executeGoogleAuth() {
+                if (!document.getElementById("consentCheckbox").checked) {
+                    alert("Consent Protocol Required.");
+                    return;
+                }
                 try {
-                    const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                    const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                    const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                    const snap = await rtdb.ref(`users/${result.user.uid}`).once('value');
                     if(!snap.exists()) {
-                        toggleView('reg');
-                        document.getElementById('regEmail').value = res.user.email;
-                        document.getElementById('regName').value = res.user.displayName;
-                        alert("Google Verified. Select Role to finalize.");
-                    } else { this.route(res.user); }
-                } catch(e) { console.error(e); }
-            },
-
-            async dispatchReset() {
-                const phone = prompt("Enter WhatsApp number for Recovery (+91...):");
-                if(phone) alert("Recovery protocol triggered via Authkey.io");
+                        AuthUI.showRegistry('google');
+                        document.getElementById('regEmail').value = result.user.email;
+                        document.getElementById('regName').value = result.user.displayName;
+                        alert("Google Identity Synchronized. Assign Role to proceed.");
+                    } else { this.route(result.user); }
+                } catch(e) { console.error("[AUTH_FAULT]", e.message); }
             },
 
             async route(u) {
                 const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
                 const role = snap.val();
-                if (!role) { alert("Access Unauthorized."); return; }
-                const target = MASTER_ROUTES[role];
-                if (target) window.location.replace(target);
+                if(role && MASTER_ROUTES[role]) {
+                    window.location.replace(MASTER_ROUTES[role]);
+                } else {
+                    alert("Identity verified but Role not assigned. Contact SuperAdmin.");
+                }
             }
         };
 
+        // UI Helpers
+        function toggleDock() { document.getElementById('terminalDock').classList.toggle('dock-minimized'); }
+        function openLegal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
+        function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); document.body.style.overflow = 'auto'; }
+
+        // Master Observer
         auth.onAuthStateChanged(user => {
             if (user && !window.location.search.includes('mode=new_partner')) AuthEngine.route(user);
         });
     </script>
+    
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
