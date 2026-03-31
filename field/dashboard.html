@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Field Command Dashboard</title>
+    <title>NirmanSutra | Field Executive Command Dashboard</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
         /* ===========================================================
-        SECTION 1: DASHBOARD ARCHITECTURAL STYLING
+        SECTION 1: ADVANCED DASHBOARD ARCHITECTURAL STYLING
         =========================================================== */
         :root { 
             --bg: #f8fafc; 
@@ -19,6 +19,7 @@
             --primary: #0f172a; 
             --text-dim: #64748b; 
             --glow-orange: 0 10px 30px rgba(255, 122, 0, 0.2);
+            --transition-main: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body { 
@@ -26,27 +27,52 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: var(--primary); 
             -webkit-font-smoothing: antialiased; 
-            padding-bottom: 50px;
+            padding-bottom: 80px;
         }
         
-        /* --- CARD ARCHITECTURE --- */
-        .card { 
-            background: var(--card); 
-            border-radius: 40px; 
-            padding: 40px; 
-            margin-bottom: 30px; 
-            border: 1px solid #e2e8f0; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); 
-            transition: 0.3s ease;
+        /* --- MIS PERFORMANCE CARDS --- */
+        .mis-card {
+            background: var(--card);
+            border-radius: 35px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mis-card:hover { 
+            transform: translateY(-12px); 
+            border-color: var(--accent); 
+            box-shadow: var(--glow-orange); 
+        }
+
+        .mis-label { 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: var(--text-dim); 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+        }
+
+        .mis-value { 
+            font-size: 42px; 
+            font-weight: 900; 
+            color: var(--primary); 
+            margin-top: 15px; 
+            line-height: 1;
         }
 
         /* --- INTERACTIVE NODE BUTTONS --- */
         .node-btn {
             background: var(--primary);
-            padding: 50px 35px;
-            border-radius: 35px;
+            padding: 60px 40px;
+            border-radius: 45px;
             text-align: center;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transition-main);
             border: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
             position: relative;
@@ -58,159 +84,168 @@
         }
 
         .node-btn:hover {
-            transform: translateY(-12px);
+            transform: translateY(-15px);
             border-color: var(--accent);
             box-shadow: var(--glow-orange);
         }
 
         .node-btn::after {
-            content: 'LAUNCH';
+            content: 'INITIALIZE';
             position: absolute;
             bottom: -20px;
-            font-size: 8px;
+            font-size: 9px;
             font-weight: 900;
             color: var(--accent);
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             transition: 0.4s;
             opacity: 0;
         }
         
-        .node-btn:hover::after {
-            bottom: 15px;
-            opacity: 1;
-        }
-
-        .node-icon { font-size: 45px; margin-bottom: 20px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); }
+        .node-btn:hover::after { bottom: 20px; opacity: 1; }
+        .node-icon { font-size: 55px; margin-bottom: 25px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); }
         
-        /* --- ACTIVITY FEED STYLING --- */
+        /* --- ACTIVITY FEED SYSTEM --- */
         .activity-item {
             display: flex;
             align-items: center;
-            gap: 20px;
-            padding: 25px;
+            gap: 25px;
+            padding: 28px;
             background: #ffffff;
-            border-radius: 25px;
-            margin-bottom: 15px;
+            border-radius: 30px;
+            margin-bottom: 18px;
             border: 1px solid #f1f5f9;
-            transition: 0.3s;
+            transition: 0.4s;
         }
         
         .activity-item:hover {
             background: #f8fafc;
-            transform: scale(1.01);
+            transform: scale(1.02) translateX(10px);
+            border-color: #e2e8f0;
         }
 
-        .status-dot { 
-            width: 12px; 
-            height: 12px; 
-            border-radius: 50%; 
-            position: relative;
-        }
-        
-        .status-dot::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 1px solid currentColor;
-            opacity: 0.3;
-        }
+        .status-dot { width: 14px; height: 14px; border-radius: 50%; position: relative; }
+        .status-dot::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid currentColor; opacity: 0.3; }
 
         .dot-orange { background: var(--accent); color: var(--accent); }
         .dot-blue { background: #3b82f6; color: #3b82f6; }
 
-        #agentIdentity { letter-spacing: 5px; }
-
-        /* --- STATS GRID --- */
-        .stats-box {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 30px;
-            padding: 30px;
+        /* --- SESSION MONITOR BAR --- */
+        .session-monitor {
+            background: #0f172a;
             color: white;
+            padding: 15px 40px;
+            border-radius: 0 0 40px 40px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        /* --- RESPONSIVE ADAPTATION --- */
+        @media (max-width: 768px) {
+            .mis-value { font-size: 32px; }
+            .node-btn { padding: 40px 20px; }
+            .session-monitor { padding: 12px 20px; font-size: 9px; }
         }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-10 flex justify-between items-center rounded-b-[50px] border-b mb-12 shadow-sm">
-    <div class="flex flex-col">
-        <h1 class="text-3xl font-black italic tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[10px] font-black text-slate-400 uppercase mt-3" id="agentIdentity">COMMAND CENTER • V2.8</p>
-    </div>
-    <div class="flex items-center gap-6">
-        <div class="hidden md:flex flex-col text-right">
-            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">System Status</span>
-            <span class="text-[10px] font-black text-emerald-500 uppercase">Online & Synced</span>
+<div class="max-w-5xl mx-auto mb-10">
+    <div class="session-monitor">
+        <div class="flex items-center">
+            <span class="live-pulse animate-ping"></span>
+            <span>Uplink Active • Logged: <span id="sessionTime">--:--</span></span>
         </div>
-        <button onclick="auth.signOut()" class="bg-red-50 text-red-500 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[2px] transition hover:bg-red-100">Terminate Session</button>
+        <div id="operatorMail" class="text-slate-500 font-mono">NODE_CONNECTING...</div>
+    </div>
+</div>
+
+<nav class="bg-white p-10 flex justify-between items-center rounded-b-[60px] border-b mb-12 shadow-sm max-w-5xl mx-auto">
+    <div class="flex flex-col">
+        <h1 class="text-4xl font-black italic tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-[11px] font-black text-slate-400 uppercase mt-4 tracking-[6px]" id="agentIdentity">EXECUTIVE TERMINAL • V3.0</p>
+    </div>
+    <div class="flex items-center gap-8">
+        <div class="hidden md:flex flex-col text-right">
+            <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Protocol Status</span>
+            <span class="text-[11px] font-black text-emerald-500 uppercase tracking-tighter">Authorized</span>
+        </div>
+        <button onclick="auth.signOut()" class="bg-red-50 text-red-500 px-10 py-5 rounded-3xl text-[11px] font-black uppercase tracking-[3px] transition hover:bg-red-600 hover:text-white shadow-sm">Terminate</button>
     </div>
 </nav>
 
-<div class="max-w-3xl mx-auto px-10">
-    <div class="flex justify-between items-end mb-12">
-        <div>
-            <h2 class="text-4xl font-black tracking-tighter" id="welcomeMsg">Namaste, Auditor</h2>
-            <p class="text-slate-400 font-bold text-[11px] mt-2 uppercase tracking-[4px]">Active Operational Node • Rajasthan</p>
+<div class="max-w-5xl mx-auto px-10">
+    <div class="mb-14">
+        <div class="flex justify-between items-center mb-8 px-4">
+            <h3 class="text-[13px] font-900 text-slate-400 uppercase tracking-[6px]">Performance Intelligence</h3>
+            <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest bg-orange-50 px-4 py-2 rounded-full">Live Analytics</span>
         </div>
-        <div class="text-right">
-            <p class="text-[10px] font-black text-slate-300 uppercase">March 2026</p>
-            <p class="text-xl font-black tracking-tighter" id="liveClock">00:00:00</p>
-        </div>
-    </div>
-
-    <div class="stats-box mb-12">
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Submissions</p>
-            <p class="text-3xl font-black italic" id="totalCount">--</p>
-        </div>
-        <div class="h-10 w-[1px] bg-slate-700"></div>
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Site Audits</p>
-            <p class="text-3xl font-black italic text-sky-400" id="siteCount">--</p>
-        </div>
-        <div class="h-10 w-[1px] bg-slate-700"></div>
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Supplier Surveys</p>
-            <p class="text-3xl font-black italic text-orange-500" id="surveyCount">--</p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="mis-card">
+                <span class="mis-label">Today</span>
+                <h3 class="mis-value" id="mis-today">00</h3>
+            </div>
+            <div class="mis-card">
+                <span class="mis-label">This Week</span>
+                <h3 class="mis-value" id="mis-week">00</h3>
+            </div>
+            <div class="mis-card">
+                <span class="mis-label">This Month</span>
+                <h3 class="mis-value" id="mis-month">00</h3>
+            </div>
+            <div class="mis-card border-orange-500/20 bg-orange-500/5">
+                <span class="mis-label text-orange-600">Till Date</span>
+                <h3 class="mis-value text-orange-500" id="mis-total">00</h3>
+            </div>
         </div>
     </div>
 
-    <div class="flex flex-col mb-6">
-        <span class="text-[11px] font-900 text-slate-400 uppercase tracking-[5px] mb-8 text-center">Select Operational Path</span>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+    <div class="flex flex-col mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-14">
             <div onclick="location.href='site.html'" class="node-btn group">
                 <span class="node-icon">🏗️</span>
-                <h3 class="text-white font-900 text-base uppercase tracking-[2px]">Site Intelligence</h3>
-                <p class="text-slate-500 text-[10px] mt-3 font-bold uppercase tracking-widest">Home Owners & Builders</p>
+                <h3 class="text-white font-900 text-xl uppercase tracking-[3px]">Site Intelligence</h3>
+                <p class="text-slate-500 text-[11px] mt-4 font-bold uppercase tracking-widest">Home Owners & Site Audits</p>
             </div>
 
             <div onclick="location.href='survey.html'" class="node-btn group">
                 <span class="node-icon">🏪</span>
-                <h3 class="text-white font-900 text-base uppercase tracking-[2px]">Supplier Matrix</h3>
-                <p class="text-slate-500 text-[10px] mt-3 font-bold uppercase tracking-widest">Material Dispatch Registry</p>
+                <h3 class="text-white font-900 text-xl uppercase tracking-[3px]">Supplier Matrix</h3>
+                <p class="text-slate-500 text-[11px] mt-4 font-bold uppercase tracking-widest">Material Dispatch Registry</p>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-xl border-slate-200">
-        <div class="flex justify-between items-center mb-10">
+    <div class="card shadow-2xl border-slate-200 p-12">
+        <div class="flex justify-between items-center mb-12">
             <div>
-                <h3 class="text-[12px] font-900 text-slate-400 uppercase tracking-[4px]">Field Activity Feed</h3>
-                <p class="text-[9px] text-slate-300 font-bold uppercase mt-1 italic">Real-time sync from matrix nodes</p>
+                <h3 class="text-[14px] font-900 text-slate-400 uppercase tracking-[5px]">Field Activity Stream</h3>
+                <p class="text-[10px] text-slate-300 font-bold uppercase mt-2 italic">Chronological sync from current node</p>
             </div>
-            <div class="flex items-center gap-2 bg-emerald-50 px-5 py-2 rounded-full">
-                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span class="text-emerald-600 text-[10px] font-black uppercase tracking-widest">Live</span>
+            <div class="text-right">
+                <p class="text-[11px] font-black text-slate-300 uppercase tracking-tighter" id="liveClock">00:00:00</p>
             </div>
         </div>
 
-        <div id="activityFeed" class="space-y-4">
-            <div class="text-center py-20">
-                <div class="inline-block w-8 h-8 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4"></div>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Synchronizing terminal logs...</p>
+        <div id="activityFeed" class="space-y-6">
+            <div class="text-center py-24">
+                <div class="inline-block w-12 h-12 border-[6px] border-orange-500/10 border-t-orange-500 rounded-full animate-spin mb-6"></div>
+                <p class="text-slate-400 text-[11px] font-black uppercase tracking-[5px]">Establishing Cloud Link...</p>
             </div>
         </div>
     </div>
@@ -221,7 +256,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 
 <script>
-    // FIREBASE INITIALIZATION
+    /* ===========================================================
+    SECTION 6: CORE INTELLIGENCE ENGINE
+    =========================================================== */
     const firebaseConfig = {
         apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
         authDomain: "infradepo.firebaseapp.com",
@@ -232,84 +269,116 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database(), auth = firebase.auth();
 
-    // LIVE CLOCK PROTOCOL
+    // Clock Protocol
     setInterval(() => {
-        document.getElementById('liveClock').innerText = new Date().toLocaleTimeString('en-GB');
+        const time = new Date().toLocaleTimeString('en-GB');
+        const clock = document.getElementById('liveClock');
+        if(clock) clock.innerText = time;
     }, 1000);
 
+    // Session Start Stamping
+    document.getElementById('sessionTime').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
     /**
-     * CORE FUNCTION: Load recent activity from multi-node databases
-     * Targets: 'site_audits_v4' and 'surveys'
+     * MASTER DATA STREAM: TEMPORAL ANALYTICS
+     * Fetches and filters performance based on current agent's email
      */
-    async function loadActivity(userEmail) {
+    async function executePerformanceSync(userEmail) {
         const feed = document.getElementById('activityFeed');
-        let activities = [];
-        let sites = 0, surveys = 0;
+        let consolidatedLogs = [];
+        
+        // Temporal Benchmarks
+        const now = new Date();
+        const startOfToday = new Date(now.setHours(0,0,0,0)).getTime();
+        const startOfWeek = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        const startOfMonth = Date.now() - (30 * 24 * 60 * 60 * 1000);
+
+        let mis = { today: 0, week: 0, month: 0, total: 0 };
 
         try {
-            // Fetch Site Intelligence Logs
+            // Channel A: Site Audits
             const siteSnap = await rtdb.ref('site_audits_v4').orderByChild('agent').equalTo(userEmail).once('value');
             siteSnap.forEach(child => {
-                activities.push({ ...child.val(), type: 'SITE INTEL', color: 'dot-blue' });
-                sites++;
+                const data = child.val();
+                const ts = data.timestamp || 0;
+                consolidatedLogs.push({ ...data, category: 'SITE AUDIT', color: 'dot-blue' });
+                
+                mis.total++;
+                if(ts >= startOfToday) mis.today++;
+                if(ts >= startOfWeek) mis.week++;
+                if(ts >= startOfMonth) mis.month++;
             });
 
-            // Fetch Supplier Matrix Logs
+            // Channel B: Supplier Surveys
             const surveySnap = await rtdb.ref('surveys').orderByChild('agent').equalTo(userEmail).once('value');
             surveySnap.forEach(child => {
-                activities.push({ ...child.val(), type: 'SUPPLIER MATRIX', color: 'dot-orange' });
-                surveys++;
+                const data = child.val();
+                const ts = data.timestamp || 0;
+                consolidatedLogs.push({ ...data, category: 'SUPPLIER MATRIX', color: 'dot-orange' });
+                
+                mis.total++;
+                if(ts >= startOfToday) mis.today++;
+                if(ts >= startOfWeek) mis.week++;
+                if(ts >= startOfMonth) mis.month++;
             });
 
-            // Update Intelligence Counters
-            document.getElementById('siteCount').innerText = String(sites).padStart(2, '0');
-            document.getElementById('surveyCount').innerText = String(surveys).padStart(2, '0');
-            document.getElementById('totalCount').innerText = String(sites + surveys).padStart(2, '0');
+            // Update MIS Interface
+            document.getElementById('mis-today').innerText = String(mis.today).padStart(2, '0');
+            document.getElementById('mis-week').innerText = String(mis.week).padStart(2, '0');
+            document.getElementById('mis-month').innerText = String(mis.month).padStart(2, '0');
+            document.getElementById('mis-total').innerText = String(mis.total).padStart(2, '0');
 
-            // Chronological Sort
-            activities.sort((a, b) => b.timestamp - a.timestamp);
+            // Render Chronological Feed
+            consolidatedLogs.sort((a, b) => b.timestamp - a.timestamp);
 
-            if(activities.length === 0) {
+            if(consolidatedLogs.length === 0) {
                 feed.innerHTML = `
-                    <div class="text-center py-20 bg-slate-50 rounded-[30px] border-2 border-dashed border-slate-200">
-                        <p class="text-slate-300 text-[11px] font-black uppercase tracking-widest italic">Terminal is empty. No field nodes detected.</p>
+                    <div class="text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200">
+                        <p class="text-slate-300 text-[12px] font-black uppercase tracking-[5px] italic">No active field nodes detected.</p>
                     </div>`;
                 return;
             }
 
-            // Render Feed Architecture
-            feed.innerHTML = activities.slice(0, 15).map(act => `
+            feed.innerHTML = consolidatedLogs.slice(0, 12).map(log => `
                 <div class="activity-item shadow-sm">
-                    <div class="status-dot ${act.color}"></div>
+                    <div class="status-dot ${log.color}"></div>
                     <div class="flex-1">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[2px] mb-1">${act.type}</p>
-                        <p class="text-[14px] font-900 tracking-tight">${act.project || act.firm || 'UNNAMED_NODE'}</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[3px] mb-2">${log.category}</p>
+                        <p class="text-[18px] font-900 tracking-tight text-primary">${log.project || log.firm || 'UNNAMED_NODE'}</p>
+                        <p class="text-[10px] text-slate-400 font-bold mt-1">${log.address ? log.address.substring(0, 45) + '...' : 'Location Encrypted'}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] font-black text-primary uppercase">${new Date(act.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">${new Date(act.timestamp).toLocaleDateString()}</p>
+                        <p class="text-[12px] font-black text-primary uppercase">${new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">${new Date(log.timestamp).toLocaleDateString('en-IN')}</p>
                     </div>
                 </div>
             `).join('');
 
-        } catch(e) {
-            console.error("[DASH_FAULT]", e);
-            feed.innerHTML = `<p class="text-center text-red-500 py-10 font-black uppercase text-[10px]">Critical Sync Error: Check Connectivity.</p>`;
+        } catch(error) {
+            console.error("[MONOLITH_FAULT]", error);
+            feed.innerHTML = `<div class="p-10 bg-red-50 text-red-500 rounded-3xl font-black uppercase text-center text-[10px]">Critical Synchronicity Error</div>`;
         }
     }
 
-    // AUTHENTICATION GUARD & IDENTITY SYNC
-    auth.onAuthStateChanged(u => {
-        if(u) {
-            const shortName = u.email.split('@')[0].toUpperCase();
-            document.getElementById('agentIdentity').innerText = shortName + " • COMMAND CENTER";
-            document.getElementById('welcomeMsg').innerText = "Namaste, " + u.email.split('@')[0];
-            loadActivity(u.email);
+    // AUTHENTICATION GUARD & IDENTITY HANDSHAKE
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            const agentName = user.email.split('@')[0].toUpperCase();
+            const emailDisp = document.getElementById('operatorMail');
+            const identityDisp = document.getElementById('agentIdentity');
+            
+            if(emailDisp) emailDisp.innerText = user.email;
+            if(identityDisp) identityDisp.innerText = agentName + " • EXECUTIVE HUB";
+            
+            executePerformanceSync(user.email);
         } else {
-            // Protocol Violation: Redirect to Public Terminal
+            // Protocol Violation Redirection
             location.href = "../index.html";
         }
     });
 </script>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 </body>
 </html>
