@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Labour Dashboard | NirmanSutra</title>
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --orange: #ff7a00; --dark: #0f172a; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); margin: 0; padding-bottom: 100px; }
+        .header-bg { background: #1e293b; color: white; padding: 35px 20px; border-radius: 0 0 35px 35px; }
+        .card { background: white; border-radius: 25px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .labour-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 18px; background: #f1f5f9; margin-bottom: 10px; }
+        .btn-present { background: #10b981; color: white; padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 10px; }
+        .btn-absent { background: #ef4444; color: white; padding: 8px 15px; border-radius: 10px; font-weight: 800; font-size: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header-bg">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+        <h1 class="text-xl font-black italic tracking-tighter">NIRMANSUTRA</h1>
+        <button onclick="auth.signOut()" class="text-[9px] font-black border border-white/20 px-3 py-2 rounded-xl">LOGOUT</button>
+    </div>
+    <div class="max-w-4xl mx-auto mt-8">
+        <h2 class="text-2xl font-black">Ram Ram, <span id="displayName">Thekedar</span></h2>
+        <p class="opacity-70 text-xs mt-1">Manage your team's daily attendance and haajri.</p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-5 -mt-6">
+    <div class="grid grid-cols-3 gap-3 mb-8 text-center">
+        <div class="card p-4">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Mistry</p>
+            <p class="text-xl font-black">04</p>
+        </div>
+        <div class="card p-4">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Mazdoor</p>
+            <p class="text-xl font-black text-orange-500">18</p>
+        </div>
+        <div class="card p-4">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Helper</p>
+            <p class="text-xl font-black">06</p>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center mb-4 px-2">
+        <h3 class="font-black text-[10px] uppercase tracking-widest text-slate-400">Mark Today's Haajri</h3>
+        <span class="text-[10px] font-bold text-slate-500">March 31, 2026</span>
+    </div>
+
+    <div class="card">
+        <div class="labour-row">
+            <div>
+                <p class="text-sm font-black">Rajesh Kumar</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase">Skilled Mistry • ₹800/day</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn-present">P</button>
+                <button class="btn-absent opacity-30">A</button>
+            </div>
+        </div>
+
+        <div class="labour-row">
+            <div>
+                <p class="text-sm font-black">Suresh Meena</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase">Mazdoor • ₹450/day</p>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn-present">P</button>
+                <button class="btn-absent opacity-30">A</button>
+            </div>
+        </div>
+        
+        <button class="w-full mt-4 py-4 bg-orange-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg">Submit Attendance</button>
+    </div>
+
+    <div class="card">
+        <h3 class="font-black text-xs uppercase mb-4 tracking-widest">Labour Advance (Kharcha)</h3>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center text-xs">
+                <span class="font-bold text-slate-600">Total Advance Paid Today</span>
+                <span class="font-black text-red-500">₹2,500</span>
+            </div>
+            <div class="flex justify-between items-center text-xs">
+                <span class="font-bold text-slate-600">Pending Wage Payout</span>
+                <span class="font-black text-emerald-600">₹14,200</span>
+            </div>
+        </div>
+        <button class="w-full mt-6 py-3 border-2 border-slate-100 rounded-xl text-[10px] font-black uppercase text-slate-500">Add Advance Payment</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
+        authDomain: "infradepo.firebaseapp.com",
+        projectId: "infradepo",
+        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth(), rtdb = firebase.database();
+
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('displayName').innerText = user.email.split('@')[0];
+        } else {
+            window.location.href = "../index.html";
+        }
+    });
+</script>
+</body>
+</html>
