@@ -19,26 +19,12 @@
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow-x: hidden; }
-        
-        .hero-gate { 
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            padding-top: 80px; text-align: center;
-            background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
-        }
-
-        .identity-dock {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #ffffff; color: #0f172a;
-            border-radius: 40px 40px 0 0; padding: 40px 30px;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.8); z-index: 5000;
-            transition: 0.5s ease; max-height: 90vh; overflow-y: auto;
-        }
+        .hero-gate { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 80px; text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%); }
+        .identity-dock { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; color: #0f172a; border-radius: 40px 40px 0 0; padding: 40px 30px; box-shadow: 0 -20px 60px rgba(0,0,0,0.8); z-index: 5000; transition: 0.5s ease; max-height: 90vh; overflow-y: auto; }
         .handle { width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; }
-
         .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
         .u-input:focus { border-color: var(--accent); background: white; }
         .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
-        
         .channel-btn { width: 100%; padding: 18px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: 0.3s; }
         .hidden { display: none !important; }
     </style>
@@ -48,7 +34,6 @@
     <main class="hero-gate">
         <h1 class="text-5xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
         <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[10px] mt-4">Infrastructure Intelligence</p>
-        <h2 class="text-4xl font-black mt-16 px-10">Building The Spine<br>Of Modern India.</h2>
     </main>
 
     <div class="identity-dock">
@@ -62,10 +47,8 @@
                 <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('logPass')">👁️</span>
             </div>
             <button onclick="handleLogin()" class="btn-main mb-6">Login Now</button>
-            
             <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white">📱 Login with Mobile / OTP</div>
-            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Login with Google</div>
-            
+            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Login with Google</div>
             <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New User? Register</p>
         </div>
 
@@ -73,18 +56,16 @@
             <h3 class="text-xl font-black mb-8 text-center">Register New Account</h3>
             <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile No + OTP</div>
             <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp No + OTP</div>
-            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Login</div>
+            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login</div>
             <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
         </div>
 
         <div id="dynamicFormView" class="hidden">
             <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
-            
             <div id="otpBox" class="hidden mb-6">
                 <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter 6-Digit OTP</p>
                 <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
             </div>
-
             <div id="inputBox">
                 <div id="regOnlyFields" class="hidden">
                     <input type="text" id="regName" class="u-input" placeholder="Full Name">
@@ -104,7 +85,6 @@
                     <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('userPass')">👁️</span>
                 </div>
             </div>
-
             <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send OTP</button>
             <p onclick="toggleView('login')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Cancel</p>
         </div>
@@ -128,17 +108,16 @@
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('inputBox').classList.remove('hidden');
             document.getElementById('flowActionBtn').innerText = 'Send OTP';
-            
             const isReg = (mode === 'mobile' || mode === 'whatsapp');
             document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
             document.getElementById('flowTitle').innerText = isReg ? 'New User Registration' : 'Mobile Login';
-            
             toggleView('dynamic');
         }
 
         async function executeFlow() {
             if(!otpSent) {
-                if(!document.getElementById('userPhone').value) return alert("Enter Mobile Number");
+                const phone = document.getElementById('userPhone').value;
+                if(!phone) return alert("Enter Mobile Number");
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
@@ -164,25 +143,30 @@
             const p = document.getElementById('userPass').value;
             const btn = document.getElementById('flowActionBtn');
             btn.innerText = "VERIFYING PROFILE...";
-            
             try {
                 const userSnap = await rtdb.ref('users').orderByChild('phone').equalTo(ph).once('value');
-                
                 if (!userSnap.exists()) {
-                    alert("No account found with this mobile number. Please Register.");
+                    alert("No account found with this mobile number.");
                     location.reload();
                     return;
                 }
-
+                
                 let userUID = Object.keys(userSnap.val())[0];
                 let userData = userSnap.val()[userUID];
+                
+                // SAFETY FALLBACK: Use the email in DB OR recreate the standard format
                 const email = userData.email || `ns_user_${userUID}@nirmansutra.in`;
-                
-                const res = await auth.signInWithEmailAndPassword(email, p);
-                AuthRouter.redirect(res.user);
-                
+
+                try {
+                    const res = await auth.signInWithEmailAndPassword(email, p);
+                    alert("Login Verified!");
+                    AuthRouter.redirect(res.user);
+                } catch(authErr) {
+                    alert("Incorrect Password for mobile: " + ph);
+                    btn.innerText = "Verify & Proceed";
+                }
             } catch(e) {
-                alert("Login Failed: Incorrect Password for this mobile number.");
+                alert("Network Error. Try again.");
                 btn.innerText = "Verify & Proceed";
             }
         }
@@ -197,12 +181,22 @@
         async function handleRegister() {
             const n = document.getElementById('regName').value, ph = document.getElementById('userPhone').value, 
                   p = document.getElementById('userPass').value, r = document.getElementById('regRole').value;
-            const tempMail = "ns_user_" + Date.now() + "@nirmansutra.in";
+            
+            // Standardizing the email format
+            const timestamp = Date.now();
+            const tempMail = "ns_user_" + timestamp + "@nirmansutra.in";
+            
             try {
                 const res = await auth.createUserWithEmailAndPassword(tempMail, p || "NirSut123!");
                 await rtdb.ref(`users/${res.user.uid}`).set({
-                    name: n, phone: ph, role: r, email: tempMail, timestamp: Date.now(), accessStatus: r + ' Verified Access'
+                    name: n, 
+                    phone: ph, 
+                    role: r, 
+                    email: tempMail, 
+                    timestamp: timestamp, 
+                    accessStatus: r + ' Verified Access'
                 });
+                alert("Registration Successful!");
                 window.location.href = MASTER_ROUTES[r];
             } catch(err) { alert("Error: " + err.message); }
         }
