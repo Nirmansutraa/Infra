@@ -35,7 +35,7 @@
             line-height: 1.6;
         }
 
-        /* --- MASTER LAYOUT --- */
+        /* --- MASTER LAYOUT ARCHITECTURE --- */
         .sidebar { 
             width: 360px; height: 100vh; background: var(--sidebar-bg); 
             border-right: 1px solid rgba(255, 255, 255, 0.05); position: fixed; 
@@ -49,7 +49,7 @@
             scroll-behavior: smooth; 
         }
 
-        /* --- COMPONENT STYLING --- */
+        /* --- GLASSMOPHISM MODULES --- */
         .glass-module { 
             background: var(--card-glass); backdrop-filter: blur(60px); 
             border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px; 
@@ -75,6 +75,18 @@
         .verified { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.2); }
         .pending { background: rgba(255, 122, 0, 0.1); color: var(--accent); border-color: rgba(255, 122, 0, 0.2); }
 
+        /* --- PASSWORD EYE SYSTEM --- */
+        .input-container { position: relative; width: 100%; }
+        .auth-input {
+            width: 100%; background: #0f172a; border: 2px solid #1e293b; 
+            padding: 20px; border-radius: 22px; color: white; font-weight: 600; outline: none;
+        }
+        .eye-toggle { 
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%); 
+            cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 20px;
+        }
+        .eye-toggle:hover { opacity: 1; color: var(--accent); }
+
         /* --- SECURITY GATE --- */
         #authGate { 
             position: fixed; inset: 0; background: #000; z-index: 10000; 
@@ -97,23 +109,23 @@
     <div id="authGate">
         <div class="pulse-logo mb-12">🏪</div>
         <h2 class="text-4xl font-black italic tracking-tighter text-white uppercase">Partner Protocol</h2>
-        <p id="authMsg" class="text-slate-500 uppercase tracking-[15px] text-xs mt-8">Verifying Authorized Supply Node...</p>
+        <p id="authMsg" class="text-slate-500 uppercase tracking-[15px] text-xs mt-8 text-center px-10">Initializing Secure Supply Node...</p>
     </div>
 
     <nav class="sidebar">
         <div class="p-12 border-b border-white/5">
-            <h1 class="text-4xl font-black italic tracking-tighter text-white">INFRA<span class="text-orange-500">PARTNER</span></h1>
-            <p class="text-[10px] font-extrabold text-slate-600 uppercase tracking-[8px] mt-4">Sovereign Supply v1.0</p>
+            <h1 class="text-4xl font-black italic tracking-tighter text-white leading-none">INFRA<span class="text-orange-500">PARTNER</span></h1>
+            <p class="text-[10px] font-extrabold text-slate-600 uppercase tracking-[8px] mt-4">Sovereign Supply v3.1</p>
         </div>
         
-        <div class="flex-grow py-12">
+        <div class="flex-grow py-8">
             <div onclick="show('dash')" id="nav-dash" class="nav-item active">📊 <span class="nav-text">Performance</span></div>
             <div onclick="show('orders')" id="nav-orders" class="nav-item">📋 <span class="nav-text">Market Leads</span></div>
-            <div onclick="show('catalog')" id="nav-catalog" class="nav-item">⚒️ <span class="nav-text">My Inventory</span></div>
-            <div onclick="show('profile')" id="nav-profile" class="nav-item">👤 <span class="nav-text">KYB Profile</span></div>
+            <div onclick="show('catalog')" id="nav-catalog" class="nav-item">⚒️ <span class="nav-text">Inventory</span></div>
+            <div onclick="show('security')" id="nav-security" class="nav-item">🛡️ <span class="nav-text">Security</span></div>
         </div>
 
-        <div class="p-12 border-t border-white/5 bg-slate-900/60">
+        <div class="p-10 border-t border-white/5 bg-slate-900/60">
             <p id="partnerName" class="text-[12px] font-black text-orange-500 uppercase tracking-widest truncate mb-6 italic">NODE_SYNCING...</p>
             <button onclick="auth.signOut()" class="w-full py-5 bg-red-600/10 text-red-500 rounded-2xl font-black text-[11px] uppercase border border-red-600/20 hover:bg-red-600 hover:text-white transition-all">🔒 TERMINATE SESSION</button>
         </div>
@@ -127,39 +139,50 @@
                 <p id="viewSubtitle" class="text-slate-400 text-2xl font-medium mt-6 italic">Strategic marketplace supply monitor.</p>
             </div>
             <div class="px-10 py-6 bg-emerald-500/10 border-2 border-emerald-500/20 rounded-full">
-                <span class="text-emerald-500 font-black uppercase tracking-widest text-xs">● Live Supply Node: RJ-UDR-73</span>
+                <span class="text-emerald-500 font-black uppercase tracking-widest text-xs animate-pulse">● Live Supply Node Active</span>
             </div>
         </header>
 
         <section id="panel-dash" class="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div class="glass-module">
-                <p class="text-slate-500 font-black uppercase text-[11px] tracking-widest">Market Visibility</p>
-                <h3 class="text-8xl font-black mt-8 text-white leading-none">HIGH</h3>
-            </div>
-            <div class="glass-module">
+            <div class="glass-module border-l-[15px] border-l-blue-500">
                 <p class="text-slate-500 font-black uppercase text-[11px] tracking-widest">Active Quotations</p>
                 <h3 class="text-8xl font-black mt-8 text-white leading-none">12</h3>
             </div>
-            <div class="glass-module border-orange-500/20">
-                <p class="text-orange-500 font-black uppercase text-[11px] tracking-widest">Node Status</p>
-                <h3 class="text-3xl font-black mt-8 text-emerald-500 italic">VERIFIED_KYB</h3>
+            <div class="glass-module border-l-[15px] border-l-orange-500">
+                <p class="text-slate-500 font-black uppercase text-[11px] tracking-widest">Invoices Pending</p>
+                <h3 class="text-8xl font-black mt-8 text-white leading-none">08</h3>
+            </div>
+            <div class="glass-module border-l-[15px] border-l-emerald-500">
+                <p class="text-emerald-500 font-black uppercase text-[11px] tracking-widest">Node Status</p>
+                <h3 class="text-3xl font-black mt-8 text-emerald-500 italic">VERIFIED_SUPPLIER</h3>
             </div>
         </section>
 
         <section id="panel-orders" class="hidden-panel space-y-10">
             <div class="glass-module">
-                <h3 class="text-4xl font-black uppercase tracking-tighter mb-10">Real-time Project Leads</h3>
+                <h3 class="text-4xl font-black uppercase tracking-tighter mb-10 text-white">Live Construction Demand</h3>
                 <div id="leadsFeed" class="space-y-6">
-                    <p class="text-slate-500 font-bold uppercase text-xs">Scanning Matrix for construction sites...</p>
+                    <div class="text-center py-20">
+                        <div class="inline-block w-12 h-12 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin"></div>
+                        <p class="text-slate-500 font-black uppercase text-[10px] mt-8 tracking-widest">Scanning Global Matrix for Projects...</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="panel-catalog" class="hidden-panel">
-            <div class="glass-module">
-                <h3 class="text-4xl font-black uppercase tracking-tighter mb-10">My Supply Portfolio</h3>
-                <div id="myPortfolio" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <section id="panel-security" class="hidden-panel">
+            <div class="glass-module max-w-2xl">
+                <h3 class="text-4xl font-black uppercase tracking-tighter mb-8 text-white">Security Protocol</h3>
+                <p class="text-slate-400 mb-10 font-medium">Update your supply node authentication signature.</p>
+                
+                <div class="space-y-8">
+                    <div class="input-container">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4 ml-4">Access Password</label>
+                        <input type="password" id="nodePass" class="auth-input" placeholder="••••••••••••">
+                        <span class="eye-toggle" onclick="toggleDashboardEye('nodePass')">👁️</span>
                     </div>
+                    <button class="w-full py-6 bg-orange-500 text-white rounded-3xl font-black uppercase text-sm tracking-widest shadow-xl hover:scale-105 transition-all">Update Identity</button>
+                </div>
             </div>
         </section>
 
@@ -179,64 +202,105 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database(), auth = firebase.auth();
 
-        // 🛡️ SECURITY HANDSHAKE
+        /**
+         * 🛡️ MASTER SECURITY HANDSHAKE
+         * Integrated Role Check for Capitalized "Supplier" role.
+         */
         auth.onAuthStateChanged(async (u) => {
-            if (!u) { window.location.href = "../index.html"; return; }
-            
-            // Check Profile in supplier_onboarding or users
-            const snap = await rtdb.ref(`users/${u.uid}`).once('value');
-            const profile = snap.val() || {};
+            const gate = document.getElementById('authGate');
+            const msg = document.getElementById('authMsg');
 
-            // Suppliers often have 'supplier' role or login via registration
-            if (profile.role === 'supplier' || profile.role === 'super_admin') {
-                setTimeout(() => { document.getElementById('authGate').style.display = "none"; }, 1500);
-                document.getElementById('partnerName').innerText = u.email.toUpperCase();
-                loadSupplierIntelligence(u.email);
+            if (u) {
+                try {
+                    const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
+                    const role = snap.val();
+
+                    console.log("[SECURITY] Logged Identity Role:", role);
+
+                    // MATCHING LOGIC: Accepts Supplier, admin, or super_admin
+                    if (role === 'Supplier' || role === 'admin' || role === 'super_admin') {
+                        msg.innerText = "IDENTITY VERIFIED. WELCOME PARTNER.";
+                        document.getElementById('partnerName').innerText = u.email.toUpperCase();
+                        
+                        // Delay for smooth transition
+                        setTimeout(() => {
+                            gate.style.opacity = '0';
+                            setTimeout(() => gate.style.display = "none", 500);
+                        }, 1200);
+
+                        loadDemandMatrix();
+                    } else {
+                        msg.innerText = "ACCESS DENIED: UNAUTHORIZED NODE.";
+                        msg.style.color = "#ef4444";
+                        setTimeout(() => window.location.href = "../index.html", 2500);
+                    }
+                } catch (err) {
+                    console.error("Cloud Access Error:", err);
+                    window.location.href = "../index.html";
+                }
             } else {
-                document.getElementById('authMsg').innerText = "RESTRICTED ACCESS: SUPPLIER HUB";
-                setTimeout(() => window.location.href = "../index.html", 2500);
+                window.location.href = "../index.html";
             }
         });
 
+        /**
+         * UI MODULE: NAVIGATION ENGINE
+         */
         function show(id) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden-panel'));
             document.getElementById('panel-' + id).classList.remove('hidden-panel');
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById('nav-' + id).classList.add('active');
+            
+            const titles = { dash: 'Partner Pulse', orders: 'Demand Matrix', catalog: 'Supply Vault', security: 'Access Shield' };
+            document.getElementById('viewTitle').innerText = titles[id];
         }
 
-        async function loadSupplierIntelligence(email) {
-            console.log("[INTEL] Fetching Supply Node Data...");
-            
-            // 1. Load Portfolio (From their registration)
-            const regSnap = await rtdb.ref('supplier_onboarding').orderByChild('ownerWa').equalTo(email).once('value');
-            if(!regSnap.exists()) {
-                // Try secondary mapping
-                const regSnap2 = await rtdb.ref('supplier_onboarding').orderByChild('phone').equalTo(email).once('value');
-            }
+        /**
+         * UI UTILITY: PASSWORD VISIBILITY (EYE FUNCTION)
+         */
+        function toggleDashboardEye(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === "password" ? "text" : "password";
+        }
 
-            // 2. Load Global Leads (Sites from site_audits_v4)
-            rtdb.ref('site_audits_v4').limitToLast(10).on('value', snap => {
-                const leads = document.getElementById('leadsFeed');
-                leads.innerHTML = "";
+        /**
+         * DATA ENGINE: LIVE DEMAND MATRIX
+         * Pulls real construction sites for the supplier to browse.
+         */
+        function loadDemandMatrix() {
+            console.log("[INTEL] Opening Live Lead Stream...");
+            const leadsFeed = document.getElementById('leadsFeed');
+            
+            rtdb.ref('site_audits_v4').limitToLast(12).on('value', snap => {
+                if(!snap.exists()) {
+                    leadsFeed.innerHTML = `<div class="p-20 text-center text-slate-600 font-black uppercase tracking-widest">No local demand detected.</div>`;
+                    return;
+                }
+
+                leadsFeed.innerHTML = "";
                 snap.forEach(child => {
-                    const lead = child.val();
-                    leads.innerHTML += `
-                        <div class="p-8 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center hover:border-orange-500 transition-all">
+                    const data = child.val();
+                    leadsFeed.innerHTML += `
+                        <div class="p-10 bg-white/5 rounded-[40px] border border-white/5 flex flex-col md:flex-row justify-between items-center hover:border-orange-500 transition-all gap-10">
                             <div>
-                                <p class="text-orange-500 font-black text-[10px] uppercase tracking-widest mb-2">Demand Intelligence</p>
-                                <h4 class="text-2xl font-black text-white uppercase">${lead.project || 'Project Site'}</h4>
-                                <p class="text-slate-500 text-xs mt-2">${lead.address || 'Location Hidden'}</p>
+                                <span class="status-pill verified mb-6">Site Verified</span>
+                                <h4 class="text-3xl font-black text-white uppercase tracking-tighter">${data.project || 'Project Node'}</h4>
+                                <p class="text-slate-500 text-sm mt-3 font-bold uppercase tracking-widest">${data.address || 'Udaipur, Rajasthan'}</p>
                             </div>
                             <div class="text-right">
-                                <span class="status-pill verified mb-4">Site Verified</span>
-                                <p class="text-white font-black text-lg">${lead.stage || 'Construction'}</p>
+                                <p class="text-orange-500 font-black text-xs uppercase tracking-[5px] mb-4">Construction Stage</p>
+                                <p class="text-4xl font-black italic text-white uppercase">${data.stage || 'Excavation'}</p>
+                                <button class="mt-8 px-10 py-4 bg-white text-black rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-500 hover:text-white transition-all">Submit Portfolio</button>
                             </div>
                         </div>`;
                 });
             });
         }
     </script>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
