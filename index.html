@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Infrastructure Intelligence</title>
+    <title>NirmanSutra | Building Bharat</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -24,10 +24,10 @@
         .hero-gate { 
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
-            padding-bottom: 150px; /* Space for the collapsed dock */
+            padding-bottom: 150px;
         }
 
-        /* THE AUTO-HIDE DOCK */
+        /* AUTO-HIDE DOCK */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: #ffffff; color: #0f172a;
@@ -35,21 +35,15 @@
             box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
             transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             max-height: 85vh; overflow-y: auto;
-            transform: translateY(calc(100% - 100px)); /* Shows only the top "Mini Bar" */
+            transform: translateY(calc(100% - 80px)); 
         }
 
-        /* Expanded State */
         .identity-dock.expanded { transform: translateY(0); }
 
         .handle-bar { 
             width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 15px; cursor: pointer;
         }
 
-        .mini-trigger {
-            text-align: center; cursor: pointer; padding-bottom: 20px;
-        }
-
-        /* UI Elements */
         .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
         .u-input:focus { border-color: var(--accent); background: white; }
         .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
@@ -61,28 +55,28 @@
 
     <main class="hero-gate">
         <h1 class="text-4xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[9px] mt-2">Infrastructure Intelligence</p>
+        <p class="text-orange-500 font-black uppercase tracking-[8px] text-[10px] mt-2 italic">Building Bharat</p>
         <h2 class="text-3xl font-black mt-12 px-10 leading-tight">Building The Spine<br>Of Modern India.</h2>
     </main>
 
     <div id="mainDock" class="identity-dock">
         <div class="handle-bar" onclick="toggleDock()"></div>
         
-        <div id="miniBar" class="mini-trigger" onclick="toggleDock()">
+        <div id="miniBar" class="text-center cursor-pointer pb-5" onclick="toggleDock()">
             <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Already a Partner? Login</span>
         </div>
 
         <div id="dockContent" class="opacity-0 transition-opacity duration-500">
             
             <div id="loginView">
-                <h3 class="text-xl font-black mb-6 text-center">Authorized Access</h3>
+                <h3 class="text-xl font-black mb-6 text-center">Login</h3>
                 <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white py-5">📱 Login via Mobile / OTP</div>
                 
                 <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[8px] font-black">OR</span><div class="h-px bg-slate-900 flex-1"></div></div>
                 
                 <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
                 <input type="password" id="logPass" class="u-input" placeholder="Password">
-                <button onclick="handleEmailLogin()" class="btn-main mb-6">Enter System</button>
+                <button onclick="handleEmailLogin()" class="btn-main mb-6">Login</button>
                 
                 <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Login</div>
                 <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New Partner Registration</p>
@@ -90,8 +84,8 @@
 
             <div id="regChoiceView" class="hidden">
                 <h3 class="text-xl font-black mb-8 text-center">Join The Network</h3>
-                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile Registration</div>
-                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp Registry</div>
+                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Sign Up by Mobile</div>
+                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 Sign Up by WhatsApp</div>
                 <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
             </div>
 
@@ -125,7 +119,6 @@
             const dock = document.getElementById('mainDock');
             const content = document.getElementById('dockContent');
             const mini = document.getElementById('miniBar');
-            
             dock.classList.toggle('expanded');
             if(dock.classList.contains('expanded')) {
                 content.classList.remove('opacity-0');
