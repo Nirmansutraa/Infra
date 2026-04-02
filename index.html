@@ -83,7 +83,7 @@
     <script>
         let currentMode = ""; let otpSent = false;
         const TEST_OTP = "123456";
-        const SECURE_PASS = "Ns_Otp_Secure_2026!"; // Meets all complexity rules
+        const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
 
         function toggleView(v) {
             document.getElementById('loginView').classList.add('hidden');
@@ -104,7 +104,6 @@
             toggleView('dynamic');
         }
 
-        // 10-Digit Sync Logic
         function getMappingEmail(phone) {
             let clean = phone.replace(/\D/g, ''); 
             let tenDigit = clean.slice(-10); 
@@ -133,18 +132,21 @@
             const email = getMappingEmail(ph);
             const n = document.getElementById('regName').value;
             const r = document.getElementById('regRole').value;
-            const method = currentMode === 'whatsapp' ? 'WhatsApp' : 'Mobile';
 
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, SECURE_PASS);
                 await rtdb.ref(`users/${res.user.uid}`).set({
                     name: n, phone: ph, role: r, email: email, 
-                    loginMethod: method + ' OTP', timestamp: Date.now()
+                    loginMethod: 'OTP', timestamp: Date.now()
                 });
                 AuthRouter.redirect(res.user);
             } catch(e) {
-                if(e.code === "auth/email-already-in-use") handleOTPLogin();
-                else alert("Firebase Error: " + e.message);
+                if(e.code === "auth/email-already-in-use") {
+                    console.log("Account exists, switching to login...");
+                    handleOTPLogin();
+                } else {
+                    alert("Firebase Error: " + e.message);
+                }
             }
         }
 
@@ -153,15 +155,13 @@
             const email = getMappingEmail(ph);
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
-                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Mobile OTP');
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Not registered yet."); }
+            } catch(e) { alert("Login failed. Check if your number is correct."); }
         }
 
         async function handleEmailLogin() {
             try {
                 const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
-                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Email ID');
                 AuthRouter.redirect(res.user);
             } catch(e) { alert("Login Error"); }
         }
@@ -169,7 +169,6 @@
         async function loginGoogle() {
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Google');
                 AuthRouter.redirect(res.user);
             } catch(e) { alert("Google Error"); }
         }
