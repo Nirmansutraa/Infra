@@ -76,7 +76,7 @@
                     </select>
                 </div>
                 <input type="tel" id="userPhone" class="u-input" placeholder="Enter Mobile Number">
-                <p class="text-[9px] text-center text-slate-400 font-bold uppercase mb-4">Internal Mapping: Password-Free Access</p>
+                <p class="text-[9px] text-center text-slate-400 font-bold uppercase mb-4">Internal Mapping Enabled</p>
             </div>
             <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send Verification Code</button>
             <p onclick="toggleView('login')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Cancel</p>
@@ -87,7 +87,9 @@
         let currentMode = ""; 
         let otpSent = false;
         const TEST_OTP = "123456";
-        const SECURE_PASS = "NS_OTP_2026"; 
+        
+        // FIXED: Added lowercase and special char to meet Firebase security rules
+        const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
 
         function toggleView(v) {
             document.getElementById('loginView').classList.add('hidden');
@@ -109,27 +111,26 @@
             toggleView('dynamic');
         }
 
-        // Logic to extract only the last 9 digits of a phone number
         function getMappingEmail(phone) {
-            let clean = phone.replace(/\D/g, ''); // Remove non-digits
-            let nineDigit = clean.slice(-9);      // Get last 9 digits
-            return `${nineDigit}@nirmansutra.in`; // Final internal map
+            let clean = phone.replace(/\D/g, ''); 
+            let nineDigit = clean.slice(-9);      
+            return `${nineDigit}@nirmansutra.in`; 
         }
 
         async function executeFlow() {
             if(!otpSent) {
                 const phone = document.getElementById('userPhone').value;
-                if(!phone || phone.length < 9) return alert("Please enter a valid 9-digit number.");
+                if(!phone || phone.length < 9) return alert("Enter valid 9-digit number.");
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('flowActionBtn').innerText = 'Verify & Proceed';
-                alert("OTP Dispatched to last 9 digits: " + TEST_OTP);
+                alert("OTP: " + TEST_OTP);
             } else {
                 if(document.getElementById('otpValue').value === TEST_OTP) {
                     if(currentMode === 'login_otp') handleOTPLogin();
                     else handleOTPRegister();
-                } else alert("Invalid OTP Code.");
+                } else alert("Invalid OTP.");
             }
         }
 
@@ -143,11 +144,11 @@
                 await rtdb.ref(`users/${res.user.uid}`).set({
                     name: n, phone: ph, role: r, email: email, authMethod: 'OTP', timestamp: Date.now(), accessStatus: r + ' Verified Access'
                 });
-                alert("Identity Verified! Welcome.");
+                alert("Identity Verified!");
                 AuthRouter.redirect(res.user);
             } catch(err) { 
                 if(err.code === "auth/email-already-in-use") handleOTPLogin(); 
-                else alert(err.message); 
+                else alert("Firebase Error: " + err.message); 
             }
         }
 
@@ -155,9 +156,8 @@
             const email = getMappingEmail(document.getElementById('userPhone').value);
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
-                alert("Verification Successful.");
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Access Denied: Node not found in Registry."); }
+            } catch(e) { alert("Access Denied: Please Register."); }
         }
 
         async function handleEmailLogin() {
