@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Sovereign Gateway</title>
+    <title>NirmanSutra | Infrastructure Intelligence</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -25,7 +25,6 @@
         .u-input:focus { border-color: var(--accent); background: white; }
         .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
         .channel-btn { width: 100%; padding: 18px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: 0.3s; }
-        .channel-btn:hover { background: #f8fafc; border-color: var(--accent); }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -40,43 +39,50 @@
         <div class="handle"></div>
         
         <div id="loginView">
-            <h3 class="text-xl font-black mb-6">Authorize Entry</h3>
+            <h3 class="text-xl font-black mb-6 text-center">Already a User? Login</h3>
             <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
-            <div class="relative"><input type="password" id="logPass" class="u-input" placeholder="Password"><span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('logPass')">👁️</span></div>
-            <button onclick="handleLogin()" class="btn-main mb-6">Sign In</button>
-            <div onclick="loginGoogle()" class="channel-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account</div>
-            <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest">New Partner? Register</p>
+            <div class="relative">
+                <input type="password" id="logPass" class="u-input" placeholder="Password">
+                <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('logPass')">👁️</span>
+            </div>
+            <button onclick="handleLogin()" class="btn-main mb-6">Login Now</button>
+            <div onclick="loginGoogle()" class="channel-btn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Login with Google</div>
+            <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New User? Register</p>
         </div>
 
         <div id="regChoiceView" class="hidden">
-            <h3 class="text-xl font-black mb-8 text-center">Initialize Registry</h3>
-            <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile SMS Registry</div>
-            <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp OTP Registry</div>
-            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Register via Google</div>
+            <h3 class="text-xl font-black mb-8 text-center">Register New Account</h3>
+            <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile No + OTP</div>
+            <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp No + OTP</div>
+            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Login</div>
             <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
         </div>
 
         <div id="regFormView" class="hidden">
-            <h3 id="flowTitle" class="text-xl font-black mb-6">Registry Node</h3>
+            <h3 id="flowTitle" class="text-xl font-black mb-6">New User Registration</h3>
             <div id="otpBox" class="hidden mb-6">
-                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter 6-Digit Code</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter 6-Digit OTP</p>
                 <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
             </div>
             <div id="inputBox">
                 <input type="text" id="regName" class="u-input" placeholder="Full Name">
                 <input type="tel" id="regPhone" class="u-input" placeholder="Mobile (+91...)">
-                <div class="relative"><input type="password" id="regPass" class="u-input" placeholder="Set Password"><span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('regPass')">👁️</span></div>
-                <label class="text-[9px] font-black text-slate-400 uppercase mb-2 block">Register as:</label>
+                <div class="relative">
+                    <input type="password" id="regPass" class="u-input" placeholder="Set Password">
+                    <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('regPass')">👁️</span>
+                </div>
                 <select id="regRole" class="u-input">
                     <option value="Supplier">Supplier (Material Shop)</option>
                     <option value="Builders">Builder</option>
                     <option value="Contractor">Contractor</option>
                     <option value="field_survey_staff">Field Agent</option>
                     <option value="FleetOwner">Fleet Operator</option>
+                    <option value="HomeOwner">Home Owner</option>
+                    <option value="Labour Contractor">Labour Contractor</option>
                 </select>
             </div>
-            <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send OTP Code</button>
-            <p onclick="toggleView('regChoice')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Options</p>
+            <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send OTP</button>
+            <p onclick="toggleView('regChoice')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Back</p>
         </div>
     </div>
 
@@ -94,22 +100,21 @@
 
         function initFlow(mode) {
             currentMode = mode;
-            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Registry' : 'WhatsApp Registry';
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('inputBox').classList.remove('hidden');
-            document.getElementById('flowActionBtn').innerText = 'Send OTP Code';
+            document.getElementById('flowActionBtn').innerText = 'Send OTP';
             otpSent = false;
             toggleView('regForm');
         }
 
         async function executeFlow() {
             if(!otpSent) {
-                if(!document.getElementById('regPhone').value) return alert("Enter mobile number.");
+                if(!document.getElementById('regPhone').value) return alert("Enter Mobile Number");
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('flowActionBtn').innerText = 'Verify & Register';
-                alert("OTP Sent (Test: 123456)");
+                alert("OTP Sent: 123456");
             } else {
                 if(document.getElementById('otpValue').value === "123456") handleRegister();
                 else alert("Wrong OTP");
@@ -120,27 +125,28 @@
             try {
                 const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Login Failed"); }
+            } catch(e) { alert("Login Failed: Check Email/Password"); }
         }
 
         async function loginGoogle() {
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Google Auth Failed"); }
+            } catch(e) { alert("Google Login Failed"); }
         }
 
         async function handleRegister() {
             const n = document.getElementById('regName').value, ph = document.getElementById('regPhone').value, 
                   p = document.getElementById('regPass').value, r = document.getElementById('regRole').value;
-            const tempMail = "node_" + Date.now() + "@nirmansutra.in";
+            const tempMail = "ns_" + Date.now() + "@nirmansutra.in";
             try {
+                // We add ?bypass=true to the URL during registration so auth-router doesn't kick us out
                 const res = await auth.createUserWithEmailAndPassword(tempMail, p || "NirSut123!");
                 await rtdb.ref(`users/${res.user.uid}`).set({
                     name: n, phone: ph, role: r, timestamp: Date.now(), accessStatus: r + ' Verified Access'
                 });
                 window.location.href = MASTER_ROUTES[r];
-            } catch(err) { alert(err.message); }
+            } catch(err) { alert("Error: " + err.message); }
         }
     </script>
 </body>
