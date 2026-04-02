@@ -18,13 +18,13 @@
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow-x: hidden; }
         
-        /* Background Branding */
+        /* Hero Section - Clean & Geometric */
         .hero-gate { 
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
-            padding-bottom: 150px;
+            padding-bottom: 120px;
         }
 
         /* AUTO-HIDE DOCK */
@@ -44,19 +44,31 @@
             width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 15px; cursor: pointer;
         }
 
-        .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
+        /* 2026 Trend Inputs */
+        .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
         .u-input:focus { border-color: var(--accent); background: white; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
-        .channel-btn { width: 100%; padding: 18px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        
+        .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; letter-spacing: 1px; }
+        
+        /* Icon Buttons */
+        .channel-btn { 
+            width: 100%; padding: 16px; border-radius: 22px; border: 1px solid #e2e8f0; 
+            margin-bottom: 12px; font-weight: 800; font-size: 12px; text-transform: uppercase; 
+            display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; 
+            transition: all 0.2s ease;
+        }
+        .channel-btn:active { transform: scale(0.98); }
+        
         .hidden { display: none !important; }
+        .trend-icon { width: 22px; height: 22px; }
     </style>
 </head>
 <body>
 
     <main class="hero-gate">
-        <h1 class="text-4xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-orange-500 font-black uppercase tracking-[8px] text-[10px] mt-2 italic">Building Bharat</p>
-        <h2 class="text-3xl font-black mt-12 px-10 leading-tight">Building The Spine<br>Of Modern India.</h2>
+        <h1 class="text-5xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <h2 class="text-4xl font-black mt-8 px-10 leading-tight tracking-tight">Building Bharat</h2>
+        <p class="text-orange-500 font-bold uppercase tracking-[4px] text-[10px] mt-4 opacity-70">Infrastructure Intelligence</p>
     </main>
 
     <div id="mainDock" class="identity-dock">
@@ -70,41 +82,54 @@
             
             <div id="loginView">
                 <h3 class="text-xl font-black mb-6 text-center">Login</h3>
-                <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white py-5">📱 Login via Mobile / OTP</div>
                 
-                <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[8px] font-black">OR</span><div class="h-px bg-slate-900 flex-1"></div></div>
+                <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-950 text-white border-none shadow-xl shadow-slate-200">
+                    <img src="https://img.icons8.com/fluency/48/phone.png" class="trend-icon"> Login via Mobile / OTP
+                </div>
                 
-                <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
+                <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[8px] font-black uppercase">Secure</span><div class="h-px bg-slate-900 flex-1"></div></div>
+                
+                <input type="email" id="logEmail" class="u-input" placeholder="Registered Email">
                 <input type="password" id="logPass" class="u-input" placeholder="Password">
-                <button onclick="handleEmailLogin()" class="btn-main mb-6">Login</button>
+                <button onclick="handleEmailLogin()" class="btn-main mb-6 shadow-lg shadow-orange-200">Login</button>
                 
-                <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Login</div>
-                <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New Partner Registration</p>
+                <div onclick="loginGoogle()" class="channel-btn bg-white">
+                    <img src="https://img.icons8.com/color/48/google-logo.png" class="trend-icon"> Login with Google
+                </div>
+                
+                <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-[11px] cursor-pointer uppercase tracking-widest underline decoration-2 underline-offset-4">New Partner Sign Up</p>
             </div>
 
             <div id="regChoiceView" class="hidden">
                 <h3 class="text-xl font-black mb-8 text-center">Join The Network</h3>
-                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Sign Up by Mobile</div>
-                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 Sign Up by WhatsApp</div>
+                
+                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-950 text-white border-none">
+                    <img src="https://img.icons8.com/fluency/48/smartphone.png" class="trend-icon"> Sign Up by Mobile
+                </div>
+                
+                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-200 text-emerald-700 bg-emerald-50">
+                    <img src="https://img.icons8.com/color/48/whatsapp.png" class="trend-icon"> Sign Up by WhatsApp
+                </div>
+                
                 <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
             </div>
 
             <div id="dynamicFormView" class="hidden">
                 <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
                 <div id="otpBox" class="hidden mb-6">
-                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl border-orange-500 bg-orange-50" placeholder="000000" maxlength="6">
                 </div>
                 <div id="inputBox">
                     <div id="regOnlyFields" class="hidden">
-                        <input type="text" id="regName" class="u-input" placeholder="Legal Name">
+                        <input type="text" id="regName" class="u-input" placeholder="Full Name">
                         <select id="regRole" class="u-input">
                             <option value="Supplier">Supplier</option><option value="Builders">Builder</option>
                             <option value="Contractor">Contractor</option><option value="field_survey_staff">Field Agent</option>
                         </select>
                     </div>
-                    <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile">
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile Number">
                 </div>
-                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send Code</button>
+                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Get Verification Code</button>
                 <p onclick="toggleDock()" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Minimize</p>
             </div>
         </div>
@@ -142,7 +167,7 @@
             currentMode = mode; otpSent = false;
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('inputBox').classList.remove('hidden');
-            document.getElementById('flowActionBtn').innerText = 'Send Code';
+            document.getElementById('flowActionBtn').innerText = 'Get Verification Code';
             const isReg = (mode === 'mobile' || mode === 'whatsapp');
             document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
             toggleView('dynamic');
@@ -160,13 +185,13 @@
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
-                document.getElementById('flowActionBtn').innerText = 'Verify';
-                alert("OTP Sent: " + TEST_OTP);
+                document.getElementById('flowActionBtn').innerText = 'Verify & Access';
+                alert("OTP: " + TEST_OTP);
             } else {
                 if(document.getElementById('otpValue').value === TEST_OTP) {
                     if(currentMode === 'login_otp') handleOTPLogin();
                     else handleOTPRegister();
-                } else alert("Invalid OTP");
+                } else alert("Invalid Code");
             }
         }
 
@@ -183,7 +208,7 @@
                 AuthRouter.redirect(res.user);
             } catch(e) {
                 if(e.code === "auth/email-already-in-use") handleOTPLogin();
-                else alert("Error: " + e.message);
+                else alert(e.message);
             }
         }
 
@@ -192,7 +217,7 @@
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Please Register First."); }
+            } catch(e) { alert("Please Sign Up First."); }
         }
 
         async function handleEmailLogin() {
