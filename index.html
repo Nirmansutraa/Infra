@@ -75,8 +75,8 @@
                         <option value="Labour Contractor">Labour Contractor</option><option value="admin">Admin</option>
                     </select>
                 </div>
-                <input type="tel" id="userPhone" class="u-input" placeholder="Enter Mobile Number">
-                <p class="text-[9px] text-center text-slate-400 font-bold uppercase mb-4">Internal Mapping Enabled</p>
+                <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile Number">
+                <p class="text-[9px] text-center text-slate-400 font-bold uppercase mb-4">OTP Verification: Secure & Instant</p>
             </div>
             <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send Verification Code</button>
             <p onclick="toggleView('login')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Cancel</p>
@@ -87,8 +87,6 @@
         let currentMode = ""; 
         let otpSent = false;
         const TEST_OTP = "123456";
-        
-        // FIXED: Added lowercase and special char to meet Firebase security rules
         const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
 
         function toggleView(v) {
@@ -111,21 +109,22 @@
             toggleView('dynamic');
         }
 
+        // Logic for 10-Digit Unique Mapping
         function getMappingEmail(phone) {
             let clean = phone.replace(/\D/g, ''); 
-            let nineDigit = clean.slice(-9);      
-            return `${nineDigit}@nirmansutra.in`; 
+            let tenDigit = clean.slice(-10); // Extract exactly last 10 digits
+            return `${tenDigit}@nirmansutra.in`; 
         }
 
         async function executeFlow() {
             if(!otpSent) {
                 const phone = document.getElementById('userPhone').value;
-                if(!phone || phone.length < 9) return alert("Enter valid 9-digit number.");
+                if(!phone || phone.replace(/\D/g, '').length < 10) return alert("Enter a valid 10-digit number.");
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('flowActionBtn').innerText = 'Verify & Proceed';
-                alert("OTP: " + TEST_OTP);
+                alert("OTP Sent: " + TEST_OTP);
             } else {
                 if(document.getElementById('otpValue').value === TEST_OTP) {
                     if(currentMode === 'login_otp') handleOTPLogin();
@@ -138,31 +137,43 @@
             const n = document.getElementById('regName').value, ph = document.getElementById('userPhone').value, 
                   r = document.getElementById('regRole').value;
             const email = getMappingEmail(ph);
+            const methodDisplay = currentMode === 'whatsapp' ? 'WhatsApp OTP' : 'Mobile OTP';
             
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, SECURE_PASS);
                 await rtdb.ref(`users/${res.user.uid}`).set({
-                    name: n, phone: ph, role: r, email: email, authMethod: 'OTP', timestamp: Date.now(), accessStatus: r + ' Verified Access'
+                    name: n, 
+                    phone: ph, 
+                    role: r, 
+                    email: email, 
+                    loginMethod: methodDisplay, // For Dashboard display
+                    timestamp: Date.now(), 
+                    accessStatus: r + ' Verified Access'
                 });
-                alert("Identity Verified!");
+                alert("Welcome " + n + "!");
                 AuthRouter.redirect(res.user);
             } catch(err) { 
                 if(err.code === "auth/email-already-in-use") handleOTPLogin(); 
-                else alert("Firebase Error: " + err.message); 
+                else alert(err.message); 
             }
         }
 
         async function handleOTPLogin() {
-            const email = getMappingEmail(document.getElementById('userPhone').value);
+            const ph = document.getElementById('userPhone').value;
+            const email = getMappingEmail(ph);
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
+                // Update method if login was successful
+                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Mobile OTP');
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Access Denied: Please Register."); }
+            } catch(e) { alert("Access Denied: Please Register First."); }
         }
 
         async function handleEmailLogin() {
+            const email = document.getElementById('logEmail').value;
             try {
-                const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
+                const res = await auth.signInWithEmailAndPassword(email, document.getElementById('logPass').value);
+                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Email ID');
                 AuthRouter.redirect(res.user);
             } catch(e) { alert("Invalid Credentials."); }
         }
@@ -170,6 +181,16 @@
         async function loginGoogle() {
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                await rtdb.ref(`users/${res.user.uid}/loginMethod`).set('Google Account');
+                // Ensure name and role exist for Google users
+                const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                if(!snap.exists()) {
+                    await rtdb.ref(`users/${res.user.uid}`).update({
+                        name: res.user.displayName,
+                        email: res.user.email,
+                        role: 'HomeOwner' // Default for Google new signups
+                    });
+                }
                 AuthRouter.redirect(res.user);
             } catch(e) { alert("Google Auth Failed"); }
         }
