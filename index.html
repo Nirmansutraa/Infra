@@ -18,119 +18,158 @@
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow-x: hidden; }
         
-        /* Hero Section - Clean & Geometric */
-        .hero-gate { 
-            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
-            padding-bottom: 120px;
+        body { 
+            background: var(--navy); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: white; margin: 0; overflow: hidden; 
         }
 
-        /* AUTO-HIDE DOCK */
+        /* MARCH 2026 TREND: Animated Mesh Gradient Background */
+        .mesh-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(at 0% 0%, rgba(255, 122, 0, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.5) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(15, 23, 42, 1) 0px, transparent 100%);
+            z-index: -1;
+        }
+
+        /* Floating Hero Section */
+        .hero-gate { 
+            min-height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center;
+            padding-bottom: 150px;
+        }
+
+        .brand-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 20px;
+            border-radius: 40px;
+            width: 90%; max-width: 400px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        }
+
+        /* 2026 Bold Typography */
+        .brand-text {
+            font-size: 3.5rem; font-weight: 900; letter-spacing: -3px; line-height: 0.9;
+        }
+
+        .bharat-tag {
+            display: inline-block; background: var(--accent); color: white;
+            padding: 4px 12px; border-radius: 8px; font-weight: 900;
+            text-transform: uppercase; font-size: 10px; letter-spacing: 2px;
+            margin-top: 15px;
+        }
+
+        /* THE AUTO-HIDE DOCK (Glass-morphism) */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: #ffffff; color: #0f172a;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px);
+            color: #0f172a;
             border-radius: 40px 40px 0 0; padding: 20px 30px 40px;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -20px 80px rgba(0,0,0,0.6); z-index: 5000;
+            transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
             max-height: 85vh; overflow-y: auto;
-            transform: translateY(calc(100% - 80px)); 
+            transform: translateY(calc(100% - 90px)); 
         }
 
         .identity-dock.expanded { transform: translateY(0); }
 
         .handle-bar { 
-            width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 15px; cursor: pointer;
+            width: 40px; height: 4px; background: #cbd5e1; border-radius: 10px; margin: 0 auto 20px; cursor: pointer;
         }
 
-        /* 2026 Trend Inputs */
-        .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
-        .u-input:focus { border-color: var(--accent); background: white; }
+        /* Inputs & Buttons */
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
+        .u-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.1); }
         
-        .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; letter-spacing: 1px; }
+        .btn-main { width: 100%; padding: 20px; border-radius: 20px; background: var(--navy); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; letter-spacing: 1px; }
         
-        /* Icon Buttons */
         .channel-btn { 
-            width: 100%; padding: 16px; border-radius: 22px; border: 1px solid #e2e8f0; 
-            margin-bottom: 12px; font-weight: 800; font-size: 12px; text-transform: uppercase; 
+            width: 100%; padding: 16px; border-radius: 22px; border: 1px solid #f1f5f9; 
+            margin-bottom: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; 
             display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; 
-            transition: all 0.2s ease;
+            background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
-        .channel-btn:active { transform: scale(0.98); }
-        
+
         .hidden { display: none !important; }
-        .trend-icon { width: 22px; height: 22px; }
+        .trend-icon { width: 24px; height: 24px; }
     </style>
 </head>
 <body>
 
+    <div class="mesh-bg"></div>
+
     <main class="hero-gate">
-        <h1 class="text-5xl font-black tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <h2 class="text-4xl font-black mt-8 px-10 leading-tight tracking-tight">Building Bharat</h2>
-        <p class="text-orange-500 font-bold uppercase tracking-[4px] text-[10px] mt-4 opacity-70">Infrastructure Intelligence</p>
+        <div class="brand-card">
+            <h1 class="brand-text">NIRMAN<br><span class="text-orange-500">SUTRA</span></h1>
+            <div class="bharat-tag">Building Bharat</div>
+            <p class="text-slate-400 font-bold uppercase tracking-[4px] text-[9px] mt-8">Infrastructure Intelligence</p>
+        </div>
+        
+        <div class="mt-12 animate-bounce opacity-30">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5M7 6l5 5 5-5"/></svg>
+        </div>
     </main>
 
     <div id="mainDock" class="identity-dock">
         <div class="handle-bar" onclick="toggleDock()"></div>
         
         <div id="miniBar" class="text-center cursor-pointer pb-5" onclick="toggleDock()">
-            <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Already a Partner? Login</span>
+            <span class="text-[11px] font-black uppercase tracking-widest text-slate-900">Partner Login & Sign Up</span>
         </div>
 
         <div id="dockContent" class="opacity-0 transition-opacity duration-500">
             
             <div id="loginView">
-                <h3 class="text-xl font-black mb-6 text-center">Login</h3>
+                <h3 class="text-xl font-black mb-8 text-center text-slate-900">Welcome Back</h3>
                 
-                <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-950 text-white border-none shadow-xl shadow-slate-200">
-                    <img src="https://img.icons8.com/fluency/48/phone.png" class="trend-icon"> Login via Mobile / OTP
+                <div onclick="initFlow('login_otp')" class="channel-btn">
+                    <img src="https://img.icons8.com/fluency/48/phone.png" class="trend-icon"> Login via OTP
                 </div>
                 
-                <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[8px] font-black uppercase">Secure</span><div class="h-px bg-slate-900 flex-1"></div></div>
+                <div class="relative my-8"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div><div class="relative flex justify-center text-[10px] uppercase font-black"><span class="bg-white px-4 text-slate-400">Manual Login</span></div></div>
                 
-                <input type="email" id="logEmail" class="u-input" placeholder="Registered Email">
+                <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
                 <input type="password" id="logPass" class="u-input" placeholder="Password">
-                <button onclick="handleEmailLogin()" class="btn-main mb-6 shadow-lg shadow-orange-200">Login</button>
+                <button onclick="handleEmailLogin()" class="btn-main mb-6 bg-orange-500">Login</button>
                 
-                <div onclick="loginGoogle()" class="channel-btn bg-white">
-                    <img src="https://img.icons8.com/color/48/google-logo.png" class="trend-icon"> Login with Google
+                <div onclick="loginGoogle()" class="channel-btn border-none bg-slate-50">
+                    <img src="https://img.icons8.com/color/48/google-logo.png" class="trend-icon"> Continue with Google
                 </div>
                 
-                <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-[11px] cursor-pointer uppercase tracking-widest underline decoration-2 underline-offset-4">New Partner Sign Up</p>
+                <p onclick="toggleView('regChoice')" class="text-center mt-8 text-slate-400 font-black text-[10px] cursor-pointer uppercase tracking-widest">New to NirmanSutra? <span class="text-orange-500 underline">Register</span></p>
             </div>
 
             <div id="regChoiceView" class="hidden">
-                <h3 class="text-xl font-black mb-8 text-center">Join The Network</h3>
-                
-                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-950 text-white border-none">
+                <h3 class="text-xl font-black mb-8 text-center text-slate-900">Register Account</h3>
+                <div onclick="initFlow('mobile')" class="channel-btn">
                     <img src="https://img.icons8.com/fluency/48/smartphone.png" class="trend-icon"> Sign Up by Mobile
                 </div>
-                
-                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-200 text-emerald-700 bg-emerald-50">
+                <div onclick="initFlow('whatsapp')" class="channel-btn">
                     <img src="https://img.icons8.com/color/48/whatsapp.png" class="trend-icon"> Sign Up by WhatsApp
                 </div>
-                
-                <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
+                <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Already a user? Login</p>
             </div>
 
             <div id="dynamicFormView" class="hidden">
-                <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
+                <h3 id="flowTitle" class="text-xl font-black mb-6 text-slate-900">Secure Entry</h3>
                 <div id="otpBox" class="hidden mb-6">
-                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl border-orange-500 bg-orange-50" placeholder="000000" maxlength="6">
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[10px] text-2xl border-orange-500" placeholder="000000" maxlength="6">
                 </div>
                 <div id="inputBox">
                     <div id="regOnlyFields" class="hidden">
-                        <input type="text" id="regName" class="u-input" placeholder="Full Name">
-                        <select id="regRole" class="u-input">
-                            <option value="Supplier">Supplier</option><option value="Builders">Builder</option>
-                            <option value="Contractor">Contractor</option><option value="field_survey_staff">Field Agent</option>
-                        </select>
+                        <input type="text" id="regName" class="u-input" placeholder="Full Legal Name">
+                        <select id="regRole" class="u-input"></select>
                     </div>
                     <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile Number">
                 </div>
-                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Get Verification Code</button>
-                <p onclick="toggleDock()" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Minimize</p>
+                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main bg-orange-500 mt-4">Send OTP</button>
+                <p onclick="toggleDock()" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase tracking-tighter">Cancel & Close</p>
             </div>
         </div>
     </div>
@@ -140,13 +179,17 @@
         const TEST_OTP = "123456";
         const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
 
+        window.addEventListener('DOMContentLoaded', () => {
+            NS_UI.loadRoles('regRole');
+        });
+
         function toggleDock() {
             const dock = document.getElementById('mainDock');
             const content = document.getElementById('dockContent');
             const mini = document.getElementById('miniBar');
             dock.classList.toggle('expanded');
             if(dock.classList.contains('expanded')) {
-                content.classList.remove('opacity-0');
+                setTimeout(() => content.classList.remove('opacity-0'), 100);
                 mini.classList.add('hidden');
             } else {
                 content.classList.add('opacity-0');
@@ -167,7 +210,7 @@
             currentMode = mode; otpSent = false;
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('inputBox').classList.remove('hidden');
-            document.getElementById('flowActionBtn').innerText = 'Get Verification Code';
+            document.getElementById('flowActionBtn').innerText = 'Send OTP Code';
             const isReg = (mode === 'mobile' || mode === 'whatsapp');
             document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
             toggleView('dynamic');
@@ -185,13 +228,13 @@
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
-                document.getElementById('flowActionBtn').innerText = 'Verify & Access';
-                alert("OTP: " + TEST_OTP);
+                document.getElementById('flowActionBtn').innerText = 'Verify & Proceed';
+                alert("OTP Sent: " + TEST_OTP);
             } else {
                 if(document.getElementById('otpValue').value === TEST_OTP) {
                     if(currentMode === 'login_otp') handleOTPLogin();
                     else handleOTPRegister();
-                } else alert("Invalid Code");
+                } else alert("Invalid OTP Code");
             }
         }
 
@@ -208,7 +251,7 @@
                 AuthRouter.redirect(res.user);
             } catch(e) {
                 if(e.code === "auth/email-already-in-use") handleOTPLogin();
-                else alert(e.message);
+                else alert("Registry Error: " + e.message);
             }
         }
 
@@ -217,21 +260,21 @@
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Please Sign Up First."); }
+            } catch(e) { alert("Mobile verification failed."); }
         }
 
         async function handleEmailLogin() {
             try {
                 const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Invalid Credentials"); }
+            } catch(e) { alert("Incorrect credentials."); }
         }
 
         async function loginGoogle() {
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Google Error"); }
+            } catch(e) { alert("Google connection error."); }
         }
     </script>
 </body>
