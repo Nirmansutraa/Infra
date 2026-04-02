@@ -3,467 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Global Field Intelligence v2.3</title>
+    <title>Site Intelligence | NirmanSutra</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/ui-utils.js"></script>
+    <script src="js/geo-engine.js"></script>
 
     <style>
-        :root { 
-            --bg: #f8fafc; 
-            --card: #ffffff; 
-            --accent: #ff7a00; 
-            --primary: #0f172a; 
-            --text-dim: #64748b; 
-        }
-        
-        body { 
-            background: var(--bg); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--primary); 
-            padding-bottom: 220px; 
-            -webkit-font-smoothing: antialiased; 
-        }
-        
-        .card { 
-            background: var(--card); 
-            border-radius: 35px; 
-            padding: 40px; 
-            margin-bottom: 30px; 
-            border: 1px solid #e2e8f0; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
-            transition: 0.4s ease; 
-        }
-        
-        .section-label { 
-            font-size: 11px; 
-            font-weight: 900; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-            letter-spacing: 3px; 
-            margin-bottom: 25px; 
-            display: block; 
-        }
-
-        .id-box { 
-            background: var(--primary); 
-            color: #10b981; 
-            text-align: center; 
-            padding: 50px; 
-            border-radius: 30px; 
-            font-size: clamp(26px, 7vw, 36px); 
-            font-weight: 900; 
-            font-family: monospace; 
-            letter-spacing: 6px; 
-            border: 1px solid #1e293b; 
-            box-shadow: inset 0 10px 30px rgba(0,0,0,0.4);
-            text-shadow: 0 0 20px rgba(16,185,129,0.5);
-        }
-
-        input, select, textarea { 
-            width: 100%; 
-            background: #f1f5f9; 
-            border: 1px solid transparent; 
-            padding: 20px 24px; 
-            border-radius: 18px; 
-            font-size: 15px; 
-            font-weight: 600;
-            margin-top: 12px; 
-            outline: none; 
-            transition: 0.3s ease; 
-        }
-        
-        input:focus { border-color: var(--accent); background: #fff; }
-        
-        label { 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: var(--text-dim); 
-            text-transform: uppercase; 
-            margin-top: 20px; 
-            display: block; 
-            padding-left: 8px; 
-        }
-
-        .mat-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 25px;
-            border-radius: 28px;
-            margin-bottom: 20px;
-        }
-
-        .calc-badge {
-            font-size: 11px;
-            background: #fff7ed;
-            color: #ea580c;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-weight: 800;
-        }
-
-        .photo-slot { 
-            aspect-ratio: 1; 
-            background: #f1f5f9; 
-            border-radius: 22px; 
-            border: 2px dashed #cbd5e1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .stamp-overlay { 
-            position: absolute; 
-            bottom: 0; left: 0; right: 0; 
-            background: rgba(0,0,0,0.8); 
-            color: white; 
-            font-size: 8px; 
-            padding: 8px; 
-            font-weight: 800; 
-            line-height: 1.4; 
-        }
-
-        .action-bar { 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0; 
-            background: rgba(255,255,255,0.95); 
-            backdrop-filter: blur(35px); 
-            padding: 25px 35px; 
-            display: flex; gap: 20px; 
-            border-top: 1px solid #e2e8f0; 
-            z-index: 1000; 
-        }
-        
-        .btn { flex: 1; padding: 24px; border-radius: 22px; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.4s ease; }
-        .btn-green { background: #10b981; color: white; box-shadow: 0 12px 25px rgba(16,185,129,0.25); }
+        :root { --accent: #ff7a00; --navy: #0f172a; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 120px; }
+        .card { background: white; border-radius: 35px; padding: 30px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; display: block; }
+        input, select, textarea { width: 100%; background: #f1f5f9; padding: 18px; border-radius: 18px; font-weight: 600; outline: none; margin-top: 8px; }
+        input:focus { border-color: var(--accent); background: white; }
+        .mat-row { background: #f8fafc; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 12px; }
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .stamp { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; width: 100%; padding: 6px; font-weight: 800; }
+        .action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 20px; border-top: 1px solid #e2e8f0; z-index: 1000; }
+        #map { height: 250px; border-radius: 25px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<nav class="bg-white p-8 flex justify-between items-center rounded-b-[45px] border-b mb-10 shadow-sm">
-    <div>
-        <h1 class="text-2xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[4px]" id="agentIdentity">AUTHENTICATING...</p>
-    </div>
-</nav>
-
-<div class="max-w-2xl mx-auto px-8">
-    <div class="card">
-        <span class="section-label">01. Session Identity</span>
-        <div id="trackId" class="id-box">SITE-UDR-000</div>
-    </div>
+<div class="max-w-2xl mx-auto px-6 py-8">
+    <header class="mb-8">
+        <h1 class="text-3xl font-black italic">SITE <span class="text-orange-500">INTEL</span></h1>
+        <p id="agentID" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Authenticating...</p>
+    </header>
 
     <div class="card">
-        <span class="section-label">02. Site Progress Stage</span>
-        <label>Current Construction Stage</label>
-        <select id="constructionStage">
-            <option value="Excavation">Excavation & Earthwork</option>
-            <option value="Foundation">Foundation / Plinth Beam</option>
-            <option value="Columns">Column & Lintel Casting</option>
-            <option value="Slab">Slab / Roof Casting</option>
-            <option value="Brickwork">Brickwork & Masonry</option>
-            <option value="Plastering">Internal / External Plastering</option>
-            <option value="Flooring">Flooring & Tiling</option>
-            <option value="Finishing">Painting & Finishing</option>
-        </select>
-        <textarea id="stageNotes" class="mt-4" placeholder="Stage specific observations..."></textarea>
+        <span class="section-label">01. Project Info</span>
+        <input id="projectName" placeholder="Site Name (e.g. Sharma Villa)">
+        <input id="clientName" placeholder="Owner Name">
+        <div class="grid grid-cols-2 gap-4">
+            <input id="phone" type="tel" placeholder="Mobile">
+            <input id="whatsapp" type="tel" placeholder="WhatsApp">
+        </div>
     </div>
 
     <div class="card">
-        <span class="section-label">03. Entity & Contact Matrix</span>
-        <input id="projectName" placeholder="Project / Site Name" class="mb-4">
-        <input id="clientName" placeholder="Owner / Builder Legal Name">
-        
-        <div class="grid grid-cols-2 gap-6 mt-4">
-            <div>
-                <label>Primary Phone</label>
-                <input id="clientPhone" type="tel" placeholder="+91" oninput="SiteIntel.syncWA(this.value)">
+        <span class="section-label">02. Demand Forecast</span>
+        <div class="mat-row">
+            <div class="flex justify-between text-[10px] font-black uppercase mb-2"><span>Cement</span><span id="c_cem">0 Bags</span></div>
+            <div class="grid grid-cols-2 gap-3">
+                <select id="u_cem" onchange="calc('cem')"><option value="1">Bags</option><option value="40">Tempo (40)</option></select>
+                <input id="v_cem" type="number" placeholder="Qty" oninput="calc('cem')">
             </div>
-            <div>
-                <div class="flex items-center justify-between px-2">
-                    <label>WhatsApp Hub</label>
-                    <div class="flex items-center gap-2 mt-4">
-                        <input type="checkbox" id="waSyncToggle" checked class="w-4 h-4 accent-orange-500" onchange="SiteIntel.toggleSync(this.checked)">
-                        <span class="text-[9px] font-black text-orange-500 uppercase tracking-tighter">Sync Phone</span>
-                    </div>
-                </div>
-                <input id="clientWa" type="tel" placeholder="WhatsApp Number" readonly>
+        </div>
+        <div class="mat-row">
+            <div class="flex justify-between text-[10px] font-black uppercase mb-2"><span>Steel (TMT)</span><span id="c_stl">0 kg</span></div>
+            <div class="grid grid-cols-2 gap-3">
+                <select id="u_stl" onchange="calc('stl')"><option value="47">8mm (47kg)</option><option value="52">12mm (52kg)</option></select>
+                <input id="v_stl" type="number" placeholder="Bundles" oninput="calc('stl')">
             </div>
         </div>
     </div>
 
     <div class="card">
-        <span class="section-label">04. Material Demand Forecast</span>
-        
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">1. Sand (Ret)</span>
-                <span id="calc_sand" class="calc-badge">0.0 Tons</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="unit_sand" onchange="SiteIntel.calc('sand')">
-                    <option value="3.5">Tractor (3.5T)</option>
-                    <option value="1">Direct Tons</option>
-                </select>
-                <input id="val_sand" type="number" placeholder="Input Value" oninput="SiteIntel.calc('sand')">
-            </div>
-            <select id="brand_sand"><option value="Local">Local Generic</option><option value="Banas">Banas Sand</option><option value="M-Sand">M-Sand</option></select>
-        </div>
-
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">2. Bricks (Int)</span>
-                <span id="calc_bricks" class="calc-badge">0 Units</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="unit_bricks" onchange="SiteIntel.calc('bricks')">
-                    <option value="3500">Med Truck (3.5k)</option>
-                    <option value="6500">Large Truck (6.5k)</option>
-                    <option value="1000">Per 1k Units</option>
-                </select>
-                <input id="val_bricks" type="number" placeholder="Input Value" oninput="SiteIntel.calc('bricks')">
-            </div>
-            <select id="brand_bricks"><option value="Red">Red Clay Bricks</option><option value="AAC">AAC Blocks</option></select>
-        </div>
-
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">3. Aggregates (Gitti)</span>
-                <span id="calc_gitti" class="calc-badge">0.0 Tons</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="unit_gitti" onchange="SiteIntel.calc('gitti')">
-                    <option value="18">10-Wheeler (18T)</option>
-                    <option value="1">Direct Tons</option>
-                </select>
-                <input id="val_gitti" type="number" placeholder="Input Value" oninput="SiteIntel.calc('gitti')">
-            </div>
-            <select id="grade_gitti"><option>20mm (Slabs)</option><option>40mm (Foundations)</option><option>60mm (Base)</option></select>
-        </div>
-
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">4. Cement</span>
-                <span id="calc_cement" class="calc-badge">0 Bags</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="unit_cement" onchange="SiteIntel.calc('cement')">
-                    <option value="1">Bags</option>
-                    <option value="40">Tempo (40 Bags)</option>
-                    <option value="300">Truck (300 Bags)</option>
-                </select>
-                <input id="val_cement" type="number" placeholder="Input Value" oninput="SiteIntel.calc('cement')">
-            </div>
-            <select id="brand_cement">
-                <option>UltraTech</option><option>ACC</option><option>Ambuja</option><option>JK Lakshmi</option><option>Shree</option>
-                <option>Dalmia</option><option>Birla</option><option>Wonder</option><option>Binani</option><option>Ramco</option>
-            </select>
-        </div>
-
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">5. TMT Steel (Sariya)</span>
-                <span id="calc_tmt" class="calc-badge">0.0 kg</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="dia_tmt" onchange="SiteIntel.calc('tmt')">
-                    <option value="47">8mm (47kg)</option>
-                    <option value="50">10mm (50kg)</option>
-                    <option value="52">12mm (52kg)</option>
-                    <option value="55">16mm (55kg)</option>
-                </select>
-                <input id="val_tmt" type="number" placeholder="Bundles" oninput="SiteIntel.calc('tmt')">
-            </div>
-            <select id="brand_tmt">
-                <option>Tata Tiscon</option><option>JSW Neosteel</option><option>SAIL</option><option>Vizag Steel</option><option>Jindal Panther</option>
-                <option>Kamdhenu</option><option>Rathi</option><option>SRMB</option><option>Electrosteel</option><option>Gallantt</option>
-            </select>
-        </div>
-
-        <div class="mat-card">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[13px] font-black uppercase tracking-widest">6. Masonry Stone / RMC</span>
-                <span id="calc_rmc" class="calc-badge">0.0 Units</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <select id="unit_rmc" onchange="SiteIntel.calc('rmc')">
-                    <option value="6.5">Transit Mixer (6.5m³)</option>
-                    <option value="1">Direct Tons (Stone)</option>
-                </select>
-                <input id="val_rmc" type="number" placeholder="Input Value" oninput="SiteIntel.calc('rmc')">
-            </div>
-        </div>
+        <span class="section-label">03. Spatial Trace</span>
+        <div id="map"></div>
+        <button onclick="capturePos()" class="w-full py-4 bg-navy text-white rounded-xl font-bold text-xs mb-3">📍 Lock Site Location</button>
+        <textarea id="address" class="text-[11px] text-slate-500 bg-transparent border-none" readonly placeholder="Waiting for GPS..."></textarea>
     </div>
 
     <div class="card">
-        <span class="section-label">05. Field Evidence Grid (Max 10)</span>
-        <div class="grid grid-cols-5 gap-4 mt-8" id="photoGrid">
-            <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-6xl hover:bg-slate-50 transition-all">+</button>
+        <span class="section-label">04. Visual Audit</span>
+        <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-5xl">+</button>
         </div>
-        <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="Evidence.process(this)">
-        <p class="text-[10px] font-black text-slate-400 mt-6 text-center uppercase tracking-widest italic">Live GPS & Timestamp Enabled (Max 512KB)</p>
-    </div>
-
-    <div class="card">
-        <span class="section-label">06. GPS proofing & Spatial Trace</span>
-        <div id="map" class="h-80 rounded-[40px] mb-8 border border-slate-200 shadow-inner"></div>
-        <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 rounded-2xl font-black text-[15px] uppercase tracking-[2px] mb-8 shadow-xl">📍 Capture Verified Location</button>
-        <textarea id="address" class="h-32 text-[13px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync..." readonly></textarea>
+        <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="handlePhoto(this)">
     </div>
 </div>
 
 <div class="action-bar">
-    <button onclick="SiteIntel.sync()" id="sBtn" class="btn btn-green">🚀 Finalize Site Sync</button>
+    <button onclick="syncSite()" id="sBtn" class="w-full py-5 bg-orange-500 text-white rounded-2xl font-black uppercase shadow-lg">Finalize Site Sync</button>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
-        authDomain: "infradepo.firebaseapp.com",
-        projectId: "infradepo",
-        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const rtdb = firebase.database(), auth = firebase.auth();
+    let state = { location: null, photos: [], forecast: {} };
 
-    window.SiteIntel = {
-        state: { photos: [], location: null, forecast: {} },
+    window.onload = () => {
+        NS_Geo.init('map');
+        auth.onAuthStateChanged(u => {
+            if(!u) window.location.href = "../index.html";
+            document.getElementById('agentID').innerText = "AUDITOR: " + u.email.toUpperCase();
+        });
+    };
+
+    function calc(item) {
+        const val = parseFloat(document.getElementById(`v_${item}`).value) || 0;
+        const unit = parseFloat(document.getElementById(`u_${item}`).value);
+        const res = val * unit;
+        document.getElementById(`c_${item}`).innerText = (item === 'cem' ? res.toFixed(0) + " Bags" : res.toFixed(1) + " kg");
+        state.forecast[item] = res;
+    }
+
+    async function capturePos() {
+        const res = await NS_Geo.captureLocation('address');
+        state.location = { lat: res.lat, lng: res.lng };
+    }
+
+    function handlePhoto(input) {
+        if(state.photos.length >= 10) return NS_UI.notify("Max 10 photos");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.photos.push({ src: e.target.result, time: new Date().toLocaleString() });
+            renderPhotos();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function renderPhotos() {
+        const grid = document.getElementById('photoGrid');
+        const btn = grid.firstElementChild;
+        grid.innerHTML = ""; grid.appendChild(btn);
+        state.photos.forEach(p => {
+            grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp">${p.time}</div></div>`;
+        });
+    }
+
+    async function syncSite() {
+        const name = document.getElementById('projectName').value;
+        if(!name || !state.location) return NS_UI.notify("Name and GPS Lock required.");
         
-        syncWA(val) {
-            const waInput = document.getElementById('clientWa');
-            if(document.getElementById('waSyncToggle').checked) { waInput.value = val; }
-        },
-        toggleSync(checked) {
-            const waInput = document.getElementById('clientWa');
-            if(checked) { waInput.value = document.getElementById('clientPhone').value; waInput.readOnly = true; }
-            else { waInput.readOnly = false; }
-        },
+        const btn = document.getElementById('sBtn');
+        btn.innerText = "SYNCING..."; btn.disabled = true;
 
-        calc(item) {
-            const val = parseFloat(document.getElementById(`val_${item}`).value) || 0;
-            let result = 0;
-            let label = "";
+        const payload = {
+            ...state,
+            project: name,
+            client: document.getElementById('clientName').value,
+            phone: document.getElementById('phone').value,
+            agent: auth.currentUser.email,
+            timestamp: Date.now(),
+            status: 'construction_audit'
+        };
 
-            if(item === 'tmt') {
-                result = val * parseFloat(document.getElementById('dia_tmt').value);
-                label = result.toFixed(1) + " kg Total";
-            } else {
-                result = val * parseFloat(document.getElementById(`unit_${item}`).value);
-                label = (item === 'bricks' || item === 'cement') ? result.toFixed(0) + " Units" : result.toFixed(1) + " Tons/m³";
-            }
-
-            document.getElementById(`calc_${item}`).innerText = label;
-            const brandEl = document.getElementById(`brand_${item}`);
-            this.state.forecast[item] = { total: result, brand: brandEl ? brandEl.value : 'N/A' };
-        },
-
-        async sync() {
-            const projectName = document.getElementById('projectName').value;
-            if(!this.state.location || !projectName) return alert("❌ Missing Site Name or GPS.");
-            const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
-            
-            const payload = {
-                project: projectName,
-                client: document.getElementById('clientName').value,
-                phone: document.getElementById('clientPhone').value,
-                whatsapp: document.getElementById('clientWa').value,
-                stage: document.getElementById('constructionStage').value,
-                notes: document.getElementById('stageNotes').value,
-                forecast: this.state.forecast,
-                photos: this.state.photos,
-                location: this.state.location,
-                address: document.getElementById('address').value,
-                agent: auth.currentUser.email,
-                timestamp: Date.now(),
-                status: 'construction_audit'
-            };
-
-            try {
-                await rtdb.ref('site_audits_v4').push(payload);
-                alert("✅ SYNC SUCCESS");
-                location.reload();
-            } catch(e) { alert("❌ Sync Fault: " + e.message); btn.innerText = "🚀 Finalize Site Sync"; }
-        }
-    };
-
-    window.Evidence = {
-        process(input) {
-            if(SiteIntel.state.photos.length >= 10) return alert("Max 10 Photos allowed.");
-            if(!SiteIntel.state.location) return alert("📍 Capture GPS first for tagging.");
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 800; canvas.height = 600;
-                    ctx.drawImage(img, 0, 0, 800, 600);
-                    
-                    let quality = 0.8;
-                    let base64 = canvas.toDataURL('image/jpeg', quality);
-                    while (base64.length > 512000 && quality > 0.1) {
-                        quality -= 0.1;
-                        base64 = canvas.toDataURL('image/jpeg', quality);
-                    }
-
-                    SiteIntel.state.photos.push({
-                        src: base64,
-                        time: new Date().toLocaleString(),
-                        gps: `${SiteIntel.state.location.lat.toFixed(4)}, ${SiteIntel.state.location.lng.toFixed(4)}`
-                    });
-                    this.render();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-        },
-        render() {
-            const grid = document.getElementById('photoGrid');
-            const addBtn = grid.querySelector('button');
-            grid.innerHTML = ""; grid.appendChild(addBtn);
-            SiteIntel.state.photos.forEach(p => {
-                grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">${p.time}<br>GPS: ${p.gps}</div></div>`;
-            });
-        }
-    };
-
-    window.Geo = {
-        map: null, marker: null,
-        init() {
-            this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-        },
-        capture() {
-            navigator.geolocation.getCurrentPosition(async p => {
-                const { latitude, longitude } = p.coords;
-                SiteIntel.state.location = { lat: latitude, lng: longitude };
-                this.map.setView([latitude, longitude], 16);
-                if (this.marker) this.map.removeLayer(this.marker);
-                this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const data = await res.json();
-                document.getElementById('address').value = data.display_name;
-            }, null, { enableHighAccuracy: true });
-        }
-    };
-
-    window.onload = () => { 
-        Geo.init(); 
-        auth.onAuthStateChanged(u => { 
-            if(u) { document.getElementById('agentIdentity').innerText = "AUDITOR: " + u.email.toUpperCase(); } 
-            else { location.href="../index.html"; }
-        }); 
-    };
+        try {
+            await rtdb.ref('site_audits_v4').push(payload);
+            NS_UI.notify("Site Synced Successfully!");
+            window.location.reload();
+        } catch(e) { NS_UI.notify("Error: " + e.message); btn.innerText = "Finalize Site Sync"; btn.disabled = false; }
+    }
 </script>
-
 </body>
 </html>
