@@ -11,17 +11,45 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-
     <script src="js/config.js"></script>
     <script src="js/ui-utils.js"></script>
     <script src="js/auth-router.js"></script>
+    <script src="js/comm-hub.js"></script>
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow-x: hidden; }
-        .hero-gate { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 80px; text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%); }
-        .identity-dock { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; color: #0f172a; border-radius: 40px 40px 0 0; padding: 40px 30px; box-shadow: 0 -20px 60px rgba(0,0,0,0.8); z-index: 5000; transition: 0.5s ease; max-height: 90vh; overflow-y: auto; }
-        .handle { width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
+        
+        /* Background Branding */
+        .hero-gate { 
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
+            padding-bottom: 150px; /* Space for the collapsed dock */
+        }
+
+        /* THE AUTO-HIDE DOCK */
+        .identity-dock {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #ffffff; color: #0f172a;
+            border-radius: 40px 40px 0 0; padding: 20px 30px 40px;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh; overflow-y: auto;
+            transform: translateY(calc(100% - 100px)); /* Shows only the top "Mini Bar" */
+        }
+
+        /* Expanded State */
+        .identity-dock.expanded { transform: translateY(0); }
+
+        .handle-bar { 
+            width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 15px; cursor: pointer;
+        }
+
+        .mini-trigger {
+            text-align: center; cursor: pointer; padding-bottom: 20px;
+        }
+
+        /* UI Elements */
         .u-input { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
         .u-input:focus { border-color: var(--accent); background: white; }
         .btn-main { width: 100%; padding: 18px; border-radius: 20px; background: var(--accent); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
@@ -32,51 +60,59 @@
 <body>
 
     <main class="hero-gate">
-        <h1 class="text-5xl font-black italic tracking-tighter mt-10">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-        <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[10px] mt-4">Infrastructure Intelligence</p>
-        <h2 class="text-4xl font-black mt-16 px-10">Building The Spine<br>Of Modern India.</h2>
+        <h1 class="text-4xl font-black italic tracking-tighter">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[9px] mt-2">Infrastructure Intelligence</p>
+        <h2 class="text-3xl font-black mt-12 px-10 leading-tight">Building The Spine<br>Of Modern India.</h2>
     </main>
 
-    <div class="identity-dock">
-        <div class="handle"></div>
+    <div id="mainDock" class="identity-dock">
+        <div class="handle-bar" onclick="toggleDock()"></div>
         
-        <div id="loginView">
-            <h3 class="text-xl font-black mb-6 text-center">Already a User? Login</h3>
-            <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white py-6">📱 Login via Mobile / OTP</div>
-            <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[9px] font-black">OR</span><div class="h-px bg-slate-900 flex-1"></div></div>
-            <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
-            <input type="password" id="logPass" class="u-input" placeholder="Password">
-            <button onclick="handleEmailLogin()" class="btn-main mb-6">Login with Password</button>
-            <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login</div>
-            <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New User? Register</p>
+        <div id="miniBar" class="mini-trigger" onclick="toggleDock()">
+            <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Already a Partner? Login</span>
         </div>
 
-        <div id="regChoiceView" class="hidden">
-            <h3 class="text-xl font-black mb-8 text-center">Register New Account</h3>
-            <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile No + OTP</div>
-            <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp No + OTP</div>
-            <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
-        </div>
-
-        <div id="dynamicFormView" class="hidden">
-            <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
-            <div id="otpBox" class="hidden mb-6">
-                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter Code</p>
-                <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
+        <div id="dockContent" class="opacity-0 transition-opacity duration-500">
+            
+            <div id="loginView">
+                <h3 class="text-xl font-black mb-6 text-center">Authorized Access</h3>
+                <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white py-5">📱 Login via Mobile / OTP</div>
+                
+                <div class="flex items-center gap-4 py-4 opacity-20"><div class="h-px bg-slate-900 flex-1"></div><span class="text-[8px] font-black">OR</span><div class="h-px bg-slate-900 flex-1"></div></div>
+                
+                <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
+                <input type="password" id="logPass" class="u-input" placeholder="Password">
+                <button onclick="handleEmailLogin()" class="btn-main mb-6">Enter System</button>
+                
+                <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Login</div>
+                <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New Partner Registration</p>
             </div>
-            <div id="inputBox">
-                <div id="regOnlyFields" class="hidden">
-                    <input type="text" id="regName" class="u-input" placeholder="Full Name">
-                    <select id="regRole" class="u-input">
-                        <option value="Supplier">Supplier</option><option value="Builders">Builder</option>
-                        <option value="Contractor">Contractor</option><option value="field_survey_staff">Field Agent</option>
-                        <option value="FleetOwner">Fleet Owner</option><option value="HomeOwner">Home Owner</option>
-                    </select>
+
+            <div id="regChoiceView" class="hidden">
+                <h3 class="text-xl font-black mb-8 text-center">Join The Network</h3>
+                <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile Registration</div>
+                <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp Registry</div>
+                <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
+            </div>
+
+            <div id="dynamicFormView" class="hidden">
+                <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
+                <div id="otpBox" class="hidden mb-6">
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
                 </div>
-                <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile Number">
+                <div id="inputBox">
+                    <div id="regOnlyFields" class="hidden">
+                        <input type="text" id="regName" class="u-input" placeholder="Legal Name">
+                        <select id="regRole" class="u-input">
+                            <option value="Supplier">Supplier</option><option value="Builders">Builder</option>
+                            <option value="Contractor">Contractor</option><option value="field_survey_staff">Field Agent</option>
+                        </select>
+                    </div>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-Digit Mobile">
+                </div>
+                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send Code</button>
+                <p onclick="toggleDock()" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Minimize</p>
             </div>
-            <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send Code</button>
-            <p onclick="toggleView('login')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Cancel</p>
         </div>
     </div>
 
@@ -84,6 +120,21 @@
         let currentMode = ""; let otpSent = false;
         const TEST_OTP = "123456";
         const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
+
+        function toggleDock() {
+            const dock = document.getElementById('mainDock');
+            const content = document.getElementById('dockContent');
+            const mini = document.getElementById('miniBar');
+            
+            dock.classList.toggle('expanded');
+            if(dock.classList.contains('expanded')) {
+                content.classList.remove('opacity-0');
+                mini.classList.add('hidden');
+            } else {
+                content.classList.add('opacity-0');
+                mini.classList.remove('hidden');
+            }
+        }
 
         function toggleView(v) {
             document.getElementById('loginView').classList.add('hidden');
@@ -106,8 +157,7 @@
 
         function getMappingEmail(phone) {
             let clean = phone.replace(/\D/g, ''); 
-            let tenDigit = clean.slice(-10); 
-            return `${tenDigit}@nirmansutra.in`; 
+            return `${clean.slice(-10)}@nirmansutra.in`; 
         }
 
         async function executeFlow() {
@@ -118,52 +168,45 @@
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('flowActionBtn').innerText = 'Verify';
-                alert("OTP: " + TEST_OTP);
+                alert("OTP Sent: " + TEST_OTP);
             } else {
                 if(document.getElementById('otpValue').value === TEST_OTP) {
                     if(currentMode === 'login_otp') handleOTPLogin();
                     else handleOTPRegister();
-                } else alert("Wrong OTP");
+                } else alert("Invalid OTP");
             }
         }
 
         async function handleOTPRegister() {
             const ph = document.getElementById('userPhone').value;
             const email = getMappingEmail(ph);
-            const n = document.getElementById('regName').value;
-            const r = document.getElementById('regRole').value;
-
             try {
                 const res = await auth.createUserWithEmailAndPassword(email, SECURE_PASS);
                 await rtdb.ref(`users/${res.user.uid}`).set({
-                    name: n, phone: ph, role: r, email: email, 
-                    loginMethod: 'OTP', timestamp: Date.now()
+                    name: document.getElementById('regName').value, 
+                    phone: ph, role: document.getElementById('regRole').value, 
+                    email: email, loginMethod: 'OTP', timestamp: Date.now()
                 });
                 AuthRouter.redirect(res.user);
             } catch(e) {
-                if(e.code === "auth/email-already-in-use") {
-                    console.log("Account exists, switching to login...");
-                    handleOTPLogin();
-                } else {
-                    alert("Firebase Error: " + e.message);
-                }
+                if(e.code === "auth/email-already-in-use") handleOTPLogin();
+                else alert("Error: " + e.message);
             }
         }
 
         async function handleOTPLogin() {
-            const ph = document.getElementById('userPhone').value;
-            const email = getMappingEmail(ph);
+            const email = getMappingEmail(document.getElementById('userPhone').value);
             try {
                 const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Login failed. Check if your number is correct."); }
+            } catch(e) { alert("Please Register First."); }
         }
 
         async function handleEmailLogin() {
             try {
                 const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
                 AuthRouter.redirect(res.user);
-            } catch(e) { alert("Login Error"); }
+            } catch(e) { alert("Invalid Credentials"); }
         }
 
         async function loginGoogle() {
