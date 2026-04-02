@@ -76,7 +76,6 @@
                         <option value="field_survey_staff">Field Agent</option>
                         <option value="FleetOwner">Fleet Operator</option>
                         <option value="HomeOwner">Home Owner</option>
-                        <option value="Labour Contractor">Labour Contractor</option>
                     </select>
                 </div>
                 <input type="tel" id="userPhone" class="u-input" placeholder="Mobile (+91...)">
@@ -110,7 +109,7 @@
             document.getElementById('flowActionBtn').innerText = 'Send OTP';
             const isReg = (mode === 'mobile' || mode === 'whatsapp');
             document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
-            document.getElementById('flowTitle').innerText = isReg ? 'New User Registration' : 'Mobile Login';
+            document.getElementById('flowTitle').innerText = isReg ? 'New Registration' : 'Mobile Login';
             toggleView('dynamic');
         }
 
@@ -142,31 +141,33 @@
             const ph = document.getElementById('userPhone').value;
             const p = document.getElementById('userPass').value;
             const btn = document.getElementById('flowActionBtn');
-            btn.innerText = "VERIFYING PROFILE...";
+            btn.innerText = "VERIFYING NODE...";
             try {
+                // Perform a deep search on the users node
                 const userSnap = await rtdb.ref('users').orderByChild('phone').equalTo(ph).once('value');
                 if (!userSnap.exists()) {
-                    alert("No account found with this mobile number.");
+                    alert("Account Not Found.");
                     location.reload();
                     return;
                 }
                 
                 let userUID = Object.keys(userSnap.val())[0];
                 let userData = userSnap.val()[userUID];
-                
-                // SAFETY FALLBACK: Use the email in DB OR recreate the standard format
                 const email = userData.email || `ns_user_${userUID}@nirmansutra.in`;
 
-                try {
-                    const res = await auth.signInWithEmailAndPassword(email, p);
-                    alert("Login Verified!");
-                    AuthRouter.redirect(res.user);
-                } catch(authErr) {
-                    alert("Incorrect Password for mobile: " + ph);
-                    btn.innerText = "Verify & Proceed";
-                }
+                // Add a small delay to avoid network race conditions
+                setTimeout(async () => {
+                    try {
+                        const res = await auth.signInWithEmailAndPassword(email, p);
+                        AuthRouter.redirect(res.user);
+                    } catch(authErr) {
+                        alert("Incorrect Password for mobile: " + ph);
+                        btn.innerText = "Verify & Proceed";
+                    }
+                }, 1000);
+
             } catch(e) {
-                alert("Network Error. Try again.");
+                alert("Database Network Error. Check Rules or Connection.");
                 btn.innerText = "Verify & Proceed";
             }
         }
@@ -181,22 +182,13 @@
         async function handleRegister() {
             const n = document.getElementById('regName').value, ph = document.getElementById('userPhone').value, 
                   p = document.getElementById('userPass').value, r = document.getElementById('regRole').value;
-            
-            // Standardizing the email format
-            const timestamp = Date.now();
-            const tempMail = "ns_user_" + timestamp + "@nirmansutra.in";
-            
+            const ts = Date.now();
+            const tempMail = "ns_user_" + ts + "@nirmansutra.in";
             try {
                 const res = await auth.createUserWithEmailAndPassword(tempMail, p || "NirSut123!");
                 await rtdb.ref(`users/${res.user.uid}`).set({
-                    name: n, 
-                    phone: ph, 
-                    role: r, 
-                    email: tempMail, 
-                    timestamp: timestamp, 
-                    accessStatus: r + ' Verified Access'
+                    name: n, phone: ph, role: r, email: tempMail, timestamp: ts, accessStatus: r + ' Verified Access'
                 });
-                alert("Registration Successful!");
                 window.location.href = MASTER_ROUTES[r];
             } catch(err) { alert("Error: " + err.message); }
         }
