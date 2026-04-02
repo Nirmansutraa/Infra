@@ -41,12 +41,10 @@
         
         <div id="loginView">
             <h3 class="text-xl font-black mb-6 text-center">Already a User? Login</h3>
-            <input type="email" id="logEmail" class="u-input" placeholder="Email Address">
-            <div class="relative">
-                <input type="password" id="logPass" class="u-input" placeholder="Password">
-                <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('logPass')">👁️</span>
-            </div>
+            <input type="email" id="logEmail" class="u-input" placeholder="Registered Email">
+            <div class="relative"><input type="password" id="logPass" class="u-input" placeholder="Password"><span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('logPass')">👁️</span></div>
             <button onclick="handleLogin()" class="btn-main mb-6">Login Now</button>
+            
             <div onclick="initFlow('login_otp')" class="channel-btn bg-slate-900 text-white">📱 Login with Mobile / OTP</div>
             <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Login with Google</div>
             <p onclick="toggleView('regChoice')" class="text-center mt-6 text-orange-600 font-black text-xs cursor-pointer uppercase tracking-widest underline">New User? Register</p>
@@ -54,37 +52,34 @@
 
         <div id="regChoiceView" class="hidden">
             <h3 class="text-xl font-black mb-8 text-center">Register New Account</h3>
-            <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile No + OTP</div>
-            <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp No + OTP</div>
+            <div onclick="initFlow('mobile')" class="channel-btn bg-slate-900 text-white">📱 Mobile No + Email Registration</div>
+            <div onclick="initFlow('whatsapp')" class="channel-btn border-emerald-500 text-emerald-600 bg-emerald-50">💬 WhatsApp No + Email Registration</div>
             <div onclick="loginGoogle()" class="channel-btn bg-white text-black"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google Login</div>
             <p onclick="toggleView('login')" class="text-center mt-8 text-slate-400 font-black text-xs cursor-pointer uppercase">Back to Login</p>
         </div>
 
         <div id="dynamicFormView" class="hidden">
-            <h3 id="flowTitle" class="text-xl font-black mb-6">Verification</h3>
+            <h3 id="flowTitle" class="text-xl font-black mb-6">Identity Hub</h3>
+            
             <div id="otpBox" class="hidden mb-6">
-                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter 6-Digit OTP</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 text-center">Enter OTP</p>
                 <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="000000" maxlength="6">
             </div>
+
             <div id="inputBox">
                 <div id="regOnlyFields" class="hidden">
-                    <input type="text" id="regName" class="u-input" placeholder="Full Name">
+                    <input type="text" id="regName" class="u-input" placeholder="Full Legal Name">
                     <select id="regRole" class="u-input">
-                        <option value="Supplier">Supplier (Shop)</option>
-                        <option value="Builders">Builder</option>
-                        <option value="Contractor">Contractor</option>
-                        <option value="field_survey_staff">Field Agent</option>
-                        <option value="FleetOwner">Fleet Operator</option>
-                        <option value="HomeOwner">Home Owner</option>
+                        <option value="Supplier">Supplier (Shop)</option><option value="Builders">Builder</option>
+                        <option value="Contractor">Contractor</option><option value="field_survey_staff">Field Agent</option>
                     </select>
                 </div>
-                <input type="tel" id="userPhone" class="u-input" placeholder="Mobile (+91...)">
-                <div class="relative">
-                    <input type="password" id="userPass" class="u-input" placeholder="Password">
-                    <span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('userPass')">👁️</span>
-                </div>
+                <input type="email" id="userEmail" class="u-input" placeholder="Primary Email (Mandatory)">
+                <input type="tel" id="userPhone" class="u-input" placeholder="Mobile Number">
+                <div class="relative"><input type="password" id="userPass" class="u-input" placeholder="Create Password"><span class="absolute right-6 top-4 cursor-pointer opacity-40" onclick="NS_UI.toggleEye('userPass')">👁️</span></div>
             </div>
-            <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Send OTP</button>
+
+            <button id="flowActionBtn" onclick="executeFlow()" class="btn-main mt-4">Verify Identity</button>
             <p onclick="toggleView('login')" class="text-center mt-6 text-slate-400 font-black text-xs cursor-pointer uppercase">Cancel</p>
         </div>
     </div>
@@ -106,22 +101,23 @@
             otpSent = false;
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('inputBox').classList.remove('hidden');
-            document.getElementById('flowActionBtn').innerText = 'Send OTP';
+            document.getElementById('flowActionBtn').innerText = (mode === 'login_otp' ? 'Login via Phone' : 'Send Registration OTP');
+            
             const isReg = (mode === 'mobile' || mode === 'whatsapp');
             document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
-            document.getElementById('flowTitle').innerText = isReg ? 'New Registration' : 'Mobile Login';
+            document.getElementById('flowTitle').innerText = isReg ? 'Secure Registration' : 'Mobile Access';
+            
             toggleView('dynamic');
         }
 
         async function executeFlow() {
             if(!otpSent) {
-                const phone = document.getElementById('userPhone').value;
-                if(!phone) return alert("Enter Mobile Number");
+                if(!document.getElementById('userPhone').value || !document.getElementById('userEmail').value) return alert("Email and Phone are mandatory.");
                 otpSent = true;
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('inputBox').classList.add('hidden');
-                document.getElementById('flowActionBtn').innerText = 'Verify & Proceed';
-                alert("OTP Sent: 123456");
+                document.getElementById('flowActionBtn').innerText = 'Complete & Verify';
+                alert("OTP Sent to Mobile: 123456");
             } else {
                 if(document.getElementById('otpValue').value === "123456") {
                     if(currentMode === 'login_otp') handleMobileLogin();
@@ -141,35 +137,31 @@
             const ph = document.getElementById('userPhone').value;
             const p = document.getElementById('userPass').value;
             const btn = document.getElementById('flowActionBtn');
-            btn.innerText = "VERIFYING NODE...";
+            btn.innerText = "CHECKING NODE...";
             try {
-                // Perform a deep search on the users node
-                const userSnap = await rtdb.ref('users').orderByChild('phone').equalTo(ph).once('value');
-                if (!userSnap.exists()) {
-                    alert("Account Not Found.");
-                    location.reload();
-                    return;
-                }
+                const snap = await rtdb.ref('users').orderByChild('phone').equalTo(ph).once('value');
+                if (!snap.exists()) return alert("No account found for this phone number.");
                 
-                let userUID = Object.keys(userSnap.val())[0];
-                let userData = userSnap.val()[userUID];
-                const email = userData.email || `ns_user_${userUID}@nirmansutra.in`;
+                let userUID = Object.keys(snap.val())[0];
+                let email = snap.val()[userUID].email;
 
-                // Add a small delay to avoid network race conditions
-                setTimeout(async () => {
-                    try {
-                        const res = await auth.signInWithEmailAndPassword(email, p);
-                        AuthRouter.redirect(res.user);
-                    } catch(authErr) {
-                        alert("Incorrect Password for mobile: " + ph);
-                        btn.innerText = "Verify & Proceed";
-                    }
-                }, 1000);
+                const res = await auth.signInWithEmailAndPassword(email, p);
+                AuthRouter.redirect(res.user);
+            } catch(e) { alert("Password mismatch for this phone number."); btn.innerText = "Try Again"; }
+        }
 
-            } catch(e) {
-                alert("Database Network Error. Check Rules or Connection.");
-                btn.innerText = "Verify & Proceed";
-            }
+        async function handleRegister() {
+            const n = document.getElementById('regName').value, ph = document.getElementById('userPhone').value, 
+                  p = document.getElementById('userPass').value, r = document.getElementById('regRole').value,
+                  e = document.getElementById('userEmail').value;
+            try {
+                const res = await auth.createUserWithEmailAndPassword(e, p);
+                await rtdb.ref(`users/${res.user.uid}`).set({
+                    name: n, phone: ph, role: r, email: e, timestamp: Date.now(), accessStatus: r + ' Verified Access'
+                });
+                alert("Account Created Successfully!");
+                window.location.href = MASTER_ROUTES[r];
+            } catch(err) { alert(err.message); }
         }
 
         async function loginGoogle() {
@@ -177,20 +169,6 @@
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 AuthRouter.redirect(res.user);
             } catch(e) { alert("Google Auth Failed"); }
-        }
-
-        async function handleRegister() {
-            const n = document.getElementById('regName').value, ph = document.getElementById('userPhone').value, 
-                  p = document.getElementById('userPass').value, r = document.getElementById('regRole').value;
-            const ts = Date.now();
-            const tempMail = "ns_user_" + ts + "@nirmansutra.in";
-            try {
-                const res = await auth.createUserWithEmailAndPassword(tempMail, p || "NirSut123!");
-                await rtdb.ref(`users/${res.user.uid}`).set({
-                    name: n, phone: ph, role: r, email: tempMail, timestamp: ts, accessStatus: r + ' Verified Access'
-                });
-                window.location.href = MASTER_ROUTES[r];
-            } catch(err) { alert("Error: " + err.message); }
         }
     </script>
 </body>
