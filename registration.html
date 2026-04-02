@@ -3,640 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nirmansutra | Global Strategic Partner Registry</title>
+    <title>Partner Registry | NirmanSutra</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/ui-utils.js"></script>
+    <script src="js/geo-engine.js"></script>
 
     <style>
-        :root { 
-            --bg: #f8fafc; 
-            --card: #ffffff; 
-            --accent: #10b981; 
-            --primary: #0f172a; 
-            --text-dim: #64748b; 
-            --orange: #ff7a00;
-            --blue: #3b82f6;
-            --danger: #ef4444;
-        }
+        :root { --accent: #10b981; --dark: #0f172a; --orange: #ff7a00; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 120px; }
         
-        body { 
-            background: var(--bg); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--primary); 
-            padding-bottom: 280px; 
-            -webkit-font-smoothing: antialiased; 
-            overflow-x: hidden;
-        }
+        .card { background: white; border-radius: 35px; padding: 35px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; display: block; }
         
-        .auth-gate { 
-            position: fixed; 
-            inset: 0; 
-            background: var(--primary); 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 30px; 
-        }
-
-        .gate-card { 
-            background: #1e293b; 
-            padding: 70px; 
-            border-radius: 50px; 
-            width: 100%; 
-            max-width: 550px; 
-            text-align: center; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6);
-        }
-
-        .gate-loader {
-            border: 4px solid #334155;
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .card { 
-            background: var(--card); 
-            border-radius: 45px; 
-            padding: 50px; 
-            margin-bottom: 40px; 
-            border: 1px solid #e2e8f0; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
+        input, select, textarea { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 18px; font-weight: 600; outline: none; transition: 0.3s; margin-top: 10px; }
+        input:focus { border-color: var(--accent); background: white; }
         
-        .card:focus-within { 
-            border-color: var(--accent); 
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px -20px rgba(16, 185, 129, 0.2); 
-        }
-
-        .section-label { 
-            font-size: 12px; 
-            font-weight: 900; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-            letter-spacing: 5px; 
-            margin-bottom: 35px; 
-            display: block; 
-        }
-
-        .id-box { 
-            background: var(--primary); 
-            color: #10b981; 
-            text-align: center; 
-            padding: 75px; 
-            border-radius: 40px; 
-            font-size: clamp(24px, 10vw, 48px); 
-            font-weight: 900; 
-            font-family: 'Courier New', monospace; 
-            letter-spacing: 12px; 
-            border: 1px solid #1e293b; 
-            box-shadow: inset 0 15px 45px rgba(0,0,0,0.6);
-            text-shadow: 0 0 30px rgba(16,185,129,0.7);
-        }
-
-        input, select, textarea { 
-            width: 100%; 
-            background: #f1f5f9; 
-            border: 2px solid transparent; 
-            padding: 24px 28px; 
-            border-radius: 22px; 
-            font-size: 16px; 
-            font-weight: 600;
-            margin-top: 18px; 
-            outline: none; 
-            transition: 0.3s ease; 
-        }
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .stamp { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; width: 100%; padding: 8px; font-weight: 800; }
         
-        input:focus { border-color: var(--accent); background: #fff; }
+        .fleet-unit { background: #f8fafc; padding: 20px; border-radius: 22px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .circle-btn { width: 45px; height: 45px; border-radius: 15px; background: var(--dark); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
         
-        label { 
-            font-size: 11px; 
-            font-weight: 800; 
-            color: var(--text-dim); 
-            text-transform: uppercase; 
-            margin-top: 30px; 
-            display: block; 
-            padding-left: 12px; 
-            letter-spacing: 2px;
-        }
-
-        .mat-item { 
-            background: var(--primary); 
-            color: white; 
-            padding: 35px 50px; 
-            border-radius: 30px; 
-            margin-bottom: 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            cursor: pointer; 
-            border: 2px solid transparent; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        
-        .mat-item.active { 
-            border-color: var(--accent); 
-            transform: scale(1.05); 
-            box-shadow: 0 25px 50px rgba(16,185,129,0.3);
-        }
-
-        .tab-grid { 
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 15px; 
-            margin-top: 35px; 
-        }
-        
-        .chip { 
-            background: #f1f5f9; 
-            padding: 25px 15px; 
-            border-radius: 26px; 
-            font-size: 11px; 
-            font-weight: 800; 
-            color: #475569; 
-            cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            text-align: center; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 80px;
-            line-height: 1.4;
-            text-transform: uppercase;
-            border: 2px solid transparent;
-        }
-        
-        .chip.active { 
-            background: var(--accent); 
-            color: white; 
-            transform: translateY(-8px) scale(1.05); 
-            box-shadow: 0 20px 30px rgba(16,185,129,0.3); 
-        }
-
-        .fleet-unit { 
-            background: #f8fafc; 
-            padding: 30px; 
-            border-radius: 28px; 
-            border: 1px solid #e2e8f0; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        
-        .circle-btn { 
-            width: 52px; 
-            height: 52px; 
-            border-radius: 18px; 
-            background: var(--primary); 
-            color: white; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            font-size: 24px; 
-        }
-
-        .photo-slot { 
-            aspect-ratio: 1; 
-            background: #f1f5f9; 
-            border-radius: 30px; 
-            border: 2px dashed #cbd5e1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .stamp-overlay { 
-            position: absolute; 
-            bottom: 0; left: 0; right: 0; 
-            background: rgba(0,0,0,0.85); 
-            color: white; 
-            font-size: 8px; 
-            padding: 15px; 
-            font-weight: 800; 
-            line-height: 1.8; 
-        }
-
-        .action-bar { 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0; 
-            background: rgba(255,255,255,0.98); 
-            backdrop-filter: blur(50px); 
-            padding: 30px; 
-            display: flex; 
-            gap: 20px; 
-            border-top: 1px solid #e2e8f0; 
-            z-index: 1000; 
-        }
-        
-        .btn { 
-            flex: 1; padding: 25px; 
-            border-radius: 22px; 
-            font-weight: 900; 
-            font-size: 14px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            transition: 0.4s ease; 
-            cursor: pointer; 
-            border: none;
-        }
-        
-        .btn-green { background: #10b981; color: white; box-shadow: 0 25px 50px rgba(16,185,129,0.3); }
-        .btn-slate { background: #64748b; color: white; }
-        
-        .hidden { display: none; }
-        .step-inactive { opacity: 0.02; pointer-events: none; filter: grayscale(1); }
-
-        @media (max-width: 640px) {
-            .gate-card { padding: 40px 20px; border-radius: 30px; }
-            .card { padding: 30px 20px; border-radius: 35px; }
-            .id-box { padding: 40px 10px; border-radius: 25px; letter-spacing: 6px; }
-            .section-label { margin-bottom: 20px; font-size: 10px; }
-            input, select, textarea { padding: 20px; border-radius: 18px; font-size: 14px; }
-            .mat-item { padding: 25px; border-radius: 25px; }
-            .mat-item span { font-size: 12px !important; }
-            .grid-cols-5 { grid-template-columns: repeat(2, 1fr) !important; }
-            .tab-grid { grid-template-columns: repeat(2, 1fr) !important; }
-            .circle-btn { width: 44px; height: 44px; font-size: 20px; }
-            .action-bar { padding: 20px; gap: 10px; }
-            .btn { padding: 20px; font-size: 11px; border-radius: 18px; }
-            h1 { font-size: 40px !important; }
-        }
+        .btn-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 25px; border-top: 1px solid #e2e8f0; z-index: 1000; display: flex; gap: 15px; }
+        .btn-main { flex: 1; padding: 20px; border-radius: 20px; background: #10b981; color: white; font-weight: 900; text-transform: uppercase; border: none; cursor: pointer; }
+        #map { height: 300px; border-radius: 25px; margin: 15px 0; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
-<div id="authGate" class="auth-gate">
-    <div class="gate-card shadow-2xl">
-        <h1 class="text-white text-5xl font-black italic mb-4 tracking-tighter">NIRMAN<span class="text-emerald-500">SUTRA</span></h1>
-        <p class="text-slate-400 text-[12px] font-bold uppercase tracking-[6px] mb-14">Strategic Partner Registry</p>
-        
-        <div id="authLoading" class="hidden"><div class="gate-loader"></div></div>
+<div class="max-w-2xl mx-auto px-6 py-10">
+    <header class="mb-10">
+        <h1 class="text-4xl font-black italic tracking-tighter">PARTNER<span class="text-emerald-500">NODE</span></h1>
+        <p id="agentTag" class="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Authenticating Session...</p>
+    </header>
 
-        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-8 rounded-3xl font-black flex items-center justify-center gap-6 text-slate-900 transition hover:bg-slate-50">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="26">
-            Verify Google Partner ID
-        </button>
+    <div class="card">
+        <span class="section-label">01. Firm Details</span>
+        <input id="firmName" placeholder="Registered Firm Name">
+        <input id="gst" placeholder="GST Number (Optional)">
+        <select id="bizType">
+            <option value="Retailer">Retailer</option>
+            <option value="Wholesaler">Wholesaler</option>
+            <option value="Manufacturer">Manufacturer</option>
+        </select>
+    </div>
 
-        <div id="otpSection" class="hidden mt-12">
-            <p class="text-emerald-400 text-[11px] font-black uppercase mb-8 animate-pulse tracking-widest">● Cloud Sync Ready. Enter OTP</p>
-            <input type="number" id="otpInput" placeholder="0 0 0 0 0 0" class="text-center mb-8 tracking-[15px] text-4xl font-black bg-slate-800 text-white border-slate-700">
-            <button onclick="AuthManager.verifyOTP()" class="btn-primary bg-emerald-600 text-white w-full p-8 rounded-3xl font-black uppercase tracking-widest">Access Registry Module</button>
+    <div class="card">
+        <span class="section-label">02. Warehouse Location</span>
+        <div id="map"></div>
+        <button onclick="capturePos()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs mb-4">📍 Lock GPS Location</button>
+        <textarea id="address" class="text-xs text-slate-500 bg-transparent border-none" readonly placeholder="Address will appear after GPS lock..."></textarea>
+    </div>
+
+    <div class="card">
+        <span class="section-label">03. Evidence Matrix (Max 10)</span>
+        <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl">+</button>
         </div>
+        <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="handlePhoto(this)">
+    </div>
+
+    <div class="card">
+        <span class="section-label">04. Dispatch Capacity</span>
+        <div id="fleetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
     </div>
 </div>
 
-<div class="max-w-3xl mx-auto px-8 py-10 lg:py-20">
-    <div id="mainForm" class="step-inactive">
-        <header class="mb-14 lg:mb-20">
-            <h1 class="text-5xl lg:text-6xl font-black italic uppercase tracking-tighter">Partner<span class="text-emerald-500">Node</span></h1>
-            <p class="text-[12px] lg:text-[14px] font-bold text-slate-400 uppercase tracking-[5px] lg:tracking-[8px] mt-4" id="idSyncTag">IDENTITY SYNC REQUIRED...</p>
-        </header>
-
-        <div class="card">
-            <span class="section-label">01. Session Tracking Signature</span>
-            <div id="trackId" class="id-box">RJ-SUP-NODE---</div>
-        </div>
-
-        <div class="card">
-            <span class="section-label">02. Entity & Contact Matrix</span>
-            <label>Legal Business Type</label>
-            <select id="supplierType" onchange="Survey.refreshID()">
-                <option value="Retailer">Authorized Retailer (R)</option>
-                <option value="Wholesaler">Stockist / Wholesaler (W)</option>
-                <option value="Manufacturer">OEM / Manufacturer (M)</option>
-            </select>
-            
-            <label>Full Firm Name (GST Registered)</label>
-            <input id="firmName" placeholder="As per legal trade license">
-            
-            <label>GSTIN (Tax Identification)</label>
-            <input id="gstNumber" placeholder="Verified Alpha-Numeric Code">
-
-            <div class="mt-12 lg:mt-16 pt-8 lg:pt-12 border-t border-slate-100">
-                <p class="text-[14px] font-black text-emerald-600 uppercase mb-8 tracking-widest">● Tier 1: Primary Owner Hub</p>
-                <label>Owner Legal Name</label>
-                <input id="ownerName" placeholder="Full Name">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-4">
-                    <div><label>Primary Phone</label><input id="ownerPhone" type="tel" oninput="Validation.phone(this, 'ownerWa')"></div>
-                    <div>
-                        <div class="flex items-center gap-4 pt-4 lg:pt-10"><label>Sync WA</label><input type="checkbox" id="syncOwner" class="w-8 h-8 accent-emerald-500" checked onchange="Validation.syncWA('ownerPhone', 'ownerWa', this.checked)"></div>
-                        <input id="ownerWa" type="tel" placeholder="WhatsApp">
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-12 lg:mt-16 pt-8 lg:pt-12 border-t border-slate-100">
-                <p class="text-[14px] font-black text-blue-500 uppercase mb-8 tracking-widest">● Tier 2: Operational Manager</p>
-                <label>Manager Name</label>
-                <input id="mgrName" placeholder="In-Charge Name">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mt-4">
-                    <div><label>Phone Number</label><input id="mgrPhone" type="tel" oninput="Validation.phone(this, 'mgrWa')"></div>
-                    <div>
-                        <div class="flex items-center gap-4 pt-4 lg:pt-10"><label>Sync WA</label><input type="checkbox" id="syncMgr" class="w-8 h-8 accent-blue-500" onchange="Validation.syncWA('mgrPhone', 'mgrWa', this.checked)"></div>
-                        <input id="mgrWa" type="tel" placeholder="WhatsApp">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <span class="section-label">03. Warehouse GPS & Spatial Lock</span>
-            <div id="map" class="h-[300px] lg:h-[450px] rounded-[35px] lg:rounded-[60px] mb-10 lg:mb-14 border border-slate-200 shadow-inner"></div>
-            <button onclick="Geo.capture()" class="bg-primary text-white w-full py-8 lg:py-10 rounded-2xl lg:rounded-3xl font-black text-[16px] lg:text-[18px] uppercase tracking-[3px] lg:tracking-[5px] mb-10 lg:mb-12 shadow-2xl">📍 Secure Warehouse Spatial Lock</button>
-            <textarea id="address" class="h-32 lg:h-40 text-sm lg:text-[16px] text-slate-500 bg-transparent p-0 border-none leading-relaxed" placeholder="Geotag address sync pending..." readonly></textarea>
-            
-            <div class="mt-12 lg:mt-20">
-                <label>Warehouse Evidence matrix (Max 10 Slots)</label>
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8 mt-10 lg:mt-12" id="photoGrid">
-                    <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl lg:text-8xl hover:bg-slate-50 transition-all">+</button>
-                </div>
-                <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
-            </div>
-        </div>
-
-        <div class="card">
-            <span class="section-label">04. Material Supply Intelligence</span>
-            <div id="matSelector" class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8"></div>
-
-            <div id="varietySection" class="mt-12 lg:mt-16 hidden bg-slate-50 p-8 lg:p-12 rounded-[35px] lg:rounded-[50px] border border-slate-200 shadow-inner">
-                <label class="section-label" style="color:#64748b">Step 2: Stock Varieties</label>
-                <div id="varietyGrid" class="tab-grid"></div>
-            </div>
-
-            <div id="brandSection" class="mt-12 lg:mt-16 hidden bg-slate-50 p-8 lg:p-12 rounded-[35px] lg:rounded-[50px] border border-slate-200 shadow-inner">
-                <label class="section-label" style="color:#64748b">Step 3: Brand Specialization</label>
-                <div id="brandGrid" class="tab-grid"></div>
-            </div>
-        </div>
-
-        <div class="card">
-            <span class="section-label">05. Logistics Dispatch Capacity</span>
-            <div id="fleetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"></div>
-        </div>
-    </div>
+<div class="btn-bottom">
+    <button onclick="submitRegistry()" id="sBtn" class="btn-main shadow-xl">Finalize Registry Sync</button>
 </div>
-
-<div class="action-bar">
-    <button onclick="Draft.save()" class="btn btn-slate">💾 Local Save</button>
-    <button onclick="RegistrationEngine.submit()" id="sBtn" class="btn btn-green">🚀 Finalize Sync</button>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    /**
-     * NIRMANSUTRA STRATEGIC REGISTRY ENGINE v46.0
-     * Target Line Count: 663+
-     */
-    
-    const firebaseConfig = {
-        apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
-        authDomain: "infradepo.firebaseapp.com",
-        projectId: "infradepo",
-        databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const rtdb = firebase.database(), auth = firebase.auth();
+    let state = { photos: [], location: null, fleet: {} };
 
-    window.Survey = {
-        state: { 
-            location: null, mat: null, varieties: [], brands: [], 
-            fleet: {}, photos: [], trackingId: "", role: "supplier" 
-        },
-        async refreshID() {
-            try {
-                const snap = await rtdb.ref('surveys').once('value');
-                const t = document.getElementById('supplierType').value[0];
-                const smartId = `NS-PRT-${t}-${String(snap.numChildren()+1).padStart(5,'0')}`;
-                document.getElementById('trackId').innerText = smartId;
-                this.state.trackingId = smartId;
-            } catch(e) { console.error("ID Engine Fault", e); }
-        }
-    };
-
-    window.AuthManager = {
-        userData: null,
-        login() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            document.getElementById('authLoading').classList.remove('hidden');
-            auth.signInWithPopup(provider).then(res => {
-                this.userData = res.user;
-                document.getElementById('gBtn').classList.add('hidden');
-                document.getElementById('authLoading').classList.add('hidden');
-                document.getElementById('otpSection').classList.remove('hidden');
-                document.getElementById('idSyncTag').innerText = "NODE AGENT: " + res.user.email.toUpperCase();
-            }).catch(e => {
-                alert("Security Fault: " + e.message);
-                document.getElementById('authLoading').classList.add('hidden');
-            });
-        },
-        verifyOTP() {
-            const val = document.getElementById('otpInput').value;
-            if(val === "123456") {
-                document.getElementById('authGate').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('step-inactive');
-                Geo.init(); syncRegistry();
-            } else { alert("Verification Failed. Access Restricted."); }
-        }
-    };
-
-    window.Geo = {
-        map: null, marker: null,
-        init() {
-            this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-        },
-        capture() {
-            navigator.geolocation.getCurrentPosition(async p => {
-                const { latitude, longitude } = p.coords;
-                Survey.state.location = { lat: latitude, lng: longitude };
-                this.map.setView([latitude, longitude], 17);
-                if (this.marker) this.map.removeLayer(this.marker);
-                this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    document.getElementById('address').value = data.display_name;
-                    Survey.refreshID();
-                } catch(e) { document.getElementById('address').value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`; }
-            }, (e) => alert("GPS Timeout. Verify Hardware permissions."), { enableHighAccuracy: true });
-        }
-    };
-
-    window.Evidence = {
-        handle(input) {
-            if(!Survey.state.location) return alert("📍 Verify Spatial Lock first.");
-            if(Survey.state.photos.length >= 10) return alert("Max Evidence Threshold Reached.");
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 1200; canvas.height = 900;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 1200, 900);
-                    
-                    ctx.fillStyle = "rgba(0,0,0,0.7)";
-                    ctx.fillRect(0, 800, 1200, 100);
-                    ctx.fillStyle = "#10b981";
-                    ctx.font = "bold 24px 'Courier New'";
-                    const stamp = `NS-PRT-NODE | ${new Date().toLocaleString()} | LAT: ${Survey.state.location.lat.toFixed(6)} | LNG: ${Survey.state.location.lng.toFixed(6)}`;
-                    ctx.fillText(stamp, 40, 860);
-
-                    const base64 = canvas.toDataURL('image/jpeg', 0.65);
-                    Survey.state.photos.push({ src: base64, time: new Date().toLocaleString() });
-                    this.render();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-        },
-        render() {
-            const grid = document.getElementById('photoGrid'); const btn = grid.firstElementChild;
-            grid.innerHTML = ""; grid.appendChild(btn);
-            Survey.state.photos.forEach((p, i) => { 
-                grid.innerHTML += `<div class="photo-slot" onclick="Evidence.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">${p.time}</div></div>`; 
-            });
-        },
-        remove(idx) { if(confirm("Discard Evidence Frame?")) { Survey.state.photos.splice(idx,1); this.render(); } }
-    };
-
-    window.Validation = {
-        phone(input, waId) {
-            let val = input.value.trim().replace(/\D/g, '');
-            if (val.length > 10) val = val.slice(-10);
-            if (val.length === 10) {
-                input.value = "+91 " + val;
-                const syncCheck = input.id === 'ownerPhone' ? 'syncOwner' : 'syncMgr';
-                if (document.getElementById(syncCheck).checked) document.getElementById(waId).value = "+91 " + val;
-            }
-        },
-        syncWA(pId, waId, check) {
-            const p = document.getElementById(pId), wa = document.getElementById(waId);
-            if (check && p.value.length >= 10) { wa.value = p.value; wa.readOnly = true; } else { wa.readOnly = false; }
-        }
-    };
-
-    function syncRegistry() {
-        rtdb.ref('registry/materials').on('value', snap => {
-            const cont = document.getElementById('matSelector'); if(!cont) return; cont.innerHTML = "";
-            window.registryData = snap.val() || {};
-            Object.keys(window.registryData).forEach(cat => {
-                cont.innerHTML += `<div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')"><span class="text-[15px] font-black uppercase tracking-[3px]">${cat}</span><div class="w-6 h-6 rounded-full bg-slate-800 border-2 border-slate-700"></div></div>`;
-            });
-        });
-    }
-
-    window.selectMat = function(cat) {
-        Survey.state.mat = cat; Survey.state.varieties = []; Survey.state.brands = [];
-        document.querySelectorAll('.mat-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('mat-'+cat).classList.add('active');
-        const vGrid = document.getElementById('varietyGrid'); vGrid.innerHTML = "";
-        document.getElementById('varietySection').classList.remove('hidden');
-        document.getElementById('brandSection').classList.add('hidden');
-        const varieties = window.registryData[cat];
-        Object.keys(varieties).forEach(vKey => {
-            if (vKey === 'status' || varieties[vKey].status === 'archived') return;
-            vGrid.innerHTML += `<div class="chip" onclick="toggleVariety('${cat}', '${vKey}', this)">${vKey}</div>`;
-        });
-    }
-
-    window.toggleVariety = function(cat, vKey, el) {
-        el.classList.toggle('active');
-        const idx = Survey.state.varieties.indexOf(vKey);
-        idx > -1 ? Survey.state.varieties.splice(idx, 1) : Survey.state.varieties.push(vKey);
-        
-        const bGrid = document.getElementById('brandGrid'); bGrid.innerHTML = "";
-        const bSection = document.getElementById('brandSection');
-        
-        if (Survey.state.varieties.length > 0) {
-            bSection.classList.remove('hidden');
-            const brands = new Set();
-            Survey.state.varieties.forEach(v => { 
-                const brandList = window.registryData[cat][v].brands || [];
-                brandList.forEach(b => brands.add(b)); 
-            });
-            brands.forEach(b => { 
-                bGrid.innerHTML += `<div class="chip ${Survey.state.brands.includes(b)?'active':''}" onclick="toggleBrand('${b}', this)">${b}</div>`; 
-            });
-        } else { bSection.classList.add('hidden'); }
-    }
-
-    window.toggleBrand = function(b, el) { 
-        el.classList.toggle('active'); 
-        const idx = Survey.state.brands.indexOf(b); 
-        idx > -1 ? Survey.state.brands.splice(idx, 1) : Survey.state.brands.push(b); 
-    };
-
-    window.fleetStep = function(t, v) { 
-        if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0; 
-        Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); 
-        document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; 
-    };
-
-    window.Draft = { save() { localStorage.setItem('ns_p_final_v46', JSON.stringify(Survey.state)); alert("💾 Local state secured."); } };
-
-    window.RegistrationEngine = {
-        async submit() {
-            const firm = document.getElementById('firmName').value;
-            if(!firm || !Survey.state.location) return alert("❌ Spatial Lock & Firm Identity are mandatory.");
-            const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING DATA...";
-            
-            const payload = { 
-                ...Survey.state, firm: firm, 
-                ownerName: document.getElementById('ownerName').value,
-                ownerPhone: document.getElementById('ownerPhone').value,
-                mgrName: document.getElementById('mgrName').value,
-                mgrPhone: document.getElementById('mgrPhone').value,
-                gst: document.getElementById('gstNumber').value,
-                email: AuthManager.userData.email,
-                uid: AuthManager.userData.uid,
-                timestamp: Date.now(), status: 'pending'
-            };
-
-            try {
-                await rtdb.ref('supplier_onboarding/' + AuthManager.userData.uid).set(payload);
-                alert("🚀 SUCCESS: Enterprise Registry Node Online.");
-                auth.signOut().then(() => location.href="index.html");
-            } catch(e) { alert("Fault: " + e.message); btn.innerText = "🚀 Finalize Global Sync"; }
-        }
-    };
-
+    // Initialize Page Tools from JS Library
     window.onload = () => {
-        const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper', 'Trailer'];
-        document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `
+        NS_Geo.init('map');
+        initFleet();
+        auth.onAuthStateChanged(user => {
+            if(!user) window.location.href = "index.html";
+            document.getElementById('agentTag').innerText = "NODE AGENT: " + user.email.toUpperCase();
+        });
+    };
+
+    function initFleet() {
+        const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer'];
+        const grid = document.getElementById('fleetGrid');
+        grid.innerHTML = types.map(t => `
             <div class="fleet-unit">
-                <span class="text-[12px] font-black text-slate-500 uppercase">${t}</span>
-                <div class="flex items-center gap-8">
-                    <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
-                    <span id="fval-${t}" class="font-black text-sm w-[30px] text-center">0</span>
-                    <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
+                <span class="font-black text-[10px] uppercase tracking-widest">${t}</span>
+                <div class="flex items-center gap-4">
+                    <div class="circle-btn" onclick="updateFleet('${t}', -1)">-</div>
+                    <span id="qty-${t}" class="font-black text-sm w-6 text-center">0</span>
+                    <div class="circle-btn" onclick="updateFleet('${t}', 1)">+</div>
                 </div>
             </div>`).join('');
-    };
-</script>
+    }
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    function updateFleet(type, change) {
+        state.fleet[type] = Math.max(0, (state.fleet[type] || 0) + change);
+        document.getElementById(`qty-${type}`).innerText = state.fleet[type];
+    }
+
+    async function capturePos() {
+        const res = await NS_Geo.captureLocation('address');
+        state.location = { lat: res.lat, lng: res.lng };
+    }
+
+    function handlePhoto(input) {
+        if(state.photos.length >= 10) return NS_UI.notify("Max 10 photos allowed");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            state.photos.push({ src: e.target.result, time: new Date().toLocaleString() });
+            renderPhotos();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function renderPhotos() {
+        const grid = document.getElementById('photoGrid');
+        const btn = grid.firstElementChild;
+        grid.innerHTML = ""; grid.appendChild(btn);
+        state.photos.forEach(p => {
+            grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp">${p.time}</div></div>`;
+        });
+    }
+
+    async function submitRegistry() {
+        const firm = document.getElementById('firmName').value;
+        if(!firm || !state.location) return NS_UI.notify("Firm Name and GPS Lock are mandatory.");
+
+        const btn = document.getElementById('sBtn');
+        btn.innerText = "TRANSMITTING..."; btn.disabled = true;
+
+        const payload = {
+            ...state,
+            firm: firm,
+            gst: document.getElementById('gst').value,
+            type: document.getElementById('bizType').value,
+            uid: auth.currentUser.uid,
+            email: auth.currentUser.email,
+            timestamp: Date.now(),
+            status: 'pending'
+        };
+
+        try {
+            await rtdb.ref(`supplier_onboarding/${auth.currentUser.uid}`).set(payload);
+            NS_UI.notify("Registry Success! Redirecting...");
+            window.location.href = "onboarding/supplierdashboard.html";
+        } catch(e) {
+            NS_UI.notify("Sync Error: " + e.message);
+            btn.innerText = "Finalize Registry Sync"; btn.disabled = false;
+        }
+    }
+</script>
 </body>
 </html>
