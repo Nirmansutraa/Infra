@@ -366,6 +366,9 @@
                         <option value="Contractor">Operational: Contractor</option>
                         <option value="Supplier">Operational: Supplier</option>
                         <option value="field_survey_staff">Operational: Field Agent</option>
+                        <option value="HomeOwner">Operational: Home Owner</option>
+                        <option value="FleetOwner">Operational: Fleet Operator</option>
+                        <option value="Labour Contractor">Operational: Labour Contractor</option>
                     </select>
                 </div>
 
@@ -397,7 +400,7 @@
     <script>
         /**
          * NIRMANSUTRA GLOBAL CLOUD CONFIGURATION
-         * Version: 24.0 (Grand Monolith Edition)
+         * Version: 26.0 (Optimized Repository Edition)
          */
         const firebaseConfig = {
             apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
@@ -412,16 +415,19 @@
 
         /**
          * GLOBAL RBAC ROUTING TABLE
-         * Maps database roles to physical server directories.
+         * RECONFIGURED: Points to correct sub-directories in your current repository
          */
         const MASTER_ROUTES = {
             'super_admin': 'admin/super_admin.html',
             'admin': 'admin/dashboard.html',
             'admin_staff': 'admin/dashboard.html',
             'field_survey_staff': 'field/dashboard.html',
-            'Supplier': 'onboarding/supplier-dashboard.html',
-            'Builders': 'onboarding/builder-dashboard.html',
-            'Contractor': 'onboarding/contractor-dashboard.html'
+            'Supplier': 'onboarding/supplierdashboard.html',
+            'Builders': 'onboarding/builderdashboard.html',
+            'Contractor': 'onboarding/contractordashboard.html',
+            'HomeOwner': 'onboarding/homeownerdashboard.html',
+            'FleetOwner': 'onboarding/fleetownerdashboard.html',
+            'Labour Contractor': 'onboarding/laborcontractordashboard.html'
         };
 
         // Runtime Global State
@@ -429,28 +435,15 @@
         let testOTP = "123456"; 
         let otpSentStatus = false;
 
-        /**
-         * INTERFACE MANAGEMENT (AuthUI)
-         * Manages modal views and state transitions for the user.
-         */
         window.AuthUI = {
             switchView(viewId) {
-                console.log("[SYSTEM] Navigating to view context:", viewId);
-                const views = {
-                    login: 'loginView',
-                    regSelection: 'regSelectionView',
-                    dynamicForm: 'dynamicFormView'
-                };
-                
+                const views = { login: 'loginView', regSelection: 'regSelectionView', dynamicForm: 'dynamicFormView' };
                 Object.values(views).forEach(v => document.getElementById(v).classList.add('hidden-internal'));
                 document.getElementById(views[viewId]).classList.remove('hidden-internal');
             },
-            
             initializeFlow(mode) {
-                console.log("[SYSTEM] Initializing Flow Protocol:", mode);
                 currentFlow = mode;
                 this.switchView('dynamicForm');
-                
                 const titleMap = { mobile: 'Mobile Registry', whatsapp: 'WhatsApp Registry' };
                 document.getElementById('flowTitle').innerText = titleMap[mode];
                 document.getElementById('registryInputs').classList.remove('hidden-internal');
@@ -461,123 +454,87 @@
             }
         };
 
-        /**
-         * CORE AUTHENTICATION ENGINE (AuthEngine)
-         * Handles logic for Login, Registry, OTP Verification, and Routing.
-         */
         window.AuthEngine = {
             async executeLogin() {
-                if(!document.getElementById("consentCheckbox").checked) {
-                    alert("Protocol Error: Personnel must accept Terms to proceed.");
-                    return;
-                }
-                const emailNode = document.getElementById('logEmail').value;
-                const passNode = document.getElementById('logPass').value;
+                if(!document.getElementById("consentCheckbox").checked) return alert("Consent required.");
                 try {
-                    const res = await auth.signInWithEmailAndPassword(emailNode, passNode);
-                    console.log("[AUTH] Login Handshake Successful.");
+                    const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
                     this.route(res.user);
-                } catch(e) { alert("Authentication Failed: Credentials Invalid."); }
+                } catch(e) { alert("Credentials Invalid."); }
             },
-
             async executeFlow() {
-                if(!document.getElementById("regConsent").checked) {
-                    alert("Protocol Error: You must accept Terms and Privacy to proceed.");
-                    return;
-                }
-
+                if(!document.getElementById("regConsent").checked) return alert("Accept Terms to proceed.");
                 const phoneNode = document.getElementById('regPhone').value;
                 const otpInputNode = document.getElementById('otpValue').value;
-
-                // LOGIC: OTP DISPATCH (HARDCODED SIMULATOR)
                 if(!otpSentStatus) {
-                    if(!phoneNode) return alert("Validation Error: Mobile Identity Node Required.");
+                    if(!phoneNode) return alert("Mobile node identity required.");
                     otpSentStatus = true;
                     document.getElementById('otpBox').classList.remove('hidden-internal');
                     document.getElementById('registryInputs').classList.add('hidden-internal');
                     document.getElementById('flowActionBtn').innerText = 'Verify & Finalize Node';
-                    alert(`OTP dispatched to ${currentFlow}. FOR TESTING USE: 123456`);
-                } 
-                
-                // LOGIC: OTP VERIFICATION
-                else {
-                    if(otpInputNode === testOTP) {
-                        console.log("[AUTH] OTP Verified. Initializing Data Registry...");
-                        this.finalizeRegistry();
-                    } else {
-                        alert("Security Error: OTP Signature Mismatch.");
-                    }
+                    alert(`OTP dispatched. TEST MODE: 123456`);
+                } else {
+                    if(otpInputNode === testOTP) this.finalizeRegistry();
+                    else alert("OTP Mismatch.");
                 }
             },
-
             async finalizeRegistry() {
-                // Generate secure temporary identity for phone users
                 const tempMail = "node_" + Date.now() + "@nirmansutra.in";
-                const securePass = document.getElementById('regPass').value || "NirSutNode!" + Date.now();
-                
                 try {
-                    const res = await auth.createUserWithEmailAndPassword(tempMail, securePass);
-                    const roleNode = document.getElementById('regRole').value;
-                    const nameNode = document.getElementById('regName').value;
-                    const phoneNode = document.getElementById('regPhone').value;
+                    const res = await auth.createUserWithEmailAndPassword(tempMail, document.getElementById('regPass').value || "NirSut123!");
+                    const role = document.getElementById('regRole').value;
+                    const name = document.getElementById('regName').value;
+                    const phone = document.getElementById('regPhone').value;
                     
                     await rtdb.ref(`users/${res.user.uid}`).set({
-                        name: nameNode,
-                        phone: phoneNode,
-                        role: roleNode,
-                        registryMethod: currentFlow,
+                        name: name,
+                        phone: phone,
+                        role: role,
                         timestamp: Date.now(),
-                        accessStatus: `${roleNode} Verified Access`
+                        accessStatus: `${role} Verified Access`
                     });
-                    
-                    console.log("[SYNC] Registry Synchronized with Cloud Database.");
-                    window.location.replace(MASTER_ROUTES[roleNode]);
-                } catch(e) { alert("Cloud Fault: " + e.message); }
+                    window.location.replace(MASTER_ROUTES[role]);
+                } catch(e) { alert(e.message); }
             },
-
             async executeGoogleAuth() {
-                if(!document.getElementById("consentCheckbox").checked) {
-                    alert("Protocol Error: Consent Required for Social Handshake.");
+                if(!document.getElementById("consentCheckbox").checked && document.getElementById('loginView').offsetParent !== null) {
+                    alert("Consent Required.");
                     return;
                 }
                 try {
                     const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                    console.log("[AUTH] Google Social Handshake Verified.");
                     this.route(res.user);
-                } catch(e) { console.error("[AUTH_FAULT]", e.message); }
+                } catch(e) { console.error(e.message); }
             },
-
             async route(u) {
                 const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
                 const role = snap.val();
                 if(role && MASTER_ROUTES[role]) {
+                    console.log("[SYSTEM] User role detected:", role);
                     window.location.replace(MASTER_ROUTES[role]);
                 } else {
-                    alert("Access Exception: Identity verified but Node unassigned. Contact SuperAdmin.");
+                    alert("Node unassigned. Contact SuperAdmin.");
                 }
             },
-
             triggerReset() {
-                const targetMail = prompt("Enter registered personnel email for cryptographic recovery link:");
-                if(targetMail) {
-                    auth.sendPasswordResetEmail(targetMail).then(() => alert("Recovery protocol dispatched to inbox."));
-                }
+                const mail = prompt("Enter email:");
+                if(mail) auth.sendPasswordResetEmail(mail).then(() => alert("Dispatched."));
             }
         };
 
-        // UI GLOBAL WRAPPERS
         function toggleDock() { document.getElementById('terminalDock').classList.toggle('dock-minimized'); }
-        function openLegal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
-        function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); document.body.style.overflow = 'auto'; }
+        function openLegal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeLegal() { document.querySelectorAll('.legal-overlay').forEach(m => m.style.display = 'none'); }
 
-        // OBSERVER PROTOCOL
         auth.onAuthStateChanged(user => {
-            if (user && !window.location.search.includes('mode=new_partner')) {
-                AuthEngine.route(user);
-            }
+            if (user && !window.location.search.includes('mode=new_partner')) AuthEngine.route(user);
         });
     </script>
     
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
