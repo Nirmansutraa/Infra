@@ -218,7 +218,7 @@
             }
         }
 
-        // --- SMART ROUTER LOGIC ---
+        // --- UPDATED SMART ROUTER LOGIC ---
         async function handleOTPRegister() {
             const ph = document.getElementById('userPhone').value;
             const email = getMappingEmail(ph);
@@ -230,7 +230,7 @@
                     name: name, phone: ph, role: role, email: email, loginMethod: 'OTP', timestamp: Date.now()
                 });
                 
-                // RAPIDO FIX: No more redirection to registration.html
+                // ROUTING FIX: Direct to the single Power File
                 if(role === "Supplier") {
                     window.location.href = "field/supplier/dashboard.html";
                 } else {
@@ -249,7 +249,7 @@
                 const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
                 const data = snap.val();
                 
-                // RAPIDO FIX: Direct entry to the Dashboard station
+                // ROUTING FIX: Direct to the single Power File
                 if(data && data.role === "Supplier") {
                     window.location.href = "field/supplier/dashboard.html";
                 } else {
@@ -261,14 +261,28 @@
         async function handleEmailLogin() {
             try {
                 const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
-                AuthRouter.redirect(res.user);
+                const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                const data = snap.val();
+                
+                if(data && data.role === "Supplier") {
+                    window.location.href = "field/supplier/dashboard.html";
+                } else {
+                    AuthRouter.redirect(res.user);
+                }
             } catch(e) { alert("Invalid credentials."); }
         }
 
         async function loginGoogle() {
             try {
                 const res = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                AuthRouter.redirect(res.user);
+                const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                const data = snap.val();
+                
+                if(data && data.role === "Supplier") {
+                    window.location.href = "field/supplier/dashboard.html";
+                } else {
+                    AuthRouter.redirect(res.user);
+                }
             } catch(e) { alert("Google connection failed."); }
         }
     </script>
