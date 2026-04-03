@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NirmanSutra | Building Bharat</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/ui-utils.js"></script>
+
+    <style>
+        :root { --accent: #ff7a00; --navy: #020617; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
+
+        .mesh-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(at 0% 0%, rgba(255, 122, 0, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.5) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(15, 23, 42, 1) 0px, transparent 100%);
+            z-index: -1;
+        }
+
+        .hero-gate { 
+            min-height: 100vh; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center;
+            padding-bottom: 120px;
+        }
+
+        .brand-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 50px 20px; border-radius: 45px;
+            width: 90%; max-width: 420px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+        }
+
+        .brand-text { font-size: 3.5rem; font-weight: 900; letter-spacing: -3px; line-height: 0.9; }
+        .bharat-tag { 
+            display: inline-block; background: var(--accent); color: white;
+            padding: 6px 16px; border-radius: 10px; font-weight: 900;
+            text-transform: uppercase; font-size: 11px; letter-spacing: 2px; margin-top: 20px;
+        }
+
+        .identity-dock {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(25px); color: #0f172a;
+            border-radius: 45px 45px 0 0; padding: 20px 30px 45px;
+            box-shadow: 0 -25px 80px rgba(0,0,0,0.7); z-index: 5000;
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            max-height: 85vh; overflow-y: auto;
+            transform: translateY(calc(100% - 90px)); 
+        }
+        .identity-dock.expanded { transform: translateY(0); }
+        .handle-bar { width: 45px; height: 5px; background: #cbd5e1; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
+
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
+        .btn-main { width: 100%; padding: 20px; border-radius: 22px; background: var(--navy); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; letter-spacing: 1px; }
+        
+        .channel-btn { 
+            width: 100%; padding: 16px; border-radius: 22px; border: 1px solid #f1f5f9; 
+            margin-bottom: 12px; font-weight: 800; font-size: 11px; text-transform: uppercase; 
+            display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; 
+            background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="mesh-bg"></div>
+
+    <main class="hero-gate">
+        <div class="brand-card">
+            <h1 class="brand-text">NIRMAN<br><span class="text-orange-500">SUTRA</span></h1>
+            <div class="bharat-tag">Building Bharat</div>
+            <p class="text-slate-400 font-bold uppercase tracking-[4px] text-[9px] mt-10">Infrastructure Intelligence</p>
+        </div>
+    </main>
+
+    <div id="mainDock" class="identity-dock">
+        <div class="handle-bar" onclick="toggleDock()"></div>
+        
+        <div id="miniBar" class="text-center cursor-pointer pb-6" onclick="toggleDock()">
+            <span class="text-[11px] font-black uppercase tracking-[3px] text-slate-900">Partner Login & Sign Up</span>
+        </div>
+
+        <div id="dockContent" class="opacity-0 transition-opacity duration-500">
+            
+            <div id="loginView">
+                <h3 class="text-2xl font-black mb-8 text-center text-slate-900">Welcome Partner</h3>
+                <div onclick="initFlow('login_otp')" class="channel-btn shadow-lg">
+                    <img src="https://img.icons8.com/fluency/48/phone.png" class="w-6 h-6"> Login via OTP
+                </div>
+                
+                <input type="email" id="logEmail" class="u-input mt-8" placeholder="Email Address">
+                <input type="password" id="logPass" class="u-input" placeholder="Password">
+                <button onclick="handleEmailLogin()" class="btn-main mb-6 bg-orange-500">Login</button>
+                
+                <p onclick="toggleView('regChoice')" class="text-center mt-8 text-slate-400 font-black text-[10px] cursor-pointer uppercase tracking-widest">New? <span class="text-orange-500 underline">Sign Up</span></p>
+            </div>
+
+            <div id="regChoiceView" class="hidden">
+                <h3 class="text-2xl font-black mb-8 text-center text-slate-900">Join Bharat</h3>
+                <div onclick="initFlow('mobile')" class="channel-btn">Sign Up by Mobile</div>
+                <div onclick="initFlow('whatsapp')" class="channel-btn">Sign Up by WhatsApp</div>
+                <p onclick="toggleView('login')" class="text-center mt-10 text-slate-400 font-black text-xs cursor-pointer uppercase underline">Back</p>
+            </div>
+
+            <div id="dynamicFormView" class="hidden">
+                <h3 id="flowTitle" class="text-xl font-black mb-6 text-slate-900">Verification</h3>
+                <div id="otpBox" class="hidden mb-6">
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[12px] text-2xl border-orange-500" placeholder="000000" maxlength="6">
+                </div>
+                <div id="inputBox">
+                    <div id="regOnlyFields" class="hidden">
+                        <input type="text" id="regName" class="u-input" placeholder="Full Name">
+                        <select id="regRole" class="u-input">
+                            <option value="Supplier">Supplier</option>
+                            <option value="Builder">Builder</option>
+                        </select>
+                    </div>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="Mobile Number">
+                </div>
+                <button id="flowActionBtn" onclick="executeFlow()" class="btn-main bg-orange-500 mt-4">Send OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use the standard configuration from your config file [cite: 85, 86]
+        const rtdb = firebase.database(), auth = firebase.auth();
+        let currentMode = ""; let otpSent = false;
+        const TEST_OTP = "123456"; // Standard test bypass [cite: 94]
+        const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
+
+        function toggleDock() {
+            const dock = document.getElementById('mainDock');
+            const content = document.getElementById('dockContent');
+            dock.classList.toggle('expanded');
+            if(dock.classList.contains('expanded')) {
+                setTimeout(() => content.classList.remove('opacity-0'), 150);
+            } else {
+                content.classList.add('opacity-0');
+            }
+        }
+
+        function toggleView(v) {
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('regChoiceView').classList.add('hidden');
+            document.getElementById('dynamicFormView').classList.add('hidden');
+            if(v === 'login') document.getElementById('loginView').classList.remove('hidden');
+            if(v === 'regChoice') document.getElementById('regChoiceView').classList.remove('hidden');
+            if(v === 'dynamic') document.getElementById('dynamicFormView').classList.remove('hidden');
+        }
+
+        function initFlow(mode) {
+            currentMode = mode; otpSent = false;
+            document.getElementById('otpBox').classList.add('hidden');
+            document.getElementById('inputBox').classList.remove('hidden');
+            const isReg = (mode === 'mobile' || mode === 'whatsapp');
+            document.getElementById('regOnlyFields').classList.toggle('hidden', !isReg);
+            toggleView('dynamic');
+        }
+
+        function getMappingEmail(phone) { return `${phone.replace(/\D/g, '').slice(-10)}@nirmansutra.in`; }
+
+        async function executeFlow() {
+            if(!otpSent) {
+                const phone = document.getElementById('userPhone').value;
+                if(!phone || phone.length < 10) return alert("Enter 10 digits");
+                otpSent = true;
+                document.getElementById('otpBox').classList.remove('hidden');
+                document.getElementById('inputBox').classList.add('hidden');
+                alert("OTP is: " + TEST_OTP); [cite: 94]
+            } else {
+                if(document.getElementById('otpValue').value === TEST_OTP) {
+                    if(currentMode === 'login_otp') handleOTPLogin();
+                    else handleOTPRegister();
+                } else alert("Invalid OTP");
+            }
+        }
+
+        async function handleOTPRegister() {
+            const ph = document.getElementById('userPhone').value;
+            const email = getMappingEmail(ph);
+            const name = document.getElementById('regName').value;
+            const role = document.getElementById('regRole').value;
+            try {
+                const res = await auth.createUserWithEmailAndPassword(email, SECURE_PASS);
+                await rtdb.ref(`users/${res.user.uid}`).set({
+                    name: name, phone: ph, role: role, email: email, timestamp: Date.now()
+                });
+                
+                // FIXED ROUTE: Send to the Single Power File [cite: 86, 137]
+                if(role === "Supplier") {
+                    window.location.href = "field/supplier/dashboard.html";
+                }
+            } catch(e) { alert(e.message); }
+        }
+
+        async function handleOTPLogin() {
+            const email = getMappingEmail(document.getElementById('userPhone').value);
+            try {
+                const res = await auth.signInWithEmailAndPassword(email, SECURE_PASS);
+                const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
+                const data = snap.val(); [cite: 87, 88]
+                
+                if(data && data.role === "Supplier") {
+                    window.location.href = "field/supplier/dashboard.html";
+                }
+            } catch(e) { alert("User not found."); }
+        }
+
+        async function handleEmailLogin() {
+            try {
+                const res = await auth.signInWithEmailAndPassword(document.getElementById('logEmail').value, document.getElementById('logPass').value);
+                window.location.href = "field/supplier/dashboard.html";
+            } catch(e) { alert("Invalid login."); }
+        }
+    </script>
+</body>
+</html>
