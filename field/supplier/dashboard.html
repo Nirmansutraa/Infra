@@ -16,54 +16,83 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script src="/js/config.js"></script>
+    <script src="/js/roles.js"></script>
+    <script src="/js/map.js"></script>
 
     <style>
         :root { --bg: #f8fafc; --accent: #10b981; --primary: #0f172a; --orange: #ff7a00; }
         body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); }
         .hidden { display: none !important; }
         
-        /* Glass Design System */
         .card { background: white; border-radius: 40px; padding: 35px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .id-box { background: var(--primary); color: var(--accent); text-align: center; padding: 50px; border-radius: 30px; font-size: 32px; font-weight: 900; font-family: monospace; letter-spacing: 6px; box-shadow: inset 0 10px 30px rgba(0,0,0,0.4); }
         
-        .mat-item { background: var(--primary); color: white; padding: 25px 35px; border-radius: 25px; cursor: pointer; border: 2px solid transparent; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .mat-item.active { border-color: var(--accent); transform: scale(1.02); }
-        
-        .btn-rapido { width: 100%; padding: 20px; border-radius: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
+        .u-input:focus { border-color: var(--accent); }
+
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
+
+        .chip { background: #f1f5f9; padding: 15px 20px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; transition: 0.3s; text-align: center; border: 2px solid transparent; text-transform: uppercase; }
+        .chip.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 10px 20px rgba(255,122,0,0.2); }
+
+        .fleet-unit { background: #f8fafc; padding: 20px; border-radius: 24px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .circle-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 20px; }
+
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 25px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); color: white; font-size: 8px; padding: 8px; font-weight: 800; line-height: 1.4; text-align: center; }
     </style>
 </head>
 <body class="p-6">
 
     <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
-        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Node...</p>
+        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Partner Node...</p>
     </div>
 
     <main id="app" class="max-w-2xl mx-auto hidden">
         <div id="regView" class="hidden">
             <header class="mb-10">
-                <h1 class="text-4xl font-black italic tracking-tighter uppercase">Partner<span class="text-emerald-500">Node</span></h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-2">Initialize Strategic Registry</p>
+                <h1 class="text-4xl font-black italic tracking-tighter uppercase">Partner<span class="text-emerald-500">Registry</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-2 italic">Entity Verification Protocol</p>
             </header>
 
             <div class="card">
-                <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-4">01. Identity Signature</span>
-                <div id="trackId" class="id-box">NS-PRT-NODE---</div>
+                <span class="label-text">01. Firm Identity</span>
+                <input id="firmName" placeholder="Name of Firm *" class="u-input">
+                <input id="gstNum" placeholder="GST Number of Firm *" class="u-input">
+                
+                <span class="label-text">02. Operational Governance</span>
+                <input id="mgrName" placeholder="Firm Manager Name *" class="u-input">
+                <input id="mgrMob" type="tel" placeholder="Manager Mobile Number *" class="u-input" oninput="Validation.handleManagerWA(this.value)">
+                <input id="mgrWa" type="tel" placeholder="Manager WhatsApp Number *" class="u-input">
             </div>
 
             <div class="card">
-                <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-6">02. Entity Details</span>
-                <input id="firmName" placeholder="Legal Firm Name" class="w-full bg-slate-100 p-5 rounded-2xl font-bold mb-4 outline-none border-2 border-transparent focus:border-emerald-500">
+                <span class="label-text">03. Spatial Lock & Evidence Matrix</span>
                 <div id="map" class="h-64 rounded-3xl border mb-4"></div>
-                <button onclick="Geo.capture()" class="btn-rapido bg-slate-900 text-white flex items-center justify-center gap-3 mb-4">
-                    <i data-lucide="map-pin"></i> Lock GPS
+                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase mb-4 flex items-center justify-center gap-3">
+                    <i data-lucide="crosshair"></i> Capture Spatial Lock
                 </button>
-                <textarea id="finalAddr" class="w-full bg-transparent text-xs text-slate-400 italic border-none mb-6" readonly placeholder="Spatial lock required..."></textarea>
+                <textarea id="address" class="u-input h-24 bg-transparent text-[11px] text-slate-400 italic" readonly placeholder="Reverse-geocoding pending..."></textarea>
                 
-                <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Select Intelligence Class</p>
-                <div id="matSelector"></div>
-                
-                <button onclick="submitRegistry()" id="sBtn" class="btn-rapido bg-emerald-500 text-white mt-10 shadow-xl">🚀 Finalize Global Sync</button>
+                <div class="grid grid-cols-3 gap-4 mt-6" id="photoGrid">
+                    <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-50 transition-all">+</button>
+                </div>
+                <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
+                <p class="text-[9px] font-bold text-slate-300 mt-4 text-center uppercase tracking-widest italic">Max 10 frames • Live GPS Stamping • 512KB Max</p>
             </div>
+
+            <div class="card">
+                <span class="label-text">04. Material Intelligence Selection</span>
+                <div id="matSelector" class="grid grid-cols-2 gap-4"></div>
+                <div id="varietyGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
+                <div id="brandGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
+            </div>
+
+            <div class="card">
+                <span class="label-text">05. Fleet Logistics Capacity</span>
+                <div id="fleetGrid"></div>
+            </div>
+
+            <button onclick="RegistryAction.transmit()" id="sBtn" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase mt-6 shadow-xl">🚀 Finalize Sovereign Sync</button>
         </div>
 
         <div id="dashView" class="hidden">
@@ -76,105 +105,173 @@
                     <i data-lucide="log-out"></i>
                 </button>
             </header>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="card text-center flex flex-col items-center">
-                    <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-4">
-                        <i data-lucide="package-search"></i>
-                    </div>
-                    <p class="font-black uppercase text-[10px] tracking-widest">Live Leads</p>
-                </div>
-                <div class="card text-center flex flex-col items-center">
-                    <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4">
-                        <i data-lucide="truck"></i>
-                    </div>
-                    <p class="font-black uppercase text-[10px] tracking-widest">Fleet</p>
-                </div>
+            <div class="card bg-[#020617] text-white p-10 text-center">
+                <p class="text-[10px] font-black uppercase tracking-[5px] text-emerald-500 mb-2">Node Verified</p>
+                <h3 class="text-2xl font-black italic uppercase">Partner Dashboard Online</h3>
             </div>
         </div>
     </main>
 
     <script>
         lucide.createIcons();
-        
+        let state = { photos: [], location: null, mat: null, varieties: [], brands: [], fleet: {} };
+
         auth.onAuthStateChanged(user => {
-            if (user) sync(user.uid);
+            if (user) checkOnboarding(user.uid);
             else window.location.href = "/";
         });
 
-        function sync(uid) {
-            // Derived from backup sync logic
+        function checkOnboarding(uid) {
             rtdb.ref('supplier_onboarding/' + uid).on('value', snap => {
                 const data = snap.val();
                 document.getElementById('loader').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
-                
                 if (data) {
-                    showDash(data);
+                    document.getElementById('dashView').classList.remove('hidden');
+                    document.getElementById('regView').classList.add('hidden');
+                    document.getElementById('bizName').innerText = data.firm;
+                    document.getElementById('bizAddr').innerText = data.address;
                 } else {
-                    showReg();
+                    document.getElementById('regView').classList.remove('hidden');
+                    NS_Geo.init('map'); //
+                    syncRegistry(); 
+                    initFleet();
                 }
             });
         }
 
-        function showDash(data) {
-            document.getElementById('dashView').classList.remove('hidden');
-            document.getElementById('regView').classList.add('hidden');
-            document.getElementById('bizName').innerText = data.firm || "Partner Node";
-            document.getElementById('bizAddr').innerText = data.address || "Coordinates Verified";
-            lucide.createIcons();
-        }
+        window.Validation = {
+            handleManagerWA(val) { document.getElementById('mgrWa').value = val; }
+        };
 
-        function showReg() {
-            document.getElementById('regView').classList.remove('hidden');
-            document.getElementById('dashView').classList.add('hidden');
-            Geo.init(); 
-            syncRegistry();
-            lucide.createIcons();
-        }
-
-        // Module derived from backup Spatial Intel
-        window.Geo = {
-            map: null, marker: null,
-            init() { 
-                if(!this.map) this.map = L.map('map', {zoomControl:false, attributionControl:false}).setView([24.58, 73.71], 12);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-            },
-            capture() {
-                navigator.geolocation.getCurrentPosition(async p => {
-                    const { latitude, longitude } = p.coords;
-                    this.map.setView([latitude, longitude], 17);
-                    if(this.marker) this.map.removeLayer(this.marker);
-                    this.marker = L.marker([latitude, longitude]).addTo(this.map);
-                    
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const addr = await res.json();
-                    document.getElementById('address').innerText = addr.display_name;
-                    // Refresh ID logic
-                    Survey.refreshID();
-                });
+        window.GeoEngine = {
+            async lock() {
+                const result = await NS_Geo.captureLock('address'); //
+                state.location = result.location;
             }
+        };
+
+        window.EvidenceEngine = {
+            handle(input) {
+                if(!state.location) return alert("❌ Spatial Lock Required for stamping.");
+                if(state.photos.length >= 10) return alert("Evidence threshold reached.");
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 800; canvas.height = 600;
+                        ctx.drawImage(img, 0, 0, 800, 600);
+                        
+                        // Cryptographic Timestamping
+                        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 530, 800, 70);
+                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 14px monospace";
+                        const stamp = `TS: ${new Date().toLocaleString()} | LAT: ${state.location.lat.toFixed(5)} | LNG: ${state.location.lng.toFixed(5)}`;
+                        ctx.fillText(stamp, 20, 570);
+
+                        // Compression to 512kb
+                        let quality = 0.7;
+                        let base64 = canvas.toDataURL('image/jpeg', quality);
+                        while (base64.length > 512000 && quality > 0.1) {
+                            quality -= 0.1;
+                            base64 = canvas.toDataURL('image/jpeg', quality);
+                        }
+                        
+                        state.photos.push({ src: base64, time: new Date().toLocaleString() });
+                        this.render();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            },
+            render() {
+                const grid = document.getElementById('photoGrid');
+                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl">+</button>`;
+                state.photos.forEach((p, i) => {
+                    grid.innerHTML += `<div class="photo-slot" onclick="EvidenceEngine.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">TAP TO DISCARD</div></div>`;
+                });
+            },
+            remove(idx) { if(confirm("Discard evidence frame?")) { state.photos.splice(idx,1); this.render(); } }
         };
 
         function syncRegistry() {
             rtdb.ref('registry/materials').on('value', snap => {
                 const cont = document.getElementById('matSelector');
-                cont.innerHTML = Object.keys(snap.val() || {}).map(cat => 
-                    `<div class="mat-item" onclick="this.classList.toggle('active')"><span>${cat}</span><div class="w-4 h-4 rounded-full bg-slate-800"></div></div>`).join('');
+                window.regData = snap.val() || {};
+                cont.innerHTML = Object.keys(window.regData).map(cat => 
+                    `<div class="chip" onclick="RegistryUI.selectMat('${cat}')">${cat}</div>`).join('');
             });
         }
 
-        async function submitRegistry() {
-            const firm = document.getElementById('firmName').value;
-            const addr = document.getElementById('finalAddr').value;
-            if(!firm || !addr) return alert("❌ Spatial Lock & Firm Identity required.");
-            
-            const btn = document.getElementById('sBtn'); btn.innerText = "Transmitting...";
-            await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).set({ 
-                firm, address: addr, timestamp: Date.now(), status: 'active' 
-            });
-            alert("🚀 Node Online!");
+        window.RegistryUI = {
+            selectMat(cat) {
+                state.mat = cat; state.varieties = []; state.brands = [];
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                const vGrid = document.getElementById('varietyGrid');
+                vGrid.classList.remove('hidden');
+                vGrid.innerHTML = Object.keys(window.regData[cat]).map(v => 
+                    `<div class="chip" onclick="RegistryUI.toggleVariety('${cat}', '${v}', this)">${v}</div>`).join('');
+            },
+            toggleVariety(cat, v, el) {
+                el.classList.toggle('active');
+                const idx = state.varieties.indexOf(v);
+                idx > -1 ? state.varieties.splice(idx, 1) : state.varieties.push(v);
+                const bGrid = document.getElementById('brandGrid');
+                bGrid.classList.remove('hidden');
+                const uniqueBrands = new Set();
+                state.varieties.forEach(vk => { (window.regData[cat][vk].brands || []).forEach(b => uniqueBrands.add(b)); });
+                bGrid.innerHTML = Array.from(uniqueBrands).map(b => 
+                    `<div class="chip" onclick="RegistryUI.toggleBrand('${b}', this)">${b}</div>`).join('');
+            },
+            toggleBrand(b, el) {
+                el.classList.toggle('active');
+                const idx = state.brands.indexOf(b);
+                idx > -1 ? state.brands.splice(idx, 1) : state.brands.push(b);
+            }
+        };
+
+        function initFleet() {
+            const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer']; //
+            document.getElementById('fleetGrid').innerHTML = types.map(t => `
+                <div class="fleet-unit">
+                    <span class="text-[11px] font-black uppercase text-slate-500">${t}</span>
+                    <div class="flex items-center gap-6">
+                        <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
+                        <span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span>
+                        <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
+                    </div>
+                </div>`).join('');
         }
+
+        window.fleetStep = (t, v) => {
+            state.fleet[t] = Math.max(0, (state.fleet[t] || 0) + v);
+            document.getElementById(`fval-${t}`).innerText = state.fleet[t];
+        };
+
+        window.RegistryAction = {
+            async transmit() {
+                const firm = document.getElementById('firmName').value;
+                const gst = document.getElementById('gstNum').value;
+                const addr = document.getElementById('address').value;
+                const mgr = document.getElementById('mgrName').value;
+
+                if(!firm || !gst || !addr || !mgr) return alert("❌ Fill all mandatory fields.");
+                
+                document.getElementById('sBtn').innerText = "TRANSMITTING...";
+                await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).set({
+                    firm, gst, address: addr, mgrName: mgr, 
+                    mgrPhone: document.getElementById('mgrMob').value,
+                    mgrWa: document.getElementById('mgrWa').value,
+                    location: state.location, photos: state.photos,
+                    mat: state.mat, varieties: state.varieties,
+                    brands: state.brands, fleet: state.fleet,
+                    timestamp: Date.now(), status: 'pending'
+                });
+                alert("🚀 Sync Successful!");
+            }
+        };
     </script>
 </body>
 </html>
