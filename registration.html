@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Registry | NirmanSutra</title>
+    <title>Supplier Registration | NirmanSutra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
@@ -14,102 +14,75 @@
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 30px; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; padding: 20px; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 30px; }
         .u-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; margin-bottom: 15px; outline: none; font-weight: 600; }
-        .u-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
-        .chip { display: inline-block; padding: 10px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
-        .chip.active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.05); }
+        .chip { display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; text-transform: uppercase; }
+        .chip.active { background: var(--accent); border-color: var(--accent); color: white; }
     </style>
 </head>
-<body class="p-6">
+<body>
 
-    <header class="mb-10 mt-4 text-center">
-        <h1 class="text-3xl font-black tracking-tight">MATERIAL <span class="text-orange-500">INTELLIGENCE</span></h1>
-        <p class="text-slate-400 text-[10px] font-black uppercase tracking-[5px] mt-2">Building Bharat Registry</p>
+    <header class="text-center mb-10">
+        <h1 class="text-3xl font-black">BUSINESS <span class="text-orange-500">REGISTRY</span></h1>
+        <p class="text-orange-500 font-black uppercase tracking-[4px] text-[10px] mt-2">Building Bharat</p>
     </header>
 
-    <div class="glass-panel max-w-lg mx-auto w-full">
-        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">1. Select Categories</h3>
-        <div id="categoryChips" class="mb-8 flex flex-wrap justify-center"></div>
+    <main class="glass-card max-w-md mx-auto">
+        <h3 class="font-black text-xs uppercase text-slate-400 mb-4 tracking-widest text-center">Select Material Categories</h3>
+        <div id="catContainer" class="flex flex-wrap justify-center mb-8"></div>
 
-        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">2. Business Details</h3>
-        <input type="text" id="shopName" class="u-input" placeholder="Enterprise / Shop Name">
-        <input type="text" id="brands" class="u-input" placeholder="Main Brands (UltraTech, J K, Tata etc.)">
-        <textarea id="address" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        <input type="text" id="bizName" class="u-input" placeholder="Shop / Enterprise Name">
+        <input type="text" id="bizBrands" class="u-input" placeholder="Primary Brands (e.g. JK, UltraTech)">
+        <textarea id="bizAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
         
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div>
-                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Service Radius</label>
-                <select id="radius" class="u-input">
-                    <option value="10">10 KM</option>
-                    <option value="30">30 KM</option>
-                    <option value="50">50 KM+</option>
-                </select>
-            </div>
-            <div>
-                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Business Type</label>
-                <select id="bizType" class="u-input">
-                    <option value="Retailer">Retailer</option>
-                    <option value="Wholesaler">Wholesaler</option>
-                    <option value="Manufacturer">Manufacturer</option>
-                </select>
-            </div>
-        </div>
-
-        <button onclick="saveIntelligence()" id="saveBtn" class="w-full bg-orange-500 hover:bg-orange-600 p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-orange-900/20 transition-all">Secure & Land on Dashboard</button>
-    </div>
+        <button onclick="submitRegistration()" id="regBtn" class="w-full bg-orange-500 p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-orange-900/40">Complete Registration</button>
+    </main>
 
     <script>
-        const categories = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Paint", "Hardware"];
-        let selectedCategories = [];
+        const materials = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware"];
+        let selectedCats = [];
 
-        // Load Chips
-        const chipBox = document.getElementById('categoryChips');
-        categories.forEach(cat => {
-            const span = document.createElement('span');
-            span.className = 'chip';
-            span.innerText = cat;
-            span.onclick = () => {
-                span.classList.toggle('active');
-                if(selectedCategories.includes(cat)) selectedCategories = selectedCategories.filter(c => c !== cat);
-                else selectedCategories.push(cat);
+        // Generate Chips
+        const container = document.getElementById('catContainer');
+        materials.forEach(m => {
+            const el = document.createElement('span');
+            el.className = 'chip';
+            el.innerText = m;
+            el.onclick = () => {
+                el.classList.toggle('active');
+                if(selectedCats.includes(m)) selectedCats = selectedCats.filter(item => item !== m);
+                else selectedCats.push(m);
             };
-            chipBox.appendChild(span);
+            container.appendChild(el);
         });
 
-        // The "Stay Logged In" Save Function
-        async function saveIntelligence() {
+        async function submitRegistration() {
             const user = auth.currentUser;
-            if(!user) return alert("Session Error. Refresh and Login again.");
+            if(!user) return alert("Session expired. Please re-login.");
             
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "SYNCING TO BHARAT NODES...";
+            const btn = document.getElementById('regBtn');
+            btn.innerText = "SAVING BUSINESS DATA...";
             btn.disabled = true;
 
-            const data = {
-                shopName: document.getElementById('shopName').value,
-                categories: selectedCategories,
-                brands: document.getElementById('brands').value,
-                address: document.getElementById('address').value,
-                deliveryRadius: document.getElementById('radius').value,
-                businessType: document.getElementById('bizType').value,
+            const registrationData = {
+                shopName: document.getElementById('bizName').value,
+                brands: document.getElementById('bizBrands').value,
+                address: document.getElementById('bizAddr').value,
+                categories: selectedCats,
                 onboardingComplete: true,
-                lastUpdated: Date.now()
+                registrationDate: Date.now()
             };
 
             try {
-                // AWAIT ensures we don't redirect until the DB confirms receipt
-                await rtdb.ref(`users/${user.uid}`).update(data);
+                // Save to the master User node
+                await rtdb.ref(`users/${user.uid}`).update(registrationData);
                 
-                // Small buffer for Auth State stability
-                setTimeout(() => {
-                    window.location.href = "supplierdashboard.html";
-                }, 800);
-
-            } catch(e) {
-                alert("Registry Error: " + e.message);
-                btn.innerText = "Retry Registry";
+                alert("Registration Successful! Opening Dashboard...");
+                window.location.href = "supplierdashboard.html";
+            } catch (error) {
+                alert("Error: " + error.message);
+                btn.innerText = "Complete Registration";
                 btn.disabled = false;
             }
         }
