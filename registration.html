@@ -2,171 +2,117 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Partner Registry | NirmanSutra</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Registry | NirmanSutra</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="js/config.js"></script>
-    <script src="js/ui-utils.js"></script>
-    <script src="js/geo-engine.js"></script>
 
     <style>
-        :root { --accent: #10b981; --dark: #0f172a; --orange: #ff7a00; }
-        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--dark); padding-bottom: 120px; }
-        
-        .card { background: white; border-radius: 35px; padding: 35px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
-        .section-label { font-size: 11px; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; display: block; }
-        
-        input, select, textarea { width: 100%; background: #f1f5f9; border: 2px solid transparent; padding: 18px; border-radius: 18px; font-weight: 600; outline: none; transition: 0.3s; margin-top: 10px; }
-        input:focus { border-color: var(--accent); background: white; }
-        
-        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .stamp { position: absolute; bottom: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; width: 100%; padding: 8px; font-weight: 800; }
-        
-        .fleet-unit { background: #f8fafc; padding: 20px; border-radius: 22px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .circle-btn { width: 45px; height: 45px; border-radius: 15px; background: var(--dark); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
-        
-        .btn-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 25px; border-top: 1px solid #e2e8f0; z-index: 1000; display: flex; gap: 15px; }
-        .btn-main { flex: 1; padding: 20px; border-radius: 20px; background: #10b981; color: white; font-weight: 900; text-transform: uppercase; border: none; cursor: pointer; }
-        #map { height: 300px; border-radius: 25px; margin: 15px 0; border: 1px solid #e2e8f0; }
+        :root { --accent: #ff7a00; --navy: #020617; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 30px; }
+        .u-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; margin-bottom: 15px; outline: none; font-weight: 600; }
+        .u-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+        .chip { display: inline-block; padding: 10px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .chip.active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.05); }
     </style>
 </head>
-<body>
+<body class="p-6">
 
-<div class="max-w-2xl mx-auto px-6 py-10">
-    <header class="mb-10">
-        <h1 class="text-4xl font-black italic tracking-tighter">PARTNER<span class="text-emerald-500">NODE</span></h1>
-        <p id="agentTag" class="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Authenticating Session...</p>
+    <header class="mb-10 mt-4 text-center">
+        <h1 class="text-3xl font-black tracking-tight">MATERIAL <span class="text-orange-500">INTELLIGENCE</span></h1>
+        <p class="text-slate-400 text-[10px] font-black uppercase tracking-[5px] mt-2">Building Bharat Registry</p>
     </header>
 
-    <div class="card">
-        <span class="section-label">01. Firm Details</span>
-        <input id="firmName" placeholder="Registered Firm Name">
-        <input id="gst" placeholder="GST Number (Optional)">
-        <select id="bizType">
-            <option value="Retailer">Retailer</option>
-            <option value="Wholesaler">Wholesaler</option>
-            <option value="Manufacturer">Manufacturer</option>
-        </select>
-    </div>
+    <div class="glass-panel max-w-lg mx-auto w-full">
+        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">1. Select Categories</h3>
+        <div id="categoryChips" class="mb-8 flex flex-wrap justify-center"></div>
 
-    <div class="card">
-        <span class="section-label">02. Warehouse Location</span>
-        <div id="map"></div>
-        <button onclick="capturePos()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-xs mb-4">📍 Lock GPS Location</button>
-        <textarea id="address" class="text-xs text-slate-500 bg-transparent border-none" readonly placeholder="Address will appear after GPS lock..."></textarea>
-    </div>
-
-    <div class="card">
-        <span class="section-label">03. Evidence Matrix (Max 10)</span>
-        <div id="photoGrid" class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-6xl">+</button>
-        </div>
-        <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="handlePhoto(this)">
-    </div>
-
-    <div class="card">
-        <span class="section-label">04. Dispatch Capacity</span>
-        <div id="fleetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">2. Business Details</h3>
+        <input type="text" id="shopName" class="u-input" placeholder="Enterprise / Shop Name">
+        <input type="text" id="brands" class="u-input" placeholder="Main Brands (UltraTech, J K, Tata etc.)">
+        <textarea id="address" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Service Radius</label>
+                <select id="radius" class="u-input">
+                    <option value="10">10 KM</option>
+                    <option value="30">30 KM</option>
+                    <option value="50">50 KM+</option>
+                </select>
             </div>
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Business Type</label>
+                <select id="bizType" class="u-input">
+                    <option value="Retailer">Retailer</option>
+                    <option value="Wholesaler">Wholesaler</option>
+                    <option value="Manufacturer">Manufacturer</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="saveIntelligence()" id="saveBtn" class="w-full bg-orange-500 hover:bg-orange-600 p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-orange-900/20 transition-all">Secure & Land on Dashboard</button>
     </div>
-</div>
 
-<div class="btn-bottom">
-    <button onclick="submitRegistry()" id="sBtn" class="btn-main shadow-xl">Finalize Registry Sync</button>
-</div>
+    <script>
+        const categories = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Paint", "Hardware"];
+        let selectedCategories = [];
 
-<script>
-    let state = { photos: [], location: null, fleet: {} };
-
-    // Initialize Page Tools from JS Library
-    window.onload = () => {
-        NS_Geo.init('map');
-        initFleet();
-        auth.onAuthStateChanged(user => {
-            if(!user) window.location.href = "index.html";
-            document.getElementById('agentTag').innerText = "NODE AGENT: " + user.email.toUpperCase();
+        // Load Chips
+        const chipBox = document.getElementById('categoryChips');
+        categories.forEach(cat => {
+            const span = document.createElement('span');
+            span.className = 'chip';
+            span.innerText = cat;
+            span.onclick = () => {
+                span.classList.toggle('active');
+                if(selectedCategories.includes(cat)) selectedCategories = selectedCategories.filter(c => c !== cat);
+                else selectedCategories.push(cat);
+            };
+            chipBox.appendChild(span);
         });
-    };
 
-    function initFleet() {
-        const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer'];
-        const grid = document.getElementById('fleetGrid');
-        grid.innerHTML = types.map(t => `
-            <div class="fleet-unit">
-                <span class="font-black text-[10px] uppercase tracking-widest">${t}</span>
-                <div class="flex items-center gap-4">
-                    <div class="circle-btn" onclick="updateFleet('${t}', -1)">-</div>
-                    <span id="qty-${t}" class="font-black text-sm w-6 text-center">0</span>
-                    <div class="circle-btn" onclick="updateFleet('${t}', 1)">+</div>
-                </div>
-            </div>`).join('');
-    }
+        // The "Stay Logged In" Save Function
+        async function saveIntelligence() {
+            const user = auth.currentUser;
+            if(!user) return alert("Session Error. Refresh and Login again.");
+            
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "SYNCING TO BHARAT NODES...";
+            btn.disabled = true;
 
-    function updateFleet(type, change) {
-        state.fleet[type] = Math.max(0, (state.fleet[type] || 0) + change);
-        document.getElementById(`qty-${type}`).innerText = state.fleet[type];
-    }
+            const data = {
+                shopName: document.getElementById('shopName').value,
+                categories: selectedCategories,
+                brands: document.getElementById('brands').value,
+                address: document.getElementById('address').value,
+                deliveryRadius: document.getElementById('radius').value,
+                businessType: document.getElementById('bizType').value,
+                onboardingComplete: true,
+                lastUpdated: Date.now()
+            };
 
-    async function capturePos() {
-        const res = await NS_Geo.captureLocation('address');
-        state.location = { lat: res.lat, lng: res.lng };
-    }
+            try {
+                // AWAIT ensures we don't redirect until the DB confirms receipt
+                await rtdb.ref(`users/${user.uid}`).update(data);
+                
+                // Small buffer for Auth State stability
+                setTimeout(() => {
+                    window.location.href = "supplierdashboard.html";
+                }, 800);
 
-    function handlePhoto(input) {
-        if(state.photos.length >= 10) return NS_UI.notify("Max 10 photos allowed");
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            state.photos.push({ src: e.target.result, time: new Date().toLocaleString() });
-            renderPhotos();
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    function renderPhotos() {
-        const grid = document.getElementById('photoGrid');
-        const btn = grid.firstElementChild;
-        grid.innerHTML = ""; grid.appendChild(btn);
-        state.photos.forEach(p => {
-            grid.innerHTML += `<div class="photo-slot"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp">${p.time}</div></div>`;
-        });
-    }
-
-    async function submitRegistry() {
-        const firm = document.getElementById('firmName').value;
-        if(!firm || !state.location) return NS_UI.notify("Firm Name and GPS Lock are mandatory.");
-
-        const btn = document.getElementById('sBtn');
-        btn.innerText = "TRANSMITTING..."; btn.disabled = true;
-
-        const payload = {
-            ...state,
-            firm: firm,
-            gst: document.getElementById('gst').value,
-            type: document.getElementById('bizType').value,
-            uid: auth.currentUser.uid,
-            email: auth.currentUser.email,
-            timestamp: Date.now(),
-            status: 'pending'
-        };
-
-        try {
-            await rtdb.ref(`supplier_onboarding/${auth.currentUser.uid}`).set(payload);
-            NS_UI.notify("Registry Success! Redirecting...");
-            window.location.href = "onboarding/supplierdashboard.html";
-        } catch(e) {
-            NS_UI.notify("Sync Error: " + e.message);
-            btn.innerText = "Finalize Registry Sync"; btn.disabled = false;
+            } catch(e) {
+                alert("Registry Error: " + e.message);
+                btn.innerText = "Retry Registry";
+                btn.disabled = false;
+            }
         }
-    }
-</script>
+    </script>
 </body>
 </html>
