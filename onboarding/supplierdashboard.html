@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Dashboard | NirmanSutra</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
@@ -19,6 +20,8 @@
         .biz-card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.06); margin-top: -40px; position: relative; }
         .badge { background: #fff7ed; color: #ea580c; padding: 5px 12px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
         .tag { background: #f1f5f9; color: #64748b; padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; margin-right: 6px; margin-bottom: 6px; display: inline-block; text-transform: uppercase; }
+        .loading-shimmer { color: #94a3b8; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -26,7 +29,7 @@
     <header class="top-bar">
         <div class="flex justify-between items-center">
             <div>
-                <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px] mb-1">Building Bharat</p>
+                <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px] mb-1">Partner Portal</p>
                 <h1 id="userName" class="text-2xl font-black">Connecting...</h1>
             </div>
             <button onclick="auth.signOut().then(()=>window.location.href='index.html')" class="bg-white/10 p-4 rounded-2xl">
@@ -39,19 +42,19 @@
         <section class="biz-card mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-black text-[10px] uppercase tracking-widest text-slate-400">Material Intelligence</h3>
-                <span class="badge">Verified Profile</span>
+                <span id="regStatus" class="badge">Active Registry</span>
             </div>
 
             <div class="space-y-6">
                 <div>
                     <p id="shopTitle" class="text-xl font-black text-slate-900 leading-tight">Fetching Business Details...</p>
-                    <p id="shopAddress" class="text-xs text-slate-400 font-medium mt-1">Locating...</p>
+                    <p id="shopAddress" class="text-xs text-slate-400 font-medium mt-1">Locating Node...</p>
                 </div>
 
                 <div>
                     <p class="text-[9px] font-black uppercase text-slate-400 mb-3">Core Inventory Categories</p>
                     <div id="catList" class="flex flex-wrap min-h-[30px]">
-                        <span class="text-slate-300 text-[10px] font-bold">Synchronizing...</span>
+                        <span class="loading-shimmer text-[10px] font-bold">Synchronizing...</span>
                     </div>
                 </div>
 
@@ -61,53 +64,72 @@
                         <p id="brandText" class="font-extrabold text-sm text-slate-800">---</p>
                     </div>
                     <div>
-                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1">Supply Radius</p>
+                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1">Supply Coverage</p>
                         <p id="radiusText" class="font-extrabold text-sm text-slate-800">---</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <h4 class="px-2 font-black text-[10px] uppercase tracking-widest text-slate-400 mb-4">Operations Hub</h4>
         <div class="grid grid-cols-2 gap-4 mb-20">
             <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-100">
                 <div class="text-3xl mb-3">📦</div>
                 <p class="text-[10px] font-black uppercase tracking-widest">Inventory</p>
             </div>
             <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-100">
-                <div class="text-3xl mb-3">📉</div>
-                <p class="text-[10px] font-black uppercase tracking-widest">Analytics</p>
+                <div class="text-3xl mb-3">📊</div>
+                <p class="text-[10px] font-black uppercase tracking-widest">Market Demand</p>
             </div>
         </div>
     </main>
 
     <script>
-        // Check Auth Status
+        // Start Listening for Auth
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("Session Active:", user.uid);
-                fetchSupplierProfile(user.uid);
+                syncDashboard(user.uid);
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        async function fetchSupplierProfile(uid) {
-            try {
-                // We use .on() instead of .once() so the dashboard updates 
-                // automatically if the data changes in the background!
-                rtdb.ref(`users/${uid}`).on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (!data) return;
+        function syncDashboard(uid) {
+            // CRITICAL: Using .on() ensures the dashboard updates the INSTANT data is saved
+            rtdb.ref(`users/${uid}`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
 
-                    // Update UI Elements
-                    document.getElementById('userName').innerText = data.name || "NirmanSutra Partner";
-                    document.getElementById('shopTitle').innerText = data.shopName || "Business Registry Pending";
-                    document.getElementById('shopAddress').innerText = data.address || "Address not provided";
-                    document.getElementById('brandText').innerText = data.brands || "No Brands Listed";
-                    document.getElementById('radiusText').innerText = data.deliveryRadius ? `${data.deliveryRadius} KM` : "Local Area";
+                // 1. Map Top Bar Info
+                document.getElementById('userName').innerText = data.name || "NirmanSutra Partner";
 
-                    // Update Categories
-                    const list = document.getElementById('catList');
-                    list.innerHTML = "";
-                    if (
+                // 2. Map Intelligence (Using Fallbacks)
+                document.getElementById('shopTitle').innerText = data.shopName || "Register Your Business Name";
+                document.getElementById('shopAddress').innerText = data.address || "No Address Provided";
+                document.getElementById('brandText').innerText = data.brands || "General Brands";
+                document.getElementById('radiusText').innerText = data.deliveryRadius ? data.deliveryRadius + " KM" : "Local Area";
+
+                // 3. Map Category Tags
+                const list = document.getElementById('catList');
+                list.innerHTML = "";
+                if (data.categories && Array.isArray(data.categories)) {
+                    data.categories.forEach(cat => {
+                        const span = document.createElement('span');
+                        span.className = "tag";
+                        span.innerText = cat;
+                        list.appendChild(span);
+                    });
+                } else {
+                    list.innerHTML = "<span class='text-slate-300 text-[10px] font-bold uppercase'>No Categories Found</span>";
+                }
+
+                // 4. Update Badge
+                if(data.onboardingComplete) {
+                    document.getElementById('regStatus').innerText = "Verified Registry";
+                    document.getElementById('regStatus').classList.replace('bg-fff7ed', 'bg-emerald-50');
+                    document.getElementById('regStatus').classList.replace('text-ea580c', 'text-emerald-600');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
