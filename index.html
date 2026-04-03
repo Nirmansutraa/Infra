@@ -6,7 +6,7 @@
     <title>NirmanSutra | Building Bharat</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
@@ -18,126 +18,138 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
-        /* Rapid-Motion Background */
+        /* Mobile & Web View Optimization */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; align-items: center; justify-content: center; 
         }
 
+        /* Rapido Glide Dock Logic */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
-            border-radius: 45px 45px 0 0; padding: 25px 30px 45px;
-            box-shadow: 0 -25px 80px rgba(0,0,0,0.6); z-index: 5000;
+            border-radius: 40px 40px 0 0; padding: 20px 25px 40px;
+            box-shadow: 0 -30px 100px rgba(0,0,0,0.7); z-index: 5000;
             transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-            max-height: 90vh; overflow-y: auto;
+            max-height: 92vh; overflow-y: auto;
+            transform: translateY(calc(100% - 90px)); /* Minimized state */
         }
+        .identity-dock.glide-up { transform: translateY(0); }
 
-        .handle { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; }
+        .handle-bar { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 20px; cursor: pointer; }
 
         .btn-rapido {
-            width: 100%; padding: 20px; border-radius: 22px; 
+            width: 100%; padding: 18px; border-radius: 20px; 
             font-weight: 800; text-transform: uppercase; font-size: 11px;
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.4s;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.3s;
             letter-spacing: 2px;
         }
         
         .btn-mobile { background: #f8fafc; color: #0f172a; border: 1px solid #e2e8f0; }
         .btn-wa { background: #e7f5ee; color: #075e54; border-color: #dcfce7; }
-        .btn-google { background: white; color: #0f172a; border-color: #e2e8f0; }
-        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
+        .btn-main { background: var(--accent); color: white; border: none; font-size: 13px; margin-top: 10px; }
 
         .u-input { 
             width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; 
-            padding: 22px; border-radius: 22px; color: #0f172a; 
-            font-weight: 700; outline: none; margin-bottom: 12px;
+            padding: 18px; border-radius: 18px; color: #0f172a; 
+            font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px;
         }
 
-        .label-text { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; display: block; padding-left: 10px; }
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
         
         .hidden { display: none !important; }
+        .legal-box { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.5; margin-top: 15px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <main class="hero-bg">
-        <div class="text-center">
-            <h1 class="text-7xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[11px]">Building Bharat</p>
+    <main class="hero-bg" onclick="toggleDock(false)">
+        <div class="text-center px-8">
+            <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[10px] md:text-[12px]">Infrastructure Intelligence</p>
         </div>
     </main>
 
     <div id="mainDock" class="identity-dock">
-        <div class="handle"></div>
+        <div class="handle-bar" onclick="toggleDock()"></div>
         
-        <div id="startView">
-            <h3 class="text-2xl font-black mb-10 text-center text-slate-900">Get Started</h3>
-            
-            <div onclick="initFlow('mobile')" class="btn-rapido btn-mobile">
-                <span class="text-xl">📱</span> Sign up or Login with Mobile
-            </div>
-            
-            <div onclick="initFlow('whatsapp')" class="btn-rapido btn-wa">
-                <span class="text-xl">💬</span> Sign up or Login with WhatsApp
-            </div>
-            
-            <div onclick="handleGoogle()" class="btn-rapido btn-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continue with Google
-            </div>
+        <div id="miniTitle" class="text-center cursor-pointer pb-6" onclick="toggleDock()">
+            <span class="text-[10px] font-black uppercase tracking-[5px] text-slate-400">Tap to Login or Sign up</span>
         </div>
 
-        <div id="flowView" class="hidden">
-            <h3 id="flowTitle" class="text-2xl font-black mb-8 text-slate-900 italic">User Verification</h3>
-            
-            <div id="entryGroup">
-                <div id="signupFields" class="hidden">
-                    <span class="label-text">Your Full Name</span>
-                    <input type="text" id="userName" class="u-input" placeholder="Enter name">
+        <div id="dockContent" class="opacity-0 transition-opacity duration-500">
+            <div id="startView">
+                <h3 class="text-xl font-black mb-8 text-center">Ready to Start?</h3>
+                <div onclick="initFlow('mobile')" class="btn-rapido btn-mobile">📱 Mobile OTP Registry</div>
+                <div onclick="initFlow('whatsapp')" class="btn-rapido btn-wa">💬 WhatsApp Registry</div>
+                <div onclick="handleGoogle()" class="btn-rapido bg-white border-slate-200">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
+                </div>
+            </div>
+
+            <div id="flowView" class="hidden">
+                <h3 id="flowTitle" class="text-xl font-black mb-6 italic">Identity Verification</h3>
+                
+                <div id="inputBox">
+                    <div id="signupFields" class="hidden">
+                        <span class="label-text">Full Legal Name *</span>
+                        <input type="text" id="regName" class="u-input" placeholder="Enter full name">
+                        
+                        <span class="label-text">Business Email *</span>
+                        <input type="email" id="regEmail" class="u-input" placeholder="name@company.com">
+
+                        <span class="label-text">Professional Role *</span>
+                        <select id="regRole" class="u-input">
+                            <option value="Supplier">Partner: Supplier</option>
+                            <option value="Builder">Partner: Builder</option>
+                            <option value="Contractor">Partner: Contractor</option>
+                            <option value="field_survey_staff">Staff: Field Agent</option>
+                        </select>
+                    </div>
+
+                    <span class="label-text">Mobile Number *</span>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
                     
-                    <span class="label-text">Professional Role</span>
-                    <select id="userRole" class="u-input">
-                        <option value="Supplier">Supplier</option>
-                        <option value="Builder">Builder</option>
-                        <option value="Contractor">Contractor</option>
-                        <option value="field_survey_staff">Field Agent</option>
-                        <option value="HomeOwner">Home Owner</option>
-                        <option value="Fleet_Owner">Fleet Operator</option>
-                        <option value="Labour_Contractor">Labour Contractor</option>
-                        <option value="Admin_Staff">Admin Support</option>
-                    </select>
+                    <span class="label-text">WhatsApp Number *</span>
+                    <input type="tel" id="userWa" class="u-input" placeholder="Same as mobile or different">
                 </div>
 
-                <span class="label-text">Mobile Number</span>
-                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit number">
-            </div>
+                <div id="otpBox" class="hidden mb-6">
+                    <p class="text-center text-[10px] font-black text-slate-400 mb-4 uppercase tracking-widest">Enter 6-digit code</p>
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" placeholder="••••••" maxlength="6">
+                </div>
 
-            <div id="otpGroup" class="hidden">
-                <p class="text-center text-xs font-black text-slate-400 mb-6 uppercase tracking-widest italic">Verifying connection... Enter code</p>
-                <input type="text" id="otpValue" class="u-input text-center tracking-[20px] text-3xl font-black border-orange-500" placeholder="••••••" maxlength="6">
-            </div>
+                <div class="legal-box" onclick="document.getElementById('legalCheck').click()">
+                    <input type="checkbox" id="legalCheck" class="w-5 h-5 accent-orange-500 rounded mt-1">
+                    <span>I accept the <span class="text-orange-500 underline">Terms of Service</span> and <span class="text-orange-500 underline">Privacy Policy</span>. *</span>
+                </div>
 
-            <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main">Send OTP Code</button>
-            <p onclick="location.reload()" class="text-center mt-8 text-slate-400 font-bold text-[10px] uppercase cursor-pointer underline tracking-widest">Back to options</p>
+                <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main shadow-xl">Verify Identity</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // MASTER ROUTES
         const ROUTES = {
-            'Super_Admin': '/admin/super_admin.html',
-            'Admin_Staff': '/admin/dashboard.html',
             'field_survey_staff': '/field/dashboard.html',
             'Supplier': '/field/supplier/dashboard.html',
-            'Builder': '/field/builder/dashboard.html',
-            'Contractor': '/field/contractor/dashboard.html',
-            'HomeOwner': '/field/homeowner/dashboard.html',
-            'Labour_Contractor': '/field/labour/dashboard.html',
-            'Fleet_Owner': '/field/fleet/dashboard.html'
+            'Builder': '/field/builder/dashboard.html'
         };
 
-        let flowType = '';
-        let flowStep = 1;
+        let step = 1; let flowType = '';
+
+        function toggleDock(open = true) {
+            const dock = document.getElementById('mainDock');
+            const content = document.getElementById('dockContent');
+            if(open) {
+                dock.classList.add('glide-up');
+                setTimeout(() => content.classList.remove('opacity-0'), 200);
+            } else {
+                dock.classList.remove('glide-up');
+                content.classList.add('opacity-0');
+            }
+        }
 
         function initFlow(mode) {
             flowType = mode;
@@ -147,90 +159,77 @@
         }
 
         async function executeStep() {
-            if(flowStep === 1) {
-                const phone = document.getElementById('userPhone').value;
-                if(phone.length < 10) return alert("Enter valid 10-digit mobile");
+            if(!document.getElementById('legalCheck').checked) return alert("Please accept Terms & Privacy Policy to proceed.");
+            
+            if(step === 1) {
+                const ph = document.getElementById('userPhone').value;
+                if(ph.length < 10) return alert("Enter valid 10-digit number.");
                 
-                // Rapido Speed: Immediately show OTP box
-                document.getElementById('entryGroup').classList.add('hidden');
-                document.getElementById('otpGroup').classList.remove('hidden');
-                document.getElementById('actionBtn').innerText = 'Verify & Access Node';
-                alert("AuthKey Simulation: Code is 123456");
-                flowStep = 2;
+                document.getElementById('inputBox').classList.add('hidden');
+                document.getElementById('otpBox').classList.remove('hidden');
+                document.getElementById('actionBtn').innerText = 'Finalize Access';
+                alert("TEST OTP: 123456");
+                step = 2;
             } else {
                 if(document.getElementById('otpValue').value === "123456") {
-                    handleSuccessfulVerification();
-                } else {
-                    alert("Verification Failed. Try again.");
-                }
+                    handleAuthSuccess();
+                } else alert("Invalid Code");
             }
         }
 
-        async function handleSuccessfulVerification() {
-            const phone = document.getElementById('userPhone').value;
-            const email = `${phone.slice(-10)}@nirmansutra.in`;
+        async function handleAuthSuccess() {
+            const ph = document.getElementById('userPhone').value;
+            const email = `${ph.slice(-10)}@nirmansutra.in`;
             
             try {
-                // Rapido Pattern: Silent check for existing user
-                const existing = await auth.signInWithEmailAndPassword(email, "NirmanSutraSecure2026!").catch(() => null);
-                
-                if (existing) {
-                    routeUser(existing.user);
+                // Check if returning user
+                const user = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
+                if(user) {
+                    routeUser(user.user);
                 } else {
-                    // Show role selection for first-time signups
-                    document.getElementById('otpGroup').classList.add('hidden');
+                    // Force Mandatory Sign-up
+                    document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
-                    document.getElementById('entryGroup').classList.remove('hidden');
-                    document.getElementById('actionBtn').innerText = 'Finish Registration';
-                    document.getElementById('flowTitle').innerText = 'New Profile';
-                    
-                    // Second Action: Finalize DB creation
-                    document.getElementById('actionBtn').onclick = finalizeRegistration;
+                    document.getElementById('inputBox').classList.remove('hidden');
+                    document.getElementById('flowTitle').innerText = 'Complete Profile';
+                    document.getElementById('actionBtn').innerText = 'Create Account';
+                    document.getElementById('actionBtn').onclick = finalizeSignup;
                 }
             } catch(e) { alert(e.message); }
         }
 
-        async function finalizeRegistration() {
+        async function finalizeSignup() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
-            const email = `${phone.slice(-10)}@nirmansutra.in`;
-            const name = document.getElementById('userName').value;
-            const role = document.getElementById('userRole').value;
+            const wa = document.getElementById('userWa').value;
 
-            if(!name) return alert("Please enter your name");
+            if(!name || !email || !wa) return alert("All fields are mandatory.");
 
             try {
-                const res = await auth.createUserWithEmailAndPassword(email, "NirmanSutraSecure2026!");
+                const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
+                const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
                 await rtdb.ref(`users/${res.user.uid}`).set({
-                    name, phone, role, email, timestamp: Date.now(), status: 'active'
+                    name, email, role, phone, whatsapp: wa, status: 'active', timestamp: Date.now()
                 });
                 window.location.href = ROUTES[role] || ROUTES['Supplier'];
             } catch(e) { alert(e.message); }
         }
 
-        async function handleGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const res = await auth.signInWithPopup(provider);
-                routeUser(res.user);
-            } catch(e) { console.error(e.message); }
-        }
-
-        async function routeUser(user) {
-            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
+        async function routeUser(u) {
+            const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
-            if(role) {
-                window.location.href = ROUTES[role] || ROUTES['Supplier'];
-            } else {
-                // If role missing, force profile registration view
-                initFlow('mobile'); 
-                handleSuccessfulVerification();
-            }
+            if(role) window.location.href = ROUTES[role] || ROUTES['Supplier'];
+            else { initFlow('mobile'); finalizeSignup(); }
         }
 
-        // Auto-Session Recovery
-        auth.onAuthStateChanged(user => {
-            if (user) routeUser(user);
-        });
+        function handleGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(res => routeUser(res.user));
+        }
+
+        auth.onAuthStateChanged(u => { if(u) routeUser(u); });
     </script>
 </body>
 </html>
