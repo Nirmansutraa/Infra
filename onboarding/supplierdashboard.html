@@ -2,360 +2,117 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supplier Dashboard | NirmanSutra Partner</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Registry | NirmanSutra</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
-    <style>
-        /* ==========================================================================
-        SECTION 2: GLOBAL ARCHITECTURAL STYLING (VERBOSE MONOLITH)
-        ==========================================================================
-        */
-        :root { 
-            --accent: #ff7a00; 
-            --bg-deep: #020617; 
-            --sidebar-bg: #0f172a; 
-            --card-glass: rgba(30, 41, 59, 0.45); 
-            --success: #10b981;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            --text-main: #f8fafc;
-            --transition-master: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        body { 
-            background-color: var(--bg-deep); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--text-main); 
-            margin: 0; padding: 0;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
-        }
-
-        /* --- MASTER LAYOUT ARCHITECTURE --- */
-        .sidebar { 
-            width: 360px; height: 100vh; background: var(--sidebar-bg); 
-            border-right: 1px solid rgba(255, 255, 255, 0.05); position: fixed; 
-            left: 0; top: 0; z-index: 2000; display: flex; flex-direction: column;
-            box-shadow: 30px 0 90px rgba(0,0,0,0.8); transition: var(--transition-master);
-        }
-
-        .main-viewport { 
-            margin-left: 360px; height: 100vh; overflow-y: auto; 
-            padding: 80px; background: radial-gradient(circle at 90% 10%, #1e293b, #020617);
-            scroll-behavior: smooth; 
-        }
-
-        /* --- GLASSMOPHISM MODULES --- */
-        .glass-module { 
-            background: var(--card-glass); backdrop-filter: blur(60px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px; 
-            padding: 50px; box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-            transition: var(--transition-master);
-        }
-        .glass-module:hover { transform: translateY(-10px); border-color: var(--accent); }
-
-        .nav-item { 
-            width: 100%; padding: 25px 45px; display: flex; align-items: center; 
-            gap: 20px; color: #94a3b8; font-weight: 800; font-size: 14px; 
-            text-transform: uppercase; letter-spacing: 4px; transition: var(--transition-master); 
-            border-left: 10px solid transparent; cursor: pointer;
-        }
-        .nav-item:hover, .nav-item.active { color: white; background: rgba(255, 122, 0, 0.15); border-left: 10px solid var(--accent); }
-
-        /* --- STATUS BADGES --- */
-        .status-pill {
-            padding: 10px 20px; border-radius: 12px; font-size: 10px;
-            font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
-            display: inline-block; border: 1px solid transparent;
-        }
-        .verified { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.2); }
-        .pending { background: rgba(255, 122, 0, 0.1); color: var(--accent); border-color: rgba(255, 122, 0, 0.2); }
-
-        /* --- PASSWORD EYE SYSTEM --- */
-        .input-container { position: relative; width: 100%; }
-        .auth-input {
-            width: 100%; background: #0f172a; border: 2px solid #1e293b; 
-            padding: 20px; border-radius: 22px; color: white; font-weight: 600; outline: none;
-        }
-        .eye-toggle { 
-            position: absolute; right: 20px; top: 50%; transform: translateY(-50%); 
-            cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 20px;
-        }
-        .eye-toggle:hover { opacity: 1; color: var(--accent); }
-
-        /* --- SECURITY GATE --- */
-        #authGate { 
-            position: fixed; inset: 0; background: #000; z-index: 10000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
-        .pulse-logo { font-size: 100px; filter: drop-shadow(0 0 50px var(--accent)); animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
-        
-        .hidden-panel { display: none !important; }
-
-        @media (max-width: 1024px) {
-            .sidebar { width: 100%; height: auto; bottom: 0; top: auto; flex-direction: row; }
-            .main-viewport { margin-left: 0; padding: 30px; padding-bottom: 120px; }
-            .nav-item { padding: 20px; flex-direction: column; font-size: 9px; border-left: none; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="authGate">
-        <div class="pulse-logo mb-12">🏪</div>
-        <h2 class="text-4xl font-black italic tracking-tighter text-white uppercase">NirmanSutra</h2>
-        <p id="authMsg" class="text-slate-500 uppercase tracking-[15px] text-xs mt-8 text-center px-10">Syncing Supplier Workspace...</p>
-    </div>
-
-    <nav class="sidebar">
-        <div class="p-12 border-b border-white/5">
-            <h1 class="text-4xl font-black italic tracking-tighter text-white leading-none">SUPPLIER<span class="text-orange-500">HUB</span></h1>
-            <p class="text-[10px] font-extrabold text-slate-600 uppercase tracking-[8px] mt-4">Partner Portal v3.5</p>
-        </div>
-        
-        <div class="flex-grow py-8">
-            <div onclick="show('dash')" id="nav-dash" class="nav-item active">📊 <span class="nav-text">Dashboard</span></div>
-            <div onclick="show('orders')" id="nav-orders" class="nav-item">📋 <span class="nav-text">New Customer Leads</span></div>
-            <div onclick="show('profile')" id="nav-profile" class="nav-item">🏢 <span class="nav-text">Business Profile</span></div>
-            <div onclick="show('security')" id="nav-security" class="nav-item">🛡️ <span class="nav-text">Settings</span></div>
-        </div>
-
-        <div class="p-10 border-t border-white/5 bg-slate-900/60">
-            <p id="partnerName" class="text-[12px] font-black text-orange-500 uppercase tracking-widest truncate mb-6 italic">NODE_SYNCING...</p>
-            <button onclick="auth.signOut()" class="w-full py-5 bg-red-600/10 text-red-500 rounded-2xl font-black text-[11px] uppercase border border-red-600/20 hover:bg-red-600 hover:text-white transition-all">Logout</button>
-        </div>
-    </nav>
-
-    <main class="main-viewport">
-        
-        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-24 gap-12">
-            <div>
-                <h2 id="viewTitle" class="text-7xl font-black uppercase tracking-tighter text-white leading-none">Welcome Back!</h2>
-                <p id="viewSubtitle" class="text-slate-400 text-2xl font-medium mt-6 italic">Manage your marketplace presence and live leads.</p>
-            </div>
-            <div class="px-10 py-6 bg-emerald-500/10 border-2 border-emerald-500/20 rounded-full">
-                <span class="text-emerald-500 font-black uppercase tracking-widest text-xs animate-pulse">● Supply Node Active</span>
-            </div>
-        </header>
-
-        <section id="panel-dash" class="space-y-12">
-            
-            <div id="kycAlert" class="glass-module border-l-[15px] border-l-orange-500 bg-orange-500/5">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div>
-                        <h4 class="text-3xl font-black text-white uppercase italic">Complete Your Business Profile</h4>
-                        <p class="text-slate-400 mt-2 font-medium">Your account is active, but you must register your firm details to start receiving live customer leads.</p>
-                    </div>
-                    <button onclick="show('profile')" class="px-12 py-6 bg-orange-500 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:scale-110 transition-all shadow-4xl">Start Registration</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div class="glass-module border-l-[15px] border-l-blue-500">
-                    <p class="text-slate-500 font-black uppercase text-[11px] tracking-widest">Active Quotations</p>
-                    <h3 class="text-8xl font-black mt-8 text-white leading-none">0</h3>
-                </div>
-                <div class="glass-module border-l-[15px] border-l-orange-500">
-                    <p class="text-slate-500 font-black uppercase text-[11px] tracking-widest">Pending Payouts</p>
-                    <h3 class="text-8xl font-black mt-8 text-white leading-none">0</h3>
-                </div>
-                <div class="glass-module border-l-[15px] border-l-emerald-500">
-                    <p class="text-emerald-500 font-black uppercase text-[11px] tracking-widest">Account Health</p>
-                    <h3 id="nodeStatusLabel" class="text-3xl font-black mt-8 text-orange-500 italic uppercase">Setup Pending</h3>
-                </div>
-            </div>
-        </section>
-
-        <section id="panel-profile" class="hidden-panel">
-            <div class="glass-module max-w-4xl">
-                <div class="text-center mb-16">
-                    <div class="text-6xl mb-8">🏢</div>
-                    <h3 class="text-5xl font-black uppercase tracking-tighter text-white">Register Your Business Entity</h3>
-                    <p class="text-slate-400 mt-4 text-xl font-medium">Onboard your shop to the official NirmanSutra Marketplace.</p>
-                </div>
-                
-                <div class="p-10 bg-white/5 rounded-[40px] border border-white/5 space-y-8">
-                    <div class="flex items-start gap-8">
-                        <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center text-2xl">📝</div>
-                        <div>
-                            <h4 class="text-xl font-bold text-white uppercase tracking-tight">Step 1: Firm Identification</h4>
-                            <p class="text-slate-500 mt-2">Enter your legal Business Name, GSTIN (optional), and Office Address.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-8">
-                        <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-2xl">🏗️</div>
-                        <div>
-                            <h4 class="text-xl font-bold text-white uppercase tracking-tight">Step 2: Material Portfolio</h4>
-                            <p class="text-slate-500 mt-2">Select the categories you supply such as Cement, Steel, Bricks, or Aggregates.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="location.href='../registration.html?mode=new_partner&bypass=true'" class="w-full mt-12 py-8 bg-orange-500 text-white rounded-[35px] font-black uppercase text-sm tracking-[5px] shadow-heavy hover:scale-105 transition-all">Launch Business Registration</button>
-            </div>
-        </section>
-
-        <section id="panel-orders" class="hidden-panel space-y-10">
-            <div class="glass-module">
-                <h3 class="text-4xl font-black uppercase tracking-tighter mb-10 text-white">Live Customer Requirements</h3>
-                <div id="leadsFeed" class="space-y-6">
-                    <p class="text-slate-500 font-black uppercase text-[11px] tracking-[5px] text-center py-24 italic border-2 border-dashed border-white/5 rounded-[40px]">Please complete your business profile to view active customer leads in your area.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="panel-security" class="hidden-panel">
-            <div class="glass-module max-w-2xl">
-                <h3 class="text-4xl font-black uppercase tracking-tighter mb-8 text-white">Account Security</h3>
-                <p class="text-slate-400 mb-10 font-medium italic">Update your supply node authentication signature.</p>
-                
-                <div class="space-y-8">
-                    <div class="input-container">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4 ml-4">Confirm Current Password</label>
-                        <input type="password" id="nodePass" class="auth-input" placeholder="••••••••••••">
-                        <span class="eye-toggle" onclick="toggleDashboardEye('nodePass')">👁️</span>
-                    </div>
-                    <button class="w-full py-6 bg-slate-800 text-white rounded-3xl font-black uppercase text-sm tracking-widest transition-all hover:bg-slate-700">Update Profile Settings</button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        :root { --accent: #ff7a00; --navy: #020617; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 30px; }
+        .u-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; margin-bottom: 15px; outline: none; font-weight: 600; }
+        .u-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+        .chip { display: inline-block; padding: 10px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .chip.active { background: var(--accent); border-color: var(--accent); color: white; transform: scale(1.05); }
+    </style>
+</head>
+<body class="p-6">
+
+    <header class="mb-10 mt-4 text-center">
+        <h1 class="text-3xl font-black tracking-tight">MATERIAL <span class="text-orange-500">INTELLIGENCE</span></h1>
+        <p class="text-slate-400 text-[10px] font-black uppercase tracking-[5px] mt-2">Building Bharat Registry</p>
+    </header>
+
+    <div class="glass-panel max-w-lg mx-auto w-full">
+        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">1. Select Categories</h3>
+        <div id="categoryChips" class="mb-8 flex flex-wrap justify-center"></div>
+
+        <h3 class="font-black text-sm uppercase mb-4 text-orange-500 tracking-widest">2. Business Details</h3>
+        <input type="text" id="shopName" class="u-input" placeholder="Enterprise / Shop Name">
+        <input type="text" id="brands" class="u-input" placeholder="Main Brands (UltraTech, J K, Tata etc.)">
+        <textarea id="address" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Service Radius</label>
+                <select id="radius" class="u-input">
+                    <option value="10">10 KM</option>
+                    <option value="30">30 KM</option>
+                    <option value="50">50 KM+</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Business Type</label>
+                <select id="bizType" class="u-input">
+                    <option value="Retailer">Retailer</option>
+                    <option value="Wholesaler">Wholesaler</option>
+                    <option value="Manufacturer">Manufacturer</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="saveIntelligence()" id="saveBtn" class="w-full bg-orange-500 hover:bg-orange-600 p-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-orange-900/20 transition-all">Secure & Land on Dashboard</button>
+    </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDi2TQAvaqnz0D3eK6KZLYYhxsHUBG10A8",
-            authDomain: "infradepo.firebaseapp.com",
-            projectId: "infradepo",
-            databaseURL: "https://infradepo-default-rtdb.asia-southeast1.firebasedatabase.app"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const rtdb = firebase.database(), auth = firebase.auth();
+        const categories = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Paint", "Hardware"];
+        let selectedCategories = [];
 
-        /**
-         * 🛡️ MASTER SECURITY HANDSHAKE
-         * Role verification for capitalized 'Supplier' type.
-         */
-        auth.onAuthStateChanged(async (u) => {
-            const gate = document.getElementById('authGate');
-            const msg = document.getElementById('authMsg');
-
-            if (u) {
-                try {
-                    const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
-                    const role = snap.val();
-
-                    console.log("[SECURITY] Logged Identity Role:", role);
-
-                    // MATCHING LOGIC: Validates correct role-based routing
-                    if (role === 'Supplier' || role === 'admin' || role === 'super_admin') {
-                        msg.innerText = "AUTHENTICATION SUCCESSFUL.";
-                        document.getElementById('partnerName').innerText = u.email.toUpperCase();
-                        
-                        setTimeout(() => {
-                            gate.style.opacity = '0';
-                            setTimeout(() => gate.style.display = "none", 500);
-                        }, 1000);
-
-                        checkBusinessIdentity(u.uid);
-                    } else {
-                        msg.innerText = "ACCESS DENIED: REDIRECTING...";
-                        msg.style.color = "#ef4444";
-                        setTimeout(() => window.location.href = "../index.html", 2000);
-                    }
-                } catch (err) {
-                    console.error("Database Error:", err);
-                    window.location.href = "../index.html";
-                }
-            } else {
-                window.location.href = "../index.html";
-            }
+        // Load Chips
+        const chipBox = document.getElementById('categoryChips');
+        categories.forEach(cat => {
+            const span = document.createElement('span');
+            span.className = 'chip';
+            span.innerText = cat;
+            span.onclick = () => {
+                span.classList.toggle('active');
+                if(selectedCategories.includes(cat)) selectedCategories = selectedCategories.filter(c => c !== cat);
+                else selectedCategories.push(cat);
+            };
+            chipBox.appendChild(span);
         });
 
-        /**
-         * LOGIC: VERIFY FIRM ONBOARDING STATUS
-         */
-        async function checkBusinessIdentity(uid) {
-            console.log("[SYSTEM] Verifying Business Node Status...");
-            const bizSnap = await rtdb.ref(`supplier_onboarding/${uid}`).once('value');
+        // The "Stay Logged In" Save Function
+        async function saveIntelligence() {
+            const user = auth.currentUser;
+            if(!user) return alert("Session Error. Refresh and Login again.");
             
-            if(bizSnap.exists()) {
-                document.getElementById('kycAlert').classList.add('hidden-panel');
-                const label = document.getElementById('nodeStatusLabel');
-                label.innerText = "Verified Partner";
-                label.className = "text-3xl font-black mt-8 text-emerald-500 italic uppercase";
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = "SYNCING TO BHARAT NODES...";
+            btn.disabled = true;
+
+            const data = {
+                shopName: document.getElementById('shopName').value,
+                categories: selectedCategories,
+                brands: document.getElementById('brands').value,
+                address: document.getElementById('address').value,
+                deliveryRadius: document.getElementById('radius').value,
+                businessType: document.getElementById('bizType').value,
+                onboardingComplete: true,
+                lastUpdated: Date.now()
+            };
+
+            try {
+                // AWAIT ensures we don't redirect until the DB confirms receipt
+                await rtdb.ref(`users/${user.uid}`).update(data);
                 
-                loadLiveMarketLeads();
+                // Small buffer for Auth State stability
+                setTimeout(() => {
+                    window.location.href = "supplierdashboard.html";
+                }, 800);
+
+            } catch(e) {
+                alert("Registry Error: " + e.message);
+                btn.innerText = "Retry Registry";
+                btn.disabled = false;
             }
         }
-
-        /**
-         * UI MODULE: NAVIGATION CONTROLLER
-         */
-        function show(id) {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden-panel'));
-            document.getElementById('panel-' + id).classList.remove('hidden-panel');
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            document.getElementById('nav-' + id).classList.add('active');
-            
-            const titles = { dash: 'Namaste!', orders: 'Market Leads', profile: 'Business Profile', security: 'Settings' };
-            document.getElementById('viewTitle').innerText = titles[id];
-        }
-
-        /**
-         * UI UTILITY: PASSWORD VISIBILITY (EYE FUNCTION)
-         */
-        function toggleDashboardEye(inputId) {
-            const input = document.getElementById(inputId);
-            input.type = input.type === "password" ? "text" : "password";
-        }
-
-        /**
-         * DATA ENGINE: LIVE MARKET LEAD FETCH
-         */
-        function loadLiveMarketLeads() {
-            const leadsFeed = document.getElementById('leadsFeed');
-            rtdb.ref('site_audits_v4').limitToLast(8).on('value', snap => {
-                if(!snap.exists()) {
-                    leadsFeed.innerHTML = `<p class="text-slate-600 font-bold uppercase text-center py-10">No construction leads found.</p>`;
-                    return;
-                }
-                leadsFeed.innerHTML = "";
-                snap.forEach(child => {
-                    const data = child.val();
-                    leadsFeed.innerHTML += `
-                        <div class="p-8 bg-white/5 rounded-3xl border border-white/5 flex flex-col md:flex-row justify-between items-center hover:border-orange-500 transition-all gap-6">
-                            <div>
-                                <h4 class="text-2xl font-black text-white uppercase tracking-tight">${data.project || 'Undeclared Project'}</h4>
-                                <p class="text-slate-500 text-xs font-bold uppercase mt-1">${data.address || 'Udaipur Hub'}</p>
-                            </div>
-                            <div class="text-right">
-                                <span class="px-6 py-3 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-black uppercase tracking-widest">Lead Active</span>
-                            </div>
-                        </div>`;
-                });
-            });
-        }
     </script>
-
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 </body>
 </html>
