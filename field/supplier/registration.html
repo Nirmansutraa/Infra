@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supplier Registration | NirmanSutra</title>
+    <title>Supplier Registry | NirmanSutra</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -57,7 +57,9 @@
             padding: 20px; border-radius: 22px; 
             font-weight: 900; text-transform: uppercase; 
             letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255, 122, 0, 0.2);
+            cursor: pointer;
         }
+        .btn-reg:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -68,26 +70,44 @@
     </header>
 
     <main class="glass-card max-w-md mx-auto">
-        <h3 class="font-black text-[10px] uppercase text-slate-400 mb-4 tracking-widest text-center">Select Material Intelligence</h3>
+        <h3 class="font-black text-[10px] uppercase text-slate-400 mb-4 tracking-widest text-center">Material Intelligence</h3>
         <div id="catContainer" class="flex flex-wrap justify-center mb-8"></div>
 
         <div class="space-y-1">
             <input type="text" id="bizName" class="u-input" placeholder="Shop / Enterprise Name">
             <input type="text" id="bizBrands" class="u-input" placeholder="Primary Brands (JK, UltraTech, etc.)">
             <textarea id="bizAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
+            
+            <div class="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Supply Radius</label>
+                    <select id="bizRadius" class="u-input mt-1">
+                        <option value="10">10 KM</option>
+                        <option value="30" selected>30 KM</option>
+                        <option value="50">50 KM+</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 ml-2">Shop Type</label>
+                    <select id="bizType" class="u-input mt-1">
+                        <option value="Retailer">Retailer</option>
+                        <option value="Wholesaler">Wholesaler</option>
+                    </select>
+                </div>
+            </div>
         </div>
         
-        <button onclick="submitRegistration()" id="regBtn" class="btn-reg mt-4 transition-all active:scale-95">Complete Registration</button>
+        <button onclick="submitRegistration()" id="regBtn" class="btn-reg mt-6 transition-all active:scale-95">Complete Registration</button>
         
         <p class="text-center mt-8 text-slate-500 font-black text-[9px] uppercase tracking-widest">Secured by NirmanSutra Node</p>
     </main>
 
     <script>
-        // MARCH 2026 MATERIAL LIST
+        // MASTER MATERIAL LIST (The Intelligence Crux)
         const materials = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware", "Paint"];
         let selectedCats = [];
 
-        // LOAD CHIPS
+        // GENERATE CATEGORY CHIPS
         const container = document.getElementById('catContainer');
         materials.forEach(m => {
             const el = document.createElement('span');
@@ -101,39 +121,48 @@
             container.appendChild(el);
         });
 
-        // STABLE AUTH CHECK
+        // AUTH GUARD: Ensure user is logged in via OTP first
         auth.onAuthStateChanged(user => {
             if (!user) {
-                console.warn("No active session. Returning to home.");
+                console.warn("Session missing. Returning to Home.");
                 window.location.href = "../../index.html";
             }
         });
 
         async function submitRegistration() {
             const user = auth.currentUser;
-            if(!user) return alert("Session lost. Please log in again.");
+            if(!user) return alert("Session expired. Please log in again.");
             
             const btn = document.getElementById('regBtn');
-            btn.innerText = "MAPPING BUSINESS...";
+            const shopName = document.getElementById('bizName').value;
+
+            if(!shopName) return alert("Please enter your Shop Name.");
+            if(selectedCats.length === 0) return alert("Please select at least one material category.");
+
+            btn.innerText = "MAPPING INTELLIGENCE...";
             btn.disabled = true;
 
+            // PREPARE THE CRUX DATA
             const registrationData = {
-                shopName: document.getElementById('bizName').value || "Unnamed Shop",
-                brands: document.getElementById('bizBrands').value || "Multiple",
+                shopName: shopName,
+                brands: document.getElementById('bizBrands').value || "N/A",
                 address: document.getElementById('bizAddr').value || "Udaipur Region",
+                deliveryRadius: document.getElementById('bizRadius').value,
+                businessType: document.getElementById('bizType').value,
                 categories: selectedCats,
                 onboardingComplete: true,
-                lastSync: Date.now()
+                lastUpdated: Date.now()
             };
 
             try {
-                // SAVE DATA
+                // SAVE TO FIREBASE
+                // We use update() so we don't delete their Phone/Email from step 1
                 await rtdb.ref(`users/${user.uid}`).update(registrationData);
                 
                 // REDIRECT TO DASHBOARD (Same folder)
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
-                }, 500);
+                }, 800);
 
             } catch (error) {
                 alert("Registry Error: " + error.message);
