@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Infrastructure Intelligence Matrix</title>
+    <title>NirmanSutra | Building Bharat</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
@@ -15,66 +15,41 @@
     <script src="/js/config.js"></script>
 
     <style>
-        :root { 
-            --accent: #ff7a00; 
-            --bg-deep: #020617; 
-            --transition-main: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        body { 
-            background-color: var(--bg-deep); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: #f8fafc; 
-            margin: 0;
-            overflow-x: hidden;
-        }
+        :root { --accent: #ff7a00; --navy: #020617; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
-        .hero-matrix { 
-            background: radial-gradient(circle at 80% 20%, #1e293b 0%, #020617 60%); 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
-            padding: 0 8%; 
+        /* Clean Rapido-Style Background */
+        .hero-bg { 
+            background: radial-gradient(circle at top right, #1e293b, #020617); 
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; 
         }
 
         .identity-dock {
-            position: fixed; 
-            bottom: 35px; 
-            right: 35px; 
-            width: 380px;
-            background: rgba(15, 23, 42, 0.98); 
-            backdrop-filter: blur(60px);
-            padding: 45px; 
-            border-radius: 50px; 
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 60px 120px rgba(0,0,0,0.9); 
-            z-index: 5000;
-            transition: var(--transition-main);
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: white; color: #0f172a;
+            border-radius: 40px 40px 0 0; padding: 25px 30px 45px;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .dock-minimized { transform: translateY(calc(100% - 85px)); opacity: 0.95; }
+        .handle { width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 20px; }
 
-        .auth-input {
-            width: 100%; 
-            background: #0f172a; 
-            border: 2px solid #1e293b; 
-            padding: 20px; 
-            border-radius: 22px; 
-            color: white; 
-            font-weight: 600; 
-            outline: none; 
-            margin-bottom: 15px;
+        .btn-rapido {
+            width: 100%; padding: 18px; border-radius: 20px; 
+            font-weight: 800; text-transform: uppercase; font-size: 13px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.3s;
         }
+        
+        .btn-mobile { background: #f8fafc; color: #0f172a; }
+        .btn-wa { background: #e7f5ee; color: #075e54; border-color: #dcfce7; }
+        .btn-google { background: white; color: #0f172a; border-color: #e2e8f0; }
+        .btn-main { background: var(--accent); color: white; border: none; font-size: 15px; margin-top: 10px; }
 
-        .btn-orange {
-            background: var(--accent);
-            width: 100%;
-            padding: 20px;
-            border-radius: 22px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
+        .u-input { 
+            width: 100%; background: #f1f5f9; border: 2px solid transparent; 
+            padding: 20px; border-radius: 20px; color: #0f172a; 
+            font-weight: 700; outline: none; margin-bottom: 12px;
         }
         
         .hidden { display: none !important; }
@@ -82,78 +57,105 @@
 </head>
 <body>
 
-    <main class="hero-matrix">
-        <div class="max-w-6xl">
-            <h1 class="text-7xl font-black italic mb-6 tracking-tighter leading-none">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-400 text-3xl font-medium max-w-3xl">Infrastructure Intelligence Matrix. Deciphering field data into strategic material clarity.</p>
+    <main class="hero-bg">
+        <div class="text-center">
+            <h1 class="text-6xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px]">Building Bharat</p>
         </div>
     </main>
 
-    <div id="terminalDock" class="identity-dock dock-minimized">
-        <div class="cursor-pointer text-center pb-6 text-[10px] font-black uppercase tracking-[5px] text-orange-500" onclick="toggleDock()">
-            ▲ Access Gateway
-        </div>
+    <div id="mainDock" class="identity-dock">
+        <div class="handle"></div>
         
-        <div id="loginView">
-            <input type="email" id="logEmail" class="auth-input" placeholder="Email Address">
-            <input type="password" id="logPass" class="auth-input" placeholder="Password">
-            <button onclick="AuthEngine.login()" class="btn-orange shadow-lg hover:scale-105">Authorize Entry</button>
+        <div id="startView">
+            <h3 class="text-xl font-black mb-8 text-center">Ready to start?</h3>
             
-            <div class="flex items-center gap-4 my-8 opacity-20">
-                <div class="h-[1px] bg-white flex-1"></div>
-                <span class="text-[9px] font-black uppercase">OR</span>
-                <div class="h-[1px] bg-white flex-1"></div>
+            <div onclick="showFlow('mobile')" class="btn-rapido btn-mobile">
+                <span>📱</span> Login with Mobile OTP
             </div>
+            
+            <div onclick="showFlow('whatsapp')" class="btn-rapido btn-wa">
+                <span>💬</span> Login with WhatsApp
+            </div>
+            
+            <div onclick="handleGoogle()" class="btn-rapido btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
+            </div>
+        </div>
 
-            <button onclick="AuthEngine.googleLogin()" class="w-full py-4 bg-white text-black rounded-2xl font-black flex items-center justify-center gap-3 text-xs uppercase">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google ID
-            </button>
+        <div id="otpFlow" class="hidden">
+            <h3 id="flowTitle" class="text-xl font-black mb-6">Enter Number</h3>
+            <div id="inputGroup">
+                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile number">
+            </div>
+            <div id="otpGroup" class="hidden">
+                <p class="text-center text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest">Enter 6-digit code</p>
+                <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="••••••" maxlength="6">
+            </div>
+            <button id="actionBtn" onclick="nextStep()" class="btn-rapido btn-main">Send Code</button>
+            <p onclick="location.reload()" class="text-center mt-6 text-slate-400 font-bold text-xs uppercase cursor-pointer">Back</p>
         </div>
     </div>
 
     <script>
-        // MASTER ROUTING TABLE
-        const MASTER_ROUTES = {
+        // MASTER ROUTES
+        const ROUTES = {
             'super_admin': '/admin/super_admin.html',
             'admin': '/admin/dashboard.html',
             'field_survey_staff': '/field/dashboard.html',
-            'Supplier': '/field/supplier/dashboard.html',
-            'Builders': '/field/builder/dashboard.html'
+            'Supplier': '/field/supplier/dashboard.html'
         };
 
-        window.AuthEngine = {
-            async login() {
-                const email = document.getElementById('logEmail').value;
-                const pass = document.getElementById('logPass').value;
-                try {
-                    const res = await auth.signInWithEmailAndPassword(email, pass);
-                    this.route(res.user);
-                } catch(e) { alert("Invalid Credentials"); }
-            },
-            async googleLogin() {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                try {
-                    const res = await auth.signInWithPopup(provider);
-                    this.route(res.user);
-                } catch(e) { console.error(e.message); }
-            },
-            async route(user) {
-                const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
-                const role = snap.val();
-                if(role && MASTER_ROUTES[role]) {
-                    window.location.href = MASTER_ROUTES[role];
+        let currentMode = '';
+        let step = 1;
+
+        function showFlow(mode) {
+            currentMode = mode;
+            document.getElementById('startView').classList.add('hidden');
+            document.getElementById('otpFlow').classList.remove('hidden');
+            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Login' : 'WhatsApp Login';
+        }
+
+        async function nextStep() {
+            if(step === 1) {
+                const ph = document.getElementById('userPhone').value;
+                if(ph.length < 10) return alert("Please enter 10 digits");
+                
+                // Rapido-Style Speed Simulation
+                document.getElementById('inputGroup').classList.add('hidden');
+                document.getElementById('otpGroup').classList.remove('hidden');
+                document.getElementById('actionBtn').innerText = 'Verify & Login';
+                alert("TEST CODE: 123456");
+                step = 2;
+            } else {
+                if(document.getElementById('otpValue').value === "123456") {
+                    // Logic: Auto-Route
+                    // For fresh starts, we route to the Supplier Dashboard as default
+                    window.location.href = ROUTES['Supplier'];
                 } else {
-                    // Default to Supplier Dashboard if role is unassigned
-                    window.location.href = MASTER_ROUTES['Supplier'];
+                    alert("Wrong code. Try again.");
                 }
             }
-        };
+        }
 
-        function toggleDock() { document.getElementById('terminalDock').classList.toggle('dock-minimized'); }
+        async function handleGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const res = await auth.signInWithPopup(provider);
+                const snap = await rtdb.ref(`users/${res.user.uid}/role`).once('value');
+                const role = snap.val();
+                window.location.href = ROUTES[role] || ROUTES['Supplier'];
+            } catch(e) { console.error(e.message); }
+        }
 
-        // Auto-route if already logged in
+        // Auto-check session
         auth.onAuthStateChanged(user => {
-            if (user) AuthEngine.route(user);
+            if (user) {
+                rtdb.ref(`users/${user.uid}/role`).once('value', snap => {
+                    const role = snap.val();
+                    if(role) window.location.href = ROUTES[role] || ROUTES['Supplier'];
+                });
+            }
         });
     </script>
 </body>
