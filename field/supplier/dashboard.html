@@ -3,196 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra Partner | Building Bharat</title>
-    
+    <title>Supplier Node | NirmanSutra</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-    
-    <script src="../js/config.js"></script>
 
     <style>
-        :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; margin: 0; }
-        .top-bar { background: var(--navy); color: white; padding: 45px 25px 90px; border-radius: 0 0 45px 45px; }
-        .main-card { background: white; padding: 25px; border-radius: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); margin: -60px 20px 20px; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.8); }
+        :root { 
+            --bg: #f8fafc; --card: #ffffff; --accent: #10b981; --primary: #0f172a; 
+            --text-dim: #64748b; --orange: #ff7a00;
+        }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 120px; }
         
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; margin-bottom: 12px; outline: none; font-weight: 700; color: #0f172a; }
-        .chip { display: inline-block; padding: 10px 18px; background: #f1f5f9; color: #64748b; border-radius: 15px; font-size: 11px; font-weight: 800; margin: 4px; cursor: pointer; text-transform: uppercase; }
-        .chip.active { background: var(--accent); color: white; transform: scale(1.05); }
+        /* Layout Modules */
+        .auth-gate { position: fixed; inset: 0; background: var(--primary); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 30px; }
+        .card { background: var(--card); border-radius: 45px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .id-box { background: var(--primary); color: #10b981; text-align: center; padding: 40px; border-radius: 30px; font-size: 24px; font-weight: 900; font-family: monospace; letter-spacing: 4px; border: 1px solid #1e293b; }
         
-        .btn-rapido { background: var(--accent); color: white; padding: 20px; border-radius: 24px; width: 100%; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 12px; border: none; cursor: pointer; }
-        .icon-circle { width: 56px; height: 56px; background: #fff7ed; color: var(--accent); border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+        /* Original Interactive Elements */
+        .mat-item { background: var(--primary); color: white; padding: 25px 35px; border-radius: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+        .mat-item.active { border-color: var(--accent); transform: scale(1.02); }
+        .chip { background: #f1f5f9; padding: 15px; border-radius: 18px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; text-transform: uppercase; border: 2px solid transparent; }
+        .chip.active { background: var(--accent); color: white; transform: translateY(-3px); }
+        
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; padding: 8px; font-weight: 800; }
+
         .hidden { display: none !important; }
+        .action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 20px 30px; display: flex; gap: 15px; border-top: 1px solid #e2e8f0; z-index: 1000; }
+        .btn-rapido { flex: 1; padding: 20px; border-radius: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
     </style>
 </head>
 <body>
 
-    <header class="top-bar flex justify-between items-start">
-        <div>
-            <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px] mb-1">Building Bharat</p>
-            <h1 id="userTitle" class="text-2xl font-black italic tracking-tight">Partner</h1>
-        </div>
-        <button onclick="auth.signOut().then(()=>window.location.href='../index.html')" class="bg-white/10 p-4 rounded-2xl text-white">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
+<div id="authGate" class="auth-gate">
+    <div class="bg-[#1e293b] p-12 rounded-[50px] w-full max-w-lg text-center border border-white/10">
+        <h1 class="text-white text-4xl font-black italic mb-2 tracking-tighter">NIRMAN<span class="text-emerald-500">SUTRA</span></h1>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[5px] mb-12">Supplier Registry Node</p>
+        
+        <button onclick="AuthManager.login()" id="gBtn" class="bg-white w-full p-6 rounded-3xl font-black flex items-center justify-center gap-4 text-slate-900 hover:bg-slate-50">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+            Verify Partner ID
         </button>
+
+        <div id="otpSection" class="hidden mt-8">
+            <input type="number" id="otpInput" placeholder="Enter 6-Digit OTP" class="w-full bg-slate-800 text-white p-6 rounded-2xl text-center text-2xl font-black tracking-[10px] outline-none border border-slate-700">
+            <button onclick="AuthManager.verifyOTP()" class="w-full bg-emerald-600 text-white p-6 rounded-2xl font-black uppercase mt-4">Access Module</button>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-3xl mx-auto px-6 py-12 hidden" id="registryContent">
+    <header class="mb-12">
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter">Supplier<span class="text-emerald-500">Registry</span></h1>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-2" id="idSyncTag">IDENTITY SYNC REQUIRED...</p>
     </header>
 
-    <main>
-        <section id="formView" class="main-card hidden">
-            <div class="text-center mb-6">
-                <div class="icon-circle mx-auto mb-3"><i data-lucide="store" class="w-7 h-7"></i></div>
-                <h3 class="font-black text-xl">Business Registry</h3>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Material Intelligence</p>
-            </div>
+    <div class="card">
+        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-4">01. Node Signature</span>
+        <div id="trackId" class="id-box">RJ-SUP-NODE---</div>
+    </div>
 
-            <p class="text-[10px] font-black text-slate-400 uppercase mb-3 ml-2">Select Your Materials</p>
-            <div id="matsBox" class="flex flex-wrap justify-center mb-8"></div>
-            
-            <input type="text" id="inShop" class="u-input" placeholder="Shop / Company Name">
-            <input type="text" id="inBrands" class="u-input" placeholder="Brands You Sell (JK, Tata, etc.)">
-            <textarea id="inAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
-            
-            <button onclick="saveProfile()" id="saveBtn" class="btn-rapido mt-4 shadow-xl shadow-orange-200">
-                <i data-lucide="zap" class="w-5 h-5"></i> Finish Registry
-            </button>
-        </section>
-
-        <section id="dashView" class="main-card hidden">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <p id="outShop" class="text-2xl font-black text-slate-900 leading-none">---</p>
-                    <p id="outAddr" class="text-xs text-slate-400 font-bold mt-2 italic">---</p>
-                </div>
-                <button onclick="toggleView('form')" class="bg-slate-50 p-3 rounded-xl">
-                    <i data-lucide="edit-3" class="w-4 h-4 text-slate-400"></i>
-                </button>
-            </div>
-            
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Live Materials</p>
-            <div id="outMats" class="flex flex-wrap mb-4"></div>
-
-            <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100">
-                <div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase">Brands</p>
-                    <p id="outBrands" class="font-black text-sm text-slate-800">---</p>
-                </div>
-                <div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase">Status</p>
-                    <p class="font-black text-sm text-green-600 uppercase">Registry Live</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="px-6 grid grid-cols-2 gap-4 mb-10">
-            <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-50">
-                <div class="icon-circle mx-auto mb-3"><i data-lucide="package-search" class="w-6 h-6"></i></div>
-                <p class="text-[10px] font-black uppercase">Live Leads</p>
-            </div>
-            <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-50">
-                <div class="icon-circle mx-auto mb-3"><i data-lucide="indian-rupee" class="w-6 h-6"></i></div>
-                <p class="text-[10px] font-black uppercase">Payments</p>
+    <div class="card">
+        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-6">02. Entity Matrix</span>
+        
+        <label class="text-[9px] font-bold text-slate-400 uppercase ml-2">Business Type</label>
+        <select id="supplierType" onchange="Survey.refreshID()" class="w-full bg-slate-100 p-5 rounded-2xl mt-2 font-bold">
+            <option value="Retailer">Authorized Retailer (R)</option>
+            <option value="Wholesaler">Stockist / Wholesaler (W)</option>
+            <option value="Manufacturer">OEM / Manufacturer (M)</option>
+        </select>
+        
+        <input id="firmName" placeholder="Legal Firm Name (GST)" class="w-full bg-slate-100 p-5 rounded-2xl mt-4 font-bold outline-none border-2 border-transparent focus:border-emerald-500">
+        <input id="gstNumber" placeholder="GSTIN Number" class="w-full bg-slate-100 p-5 rounded-2xl mt-4 font-bold outline-none border-2 border-transparent focus:border-emerald-500">
+        
+        <div class="mt-10 pt-8 border-t border-slate-100">
+            <p class="text-[11px] font-black text-emerald-600 uppercase mb-6 tracking-widest">● Primary Owner Hub</p>
+            <input id="ownerName" placeholder="Owner Full Name" class="w-full bg-slate-100 p-5 rounded-2xl font-bold outline-none">
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <input id="ownerPhone" type="tel" placeholder="Phone" oninput="Validation.phone(this, 'ownerWa')" class="w-full bg-slate-100 p-5 rounded-2xl font-bold outline-none">
+                <input id="ownerWa" type="tel" placeholder="WhatsApp" class="w-full bg-slate-100 p-5 rounded-2xl font-bold outline-none" readonly>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script>
-        lucide.createIcons();
-        const matsList = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware", "Paint"];
-        let selectedMats = [];
+    <div class="card">
+        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-6">03. GPS Spatial Lock</span>
+        <div id="map" class="h-[300px] rounded-[30px] mb-6 border border-slate-200"></div>
+        <button onclick="Geo.capture()" class="w-full bg-primary text-white p-6 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3">
+            <i data-lucide="map-pin"></i> Capture Warehouse GPS
+        </button>
+        <textarea id="address" class="w-full mt-4 text-xs text-slate-400 font-bold bg-transparent border-none outline-none italic" placeholder="Geotag pending..." readonly></textarea>
+        
+        <div class="mt-10">
+            <label class="text-[9px] font-bold text-slate-400 uppercase ml-2">Warehouse Photos (Max 10)</label>
+            <div class="grid grid-cols-5 gap-4 mt-6" id="photoGrid">
+                <button onclick="document.getElementById('cam').click()" class="photo-slot text-slate-300 text-4xl hover:bg-slate-50 transition-all">+</button>
+            </div>
+            <input type="file" id="cam" accept="image/*" capture="environment" hidden onchange="Evidence.handle(this)">
+        </div>
+    </div>
 
-        // Build Selection Chips
-        const mBox = document.getElementById('matsBox');
-        matsList.forEach(m => {
-            const s = document.createElement('span');
-            s.className = 'chip';
-            s.innerText = m;
-            s.onclick = () => {
-                s.classList.toggle('active');
-                if(selectedMats.includes(m)) selectedMats = selectedMats.filter(i => i !== m);
-                else selectedMats.push(m);
-            };
-            mBox.appendChild(s);
-        });
+    <div class="card">
+        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-6">04. Material Intelligence</span>
+        <div id="matSelector" class="grid grid-cols-1 gap-4"></div>
 
-        // Watch Firebase
-        auth.onAuthStateChanged(user => {
-            if (user) sync(user.uid);
-            else window.location.href = "../index.html";
-        });
+        <div id="varietySection" class="mt-8 hidden bg-slate-50 p-8 rounded-[35px] border border-slate-200">
+            <label class="text-[10px] font-black text-slate-400 uppercase block mb-4 tracking-widest">Step 2: Varieties</label>
+            <div id="varietyGrid" class="grid grid-cols-2 gap-3"></div>
+        </div>
 
-        function sync(uid) {
-            rtdb.ref(`users/${uid}`).on('value', snap => {
-                const data = snap.val();
-                if(!data) return;
-                document.getElementById('userTitle').innerText = data.name || "Partner";
-                
-                // DECISION: Show form if incomplete, else show dashboard
-                if (data.onboardingComplete) {
-                    showDashboard(data);
-                } else {
-                    toggleView('form');
-                }
+        <div id="brandSection" class="mt-8 hidden bg-slate-50 p-8 rounded-[35px] border border-slate-200">
+            <label class="text-[10px] font-black text-slate-400 uppercase block mb-4 tracking-widest">Step 3: Brands</label>
+            <div id="brandGrid" class="grid grid-cols-2 gap-3"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-6">05. Dispatch Capacity</span>
+        <div id="fleetGrid" class="grid grid-cols-1 gap-4"></div>
+    </div>
+</div>
+
+<div class="action-bar hidden" id="footerBar">
+    <button onclick="RegistrationEngine.submit()" id="sBtn" class="btn-rapido bg-emerald-500 text-white flex items-center justify-center gap-3">
+        <i data-lucide="send"></i> Finalize Global Sync
+    </button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // 1. Firebase Logic (Modular Path)
+    // Root js folder is ../js/config.js
+    firebase.initializeApp(firebaseConfig); // Assuming firebaseConfig is in your ../js/config.js
+    const rtdb = firebase.database(), auth = firebase.auth();
+
+    // 2. Global State Engine (From your working registration.html)
+    window.Survey = {
+        state: { location: null, mat: null, varieties: [], brands: [], fleet: {}, photos: [], trackingId: "", role: "supplier" },
+        async refreshID() {
+            const snap = await rtdb.ref('surveys').once('value');
+            const t = document.getElementById('supplierType').value[0];
+            const smartId = `NS-PRT-${t}-${String(snap.numChildren()+1).padStart(5,'0')}`;
+            document.getElementById('trackId').innerText = smartId;
+            this.state.trackingId = smartId;
+        }
+    };
+
+    // 3. Auth Manager (The Login Module)
+    window.AuthManager = {
+        userData: null,
+        login() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(res => {
+                this.userData = res.user;
+                document.getElementById('gBtn').classList.add('hidden');
+                document.getElementById('otpSection').classList.remove('hidden');
+                document.getElementById('idSyncTag').innerText = "NODE AGENT: " + res.user.email.toUpperCase();
+            });
+        },
+        verifyOTP() {
+            if(document.getElementById('otpInput').value === "123456") {
+                document.getElementById('authGate').classList.add('hidden');
+                document.getElementById('registryContent').classList.remove('hidden');
+                document.getElementById('footerBar').classList.remove('hidden');
+                Geo.init(); syncRegistry(); lucide.createIcons();
+            } else { alert("Verification Failed."); }
+        }
+    };
+
+    // 4. Geo Module (Original functionality)
+    window.Geo = {
+        map: null, marker: null,
+        init() {
+            this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.58, 73.71], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+        },
+        capture() {
+            navigator.geolocation.getCurrentPosition(async p => {
+                const { latitude, longitude } = p.coords;
+                Survey.state.location = { lat: latitude, lng: longitude };
+                this.map.setView([latitude, longitude], 17);
+                if (this.marker) this.map.removeLayer(this.marker);
+                this.marker = L.marker([latitude, longitude]).addTo(this.map);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                const data = await res.json();
+                document.getElementById('address').value = data.display_name;
+                Survey.refreshID();
             });
         }
+    };
 
-        function toggleView(view) {
-            if(view === 'form') {
-                document.getElementById('formView').classList.remove('hidden');
-                document.getElementById('dashView').classList.add('hidden');
-            } else {
-                document.getElementById('formView').classList.add('hidden');
-                document.getElementById('dashView').classList.remove('hidden');
-            }
+    // 5. Evidence Engine (Photo logic from working file)
+    window.Evidence = {
+        handle(input) {
+            if(!Survey.state.location) return alert("Verify GPS Lock first.");
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 800; canvas.height = 600;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 800, 600);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                    Survey.state.photos.push({ src: base64, time: new Date().toLocaleString() });
+                    this.render();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        },
+        render() {
+            const grid = document.getElementById('photoGrid');
+            const btn = grid.firstElementChild;
+            grid.innerHTML = ""; grid.appendChild(btn);
+            Survey.state.photos.forEach((p, i) => { 
+                grid.innerHTML += `<div class="photo-slot" onclick="Evidence.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">${p.time}</div></div>`; 
+            });
+        },
+        remove(idx) { if(confirm("Discard photo?")) { Survey.state.photos.splice(idx,1); this.render(); } }
+    };
+
+    // 6. Validation & Sync Logic
+    window.Validation = {
+        phone(input, waId) {
+            let val = input.value.replace(/\D/g, '').slice(-10);
+            if (val.length === 10) { input.value = "+91 " + val; document.getElementById(waId).value = "+91 " + val; }
         }
+    };
 
-        function showDashboard(d) {
-            toggleView('dash');
-            document.getElementById('outShop').innerText = d.shopName;
-            document.getElementById('outAddr').innerText = d.address;
-            document.getElementById('outBrands').innerText = d.brands || "General Brands";
-            
-            const oBox = document.getElementById('outMats');
-            oBox.innerHTML = "";
-            if(d.categories) {
-                d.categories.forEach(c => {
-                    const tag = document.createElement('span');
-                    tag.className = "bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-[9px] font-bold mr-2 mb-2 uppercase";
-                    tag.innerText = c;
-                    oBox.appendChild(tag);
-                });
-            }
+    function syncRegistry() {
+        rtdb.ref('registry/materials').on('value', snap => {
+            const cont = document.getElementById('matSelector'); cont.innerHTML = "";
+            window.registryData = snap.val() || {};
+            Object.keys(window.registryData).forEach(cat => {
+                cont.innerHTML += `<div class="mat-item" id="mat-${cat}" onclick="selectMat('${cat}')"><span>${cat}</span><div class="w-4 h-4 rounded-full bg-slate-800"></div></div>`;
+            });
+        });
+    }
+
+    window.selectMat = function(cat) {
+        Survey.state.mat = cat; Survey.state.varieties = [];
+        document.querySelectorAll('.mat-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('mat-'+cat).classList.add('active');
+        const vGrid = document.getElementById('varietyGrid'); vGrid.innerHTML = "";
+        document.getElementById('varietySection').classList.remove('hidden');
+        const varieties = window.registryData[cat];
+        Object.keys(varieties).forEach(v => {
+            vGrid.innerHTML += `<div class="chip" onclick="toggleVariety('${cat}', '${v}', this)">${v}</div>`;
+        });
+    };
+
+    window.toggleVariety = function(cat, vKey, el) {
+        el.classList.toggle('active');
+        const idx = Survey.state.varieties.indexOf(vKey);
+        idx > -1 ? Survey.state.varieties.splice(idx, 1) : Survey.state.varieties.push(vKey);
+        const bGrid = document.getElementById('brandGrid'); bGrid.innerHTML = "";
+        if (Survey.state.varieties.length > 0) {
+            document.getElementById('brandSection').classList.remove('hidden');
+            const brands = new Set();
+            Survey.state.varieties.forEach(v => (window.registryData[cat][v].brands || []).forEach(b => brands.add(b)));
+            brands.forEach(b => bGrid.innerHTML += `<div class="chip" onclick="toggleBrand('${b}', this)">${b}</div>`);
         }
+    };
 
-        async function saveProfile() {
-            const user = auth.currentUser;
-            const btn = document.getElementById('saveBtn');
-            const shopName = document.getElementById('inShop').value;
+    window.toggleBrand = function(b, el) { el.classList.toggle('active'); Survey.state.brands.push(b); };
 
-            if(!shopName) return alert("Please enter Shop Name");
+    window.fleetStep = function(t, v) { 
+        if (!Survey.state.fleet[t]) Survey.state.fleet[t] = 0;
+        Survey.state.fleet[t] = Math.max(0, Survey.state.fleet[t] + v); 
+        document.getElementById(`fval-${t}`).innerText = Survey.state.fleet[t]; 
+    };
 
-            btn.innerText = "SAVING PROFILE...";
-            btn.disabled = true;
-
-            try {
-                await rtdb.ref(`users/${user.uid}`).update({
-                    shopName: shopName,
-                    brands: document.getElementById('inBrands').value,
-                    address: document.getElementById('inAddr').value,
-                    categories: selectedMats,
-                    onboardingComplete: true
-                });
-                // The sync() listener will automatically show the dashboard now!
-            } catch (e) {
-                alert(e.message);
-                btn.innerText = "Finish Registry";
-                btn.disabled = false;
-            }
+    window.RegistrationEngine = {
+        async submit() {
+            const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING...";
+            const payload = { ...Survey.state, firm: document.getElementById('firmName').value, uid: AuthManager.userData.uid, timestamp: Date.now() };
+            await rtdb.ref('supplier_onboarding/' + AuthManager.userData.uid).set(payload);
+            alert("SUCCESS: Enterprise Node Online.");
+            location.reload();
         }
-    </script>
+    };
+
+    window.onload = () => {
+        const fTypes = ['Tractor', 'Mini Truck', 'Truck', 'Mini Dumper', 'Dumper'];
+        document.getElementById('fleetGrid').innerHTML = fTypes.map(t => `
+            <div class="flex justify-between items-center bg-slate-50 p-6 rounded-2xl">
+                <span class="text-[11px] font-black uppercase text-slate-500">${t}</span>
+                <div class="flex items-center gap-6">
+                    <button class="w-10 h-10 bg-slate-900 text-white rounded-xl" onclick="fleetStep('${t}', -1)">-</button>
+                    <span id="fval-${t}" class="font-black">0</span>
+                    <button class="w-10 h-10 bg-slate-900 text-white rounded-xl" onclick="fleetStep('${t}', 1)">+</button>
+                </div>
+            </div>`).join('');
+    };
+</script>
+
 </body>
 </html>
