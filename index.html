@@ -19,11 +19,13 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
+        /* Mobile & Web View Optimization */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; align-items: center; justify-content: center; 
         }
 
+        /* Rapido Glide Dock */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
@@ -31,11 +33,11 @@
             box-shadow: 0 -30px 100px rgba(0,0,0,0.7); z-index: 5000;
             transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
             max-height: 92vh; overflow-y: auto;
-            transform: translateY(calc(100% - 90px));
+            transform: translateY(calc(100% - 90px)); /* Minimized at 90px */
         }
         .identity-dock.glide-up { transform: translateY(0); }
 
-        .handle { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
+        .handle-bar { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
 
         .btn-rapido {
             width: 100%; padding: 20px; border-radius: 22px; 
@@ -45,7 +47,7 @@
             letter-spacing: 2px;
         }
         
-        .btn-main { background: var(--accent); color: white; border: none; font-size: 13px; margin-top: 10px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
+        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
 
         .u-input { 
             width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; 
@@ -53,8 +55,10 @@
             font-weight: 700; outline: none; margin-bottom: 12px;
         }
 
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
+        
         .hidden { display: none !important; }
-        .legal-box { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 15px; display: flex; gap: 10px; cursor: pointer; }
+        .legal-box { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 15px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -62,12 +66,12 @@
     <main class="hero-bg" onclick="toggleDock(false)">
         <div class="text-center px-8">
             <h1 class="text-7xl font-black italic tracking-tighter mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[11px]">Building Bharat</p>
+            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[11px]">Infrastructure Intelligence</p>
         </div>
     </main>
 
     <div id="mainDock" class="identity-dock">
-        <div class="handle" onclick="toggleDock()"></div>
+        <div class="handle-bar" onclick="toggleDock()"></div>
         
         <div id="miniTitle" class="text-center cursor-pointer pb-6" onclick="toggleDock()">
             <span class="text-[10px] font-black uppercase tracking-[5px] text-slate-400">Tap to Start</span>
@@ -84,29 +88,38 @@
             </div>
 
             <div id="flowView" class="hidden">
-                <h3 id="flowTitle" class="text-xl font-black mb-6 italic">Identity Verification</h3>
+                <h3 id="flowTitle" class="text-xl font-black mb-6 italic">Identity Check</h3>
                 
                 <div id="inputBox">
                     <div id="signupFields" class="hidden">
-                        <input type="text" id="regName" class="u-input" placeholder="Full Legal Name *">
-                        <input type="email" id="regEmail" class="u-input" placeholder="Professional Email *">
+                        <span class="label-text">Full Legal Name *</span>
+                        <input type="text" id="regName" class="u-input" placeholder="Name">
+                        
+                        <span class="label-text">Professional Email *</span>
+                        <input type="email" id="regEmail" class="u-input" placeholder="Email">
+
+                        <span class="label-text">Professional Role *</span>
                         <select id="regRole" class="u-input"></select>
                     </div>
-                    <input type="tel" id="userPhone" class="u-input" placeholder="Mobile Number *">
-                    <input type="tel" id="userWa" class="u-input" placeholder="WhatsApp Number *">
+
+                    <span class="label-text">Mobile Number *</span>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
+                    
+                    <span class="label-text">WhatsApp Number *</span>
+                    <input type="tel" id="userWa" class="u-input" placeholder="Same or different">
                 </div>
 
                 <div id="otpBox" class="hidden mb-6">
-                    <p class="text-center text-[10px] font-black text-slate-400 mb-4">Enter 6-digit code</p>
-                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" maxlength="6">
+                    <p class="text-center text-[10px] font-black text-slate-400 mb-4 uppercase tracking-widest">Enter 6-digit code</p>
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" placeholder="••••••" maxlength="6">
                 </div>
 
                 <div class="legal-box" onclick="document.getElementById('legalCheck').click()">
-                    <input type="checkbox" id="legalCheck" class="w-5 h-5 accent-orange-500 rounded">
-                    <span>Accept <span class="text-orange-500 underline">Terms</span> & <span class="text-orange-500 underline">Privacy Policy</span> *</span>
+                    <input type="checkbox" id="legalCheck" class="w-5 h-5 accent-orange-500 rounded mt-1">
+                    <span>I accept the <span class="text-orange-500 underline">Terms</span> and <span class="text-orange-500 underline">Privacy Policy</span>. *</span>
                 </div>
 
-                <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main">Proceed Securely</button>
+                <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main shadow-xl">Proceed Securely</button>
             </div>
         </div>
     </div>
@@ -114,6 +127,7 @@
     <script>
         let step = 1;
 
+        // Pull centralized roles on load
         window.addEventListener('DOMContentLoaded', () => { 
             NS_UI.loadRoles('regRole'); 
         });
@@ -133,68 +147,79 @@
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Registry' : 'WhatsApp Registry';
+            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Link' : 'WhatsApp Link';
         }
 
         async function executeStep() {
-            if(!document.getElementById('legalCheck').checked) return alert("Accept terms to proceed.");
+            // Check mandatory legal acceptance
+            if(!document.getElementById('legalCheck').checked) return alert("Please accept Terms to proceed.");
+            
             if(step === 1) {
-                if(document.getElementById('userPhone').value.length < 10) return alert("Enter valid number.");
+                if(document.getElementById('userPhone').value.length < 10) return alert("Enter valid 10-digit number.");
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
-                document.getElementById('actionBtn').innerText = 'Verify Identity';
-                alert("TEST OTP: 123456"); step = 2;
+                document.getElementById('actionBtn').innerText = 'Verify & Link Node';
+                alert("TEST OTP: 123456"); 
+                step = 2;
             } else {
-                if(document.getElementById('otpValue').value === "123456") handleAuth();
+                if(document.getElementById('otpValue').value === "123456") handleAuthSuccess();
                 else alert("Invalid Code");
             }
         }
 
-        async function handleAuth() {
+        async function handleAuthSuccess() {
             const ph = document.getElementById('userPhone').value;
             const email = `${ph.slice(-10)}@nirmansutra.in`;
             try {
+                // Check if user already exists
                 const user = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
-                if(user) route(user.user);
-                else {
+                if(user) {
+                    routeUser(user.user);
+                } else {
+                    // Trigger mandatory profile fields for first login
                     document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
                     document.getElementById('inputBox').classList.remove('hidden');
-                    document.getElementById('actionBtn').innerText = 'Finalize Profile';
-                    document.getElementById('actionBtn').onclick = finalize;
+                    document.getElementById('actionBtn').innerText = 'Complete Profile';
+                    document.getElementById('actionBtn').onclick = finalizeSignup;
                 }
             } catch(e) { alert(e.message); }
         }
 
-        async function finalize() {
+        async function finalizeSignup() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
             const wa = document.getElementById('userWa').value;
 
-            if(!name || !email || !wa) return alert("All fields required.");
+            // Enforce mandatory profile data
+            if(!name || !email || !wa) return alert("All fields are mandatory.");
 
             try {
-                const res = await auth.createUserWithEmailAndPassword(`${phone.slice(-10)}@nirmansutra.in`, "NsSecure2026!");
-                await rtdb.ref(`users/${res.user.uid}`).set({ name, email, role, phone, whatsapp: wa, timestamp: Date.now() });
+                const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
+                const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
+                await rtdb.ref(`users/${res.user.uid}`).set({
+                    name, email, role, phone, whatsapp: wa, status: 'active', timestamp: Date.now()
+                });
                 window.location.href = NS_ROLES[role].path;
             } catch(e) { alert(e.message); }
         }
 
-        async function route(u) {
+        async function routeUser(u) {
             const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
+            // Direct user based on role from centralized roles.js
             if(role) window.location.href = NS_ROLES[role].path;
-            else toggleDock();
+            else { toggleDock(); handleAuthSuccess(); }
         }
 
         function handleGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(res => route(res.user));
+            auth.signInWithPopup(provider).then(res => routeUser(res.user));
         }
 
-        auth.onAuthStateChanged(u => { if(u) route(u); });
+        auth.onAuthStateChanged(u => { if(u) routeUser(u); });
     </script>
 </body>
 </html>
