@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Supplier Registration | NirmanSutra</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
@@ -16,35 +17,77 @@
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
-        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; padding: 20px; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 30px; margin-top: 20px; }
-        .u-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; margin-bottom: 15px; outline: none; font-weight: 600; }
-        .chip { display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; text-transform: uppercase; }
-        .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+        body { 
+            background: var(--navy); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: white; margin: 0; padding: 20px;
+            background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 70%);
+            min-height: 100vh;
+        }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 35px; padding: 30px; 
+            margin-top: 20px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        }
+
+        .u-input { 
+            width: 100%; background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 18px; border-radius: 20px; color: white; 
+            margin-bottom: 15px; outline: none; font-weight: 600; 
+        }
+        .u-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+
+        .chip { 
+            display: inline-block; padding: 10px 18px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 15px; font-size: 11px; font-weight: 800; 
+            margin: 5px; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s ease;
+        }
+        .chip.active { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.05); }
+
+        .btn-reg {
+            width: 100%; background: var(--accent); 
+            padding: 20px; border-radius: 22px; 
+            font-weight: 900; text-transform: uppercase; 
+            letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255, 122, 0, 0.2);
+        }
     </style>
 </head>
 <body>
 
-    <header class="text-center mb-6">
-        <h1 class="text-3xl font-black uppercase">Business <span class="text-orange-500">Registry</span></h1>
+    <header class="text-center mb-6 mt-4">
+        <h1 class="text-3xl font-black uppercase tracking-tight">Business <span class="text-orange-500">Registry</span></h1>
         <p class="text-orange-500 font-black uppercase tracking-[4px] text-[10px] mt-2">Building Bharat</p>
     </header>
 
     <main class="glass-card max-w-md mx-auto">
-        <h3 class="font-black text-xs uppercase text-slate-400 mb-4 tracking-widest text-center">Select Material Categories</h3>
+        <h3 class="font-black text-[10px] uppercase text-slate-400 mb-4 tracking-widest text-center">Select Material Intelligence</h3>
         <div id="catContainer" class="flex flex-wrap justify-center mb-8"></div>
 
-        <input type="text" id="bizName" class="u-input" placeholder="Shop / Enterprise Name">
-        <input type="text" id="bizBrands" class="u-input" placeholder="Brands (JK, UltraTech, Tata Steel)">
-        <textarea id="bizAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        <div class="space-y-1">
+            <input type="text" id="bizName" class="u-input" placeholder="Shop / Enterprise Name">
+            <input type="text" id="bizBrands" class="u-input" placeholder="Primary Brands (JK, UltraTech, etc.)">
+            <textarea id="bizAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        </div>
         
-        <button onclick="submitRegistration()" id="regBtn" class="w-full bg-orange-500 p-5 rounded-2xl font-black uppercase tracking-widest">Complete Registration</button>
+        <button onclick="submitRegistration()" id="regBtn" class="btn-reg mt-4 transition-all active:scale-95">Complete Registration</button>
+        
+        <p class="text-center mt-8 text-slate-500 font-black text-[9px] uppercase tracking-widest">Secured by NirmanSutra Node</p>
     </main>
 
     <script>
-        const materials = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware"];
+        // MARCH 2026 MATERIAL LIST
+        const materials = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware", "Paint"];
         let selectedCats = [];
 
+        // LOAD CHIPS
         const container = document.getElementById('catContainer');
         materials.forEach(m => {
             const el = document.createElement('span');
@@ -58,28 +101,42 @@
             container.appendChild(el);
         });
 
+        // STABLE AUTH CHECK
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                console.warn("No active session. Returning to home.");
+                window.location.href = "../../index.html";
+            }
+        });
+
         async function submitRegistration() {
             const user = auth.currentUser;
-            if(!user) return alert("Session lost. Please re-login.");
+            if(!user) return alert("Session lost. Please log in again.");
             
             const btn = document.getElementById('regBtn');
-            btn.innerText = "SAVING DATA...";
+            btn.innerText = "MAPPING BUSINESS...";
             btn.disabled = true;
 
             const registrationData = {
-                shopName: document.getElementById('bizName').value,
-                brands: document.getElementById('bizBrands').value,
-                address: document.getElementById('bizAddr').value,
+                shopName: document.getElementById('bizName').value || "Unnamed Shop",
+                brands: document.getElementById('bizBrands').value || "Multiple",
+                address: document.getElementById('bizAddr').value || "Udaipur Region",
                 categories: selectedCats,
-                onboardingComplete: true
+                onboardingComplete: true,
+                lastSync: Date.now()
             };
 
             try {
+                // SAVE DATA
                 await rtdb.ref(`users/${user.uid}`).update(registrationData);
-                // Land on dashboard in the same folder
-                window.location.href = "dashboard.html";
+                
+                // REDIRECT TO DASHBOARD (Same folder)
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 500);
+
             } catch (error) {
-                alert("Error: " + error.message);
+                alert("Registry Error: " + error.message);
                 btn.innerText = "Complete Registration";
                 btn.disabled = false;
             }
