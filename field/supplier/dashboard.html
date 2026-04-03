@@ -13,22 +13,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     
-    <script src="/js/config.js"></script>
+    <script src="../js/config.js"></script>
 
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a; margin: 0; }
-        
-        .top-bar { background: var(--navy); color: white; padding: 45px 25px 90px; border-radius: 0 0 40px 40px; }
-        .main-card { background: white; padding: 25px; border-radius: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); margin: -55px 20px 20px; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.8); }
+        .top-bar { background: var(--navy); color: white; padding: 45px 25px 90px; border-radius: 0 0 45px 45px; }
+        .main-card { background: white; padding: 25px; border-radius: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); margin: -60px 20px 20px; position: relative; z-index: 10; border: 1px solid rgba(255,255,255,0.8); }
         
         .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; margin-bottom: 12px; outline: none; font-weight: 700; color: #0f172a; }
-        .chip { display: inline-block; padding: 10px 18px; background: #f1f5f9; color: #64748b; border-radius: 15px; font-size: 11px; font-weight: 800; margin: 4px; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .chip { display: inline-block; padding: 10px 18px; background: #f1f5f9; color: #64748b; border-radius: 15px; font-size: 11px; font-weight: 800; margin: 4px; cursor: pointer; text-transform: uppercase; }
         .chip.active { background: var(--accent); color: white; transform: scale(1.05); }
         
         .btn-rapido { background: var(--accent); color: white; padding: 20px; border-radius: 24px; width: 100%; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 12px; border: none; cursor: pointer; }
         .icon-circle { width: 56px; height: 56px; background: #fff7ed; color: var(--accent); border-radius: 20px; display: flex; align-items: center; justify-content: center; }
-        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -37,62 +35,55 @@
     <header class="top-bar flex justify-between items-start">
         <div>
             <p class="text-orange-500 font-black text-[10px] uppercase tracking-[4px] mb-1">Building Bharat</p>
-            <h1 id="headerTitle" class="text-2xl font-black italic tracking-tight">Partner Portal</h1>
+            <h1 id="userTitle" class="text-2xl font-black italic tracking-tight">Partner</h1>
         </div>
-        <button onclick="auth.signOut().then(()=>window.location.href='/index.html')" class="bg-white/10 p-4 rounded-2xl text-white">
+        <button onclick="auth.signOut().then(()=>window.location.href='../index.html')" class="bg-white/10 p-4 rounded-2xl text-white">
             <i data-lucide="log-out" class="w-5 h-5"></i>
         </button>
     </header>
 
     <main>
-        <section id="registryView" class="main-card hidden">
-            <div class="text-center mb-8">
+        <section id="formView" class="main-card hidden">
+            <div class="text-center mb-6">
                 <div class="icon-circle mx-auto mb-3"><i data-lucide="store" class="w-7 h-7"></i></div>
-                <h3 class="font-black text-xl">Business Setup</h3>
+                <h3 class="font-black text-xl">Business Registry</h3>
                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Material Intelligence</p>
             </div>
 
-            <p class="text-[10px] font-black text-slate-400 uppercase mb-3 ml-2">Choose Materials</p>
-            <div id="materialBox" class="flex flex-wrap justify-center mb-8"></div>
+            <p class="text-[10px] font-black text-slate-400 uppercase mb-3 ml-2">Select Your Materials</p>
+            <div id="matsBox" class="flex flex-wrap justify-center mb-8"></div>
             
-            <div class="space-y-1">
-                <input type="text" id="shopNameInput" class="u-input" placeholder="Shop / Enterprise Name">
-                <input type="text" id="brandsInput" class="u-input" placeholder="Main Brands (JK, Tata, etc.)">
-                <textarea id="addressInput" class="u-input h-24" placeholder="Full Business Address"></textarea>
-            </div>
+            <input type="text" id="inShop" class="u-input" placeholder="Shop / Company Name">
+            <input type="text" id="inBrands" class="u-input" placeholder="Brands You Sell (JK, Tata, etc.)">
+            <textarea id="inAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
             
-            <button onclick="saveRegistry()" id="saveBtn" class="btn-rapido mt-6 shadow-xl shadow-orange-200">
+            <button onclick="saveProfile()" id="saveBtn" class="btn-rapido mt-4 shadow-xl shadow-orange-200">
                 <i data-lucide="zap" class="w-5 h-5"></i> Finish Registry
             </button>
         </section>
 
-        <section id="dashboardView" class="main-card hidden">
+        <section id="dashView" class="main-card hidden">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <p id="displayShopName" class="text-2xl font-black text-slate-900 leading-none">---</p>
-                    <p id="displayAddress" class="text-xs text-slate-400 font-bold mt-2 italic">---</p>
+                    <p id="outShop" class="text-2xl font-black text-slate-900 leading-none">---</p>
+                    <p id="outAddr" class="text-xs text-slate-400 font-bold mt-2 italic">---</p>
                 </div>
-                <button onclick="toggleView('registry')" class="bg-slate-50 p-3 rounded-xl">
+                <button onclick="toggleView('form')" class="bg-slate-50 p-3 rounded-xl">
                     <i data-lucide="edit-3" class="w-4 h-4 text-slate-400"></i>
                 </button>
             </div>
             
-            <div class="mb-8">
-                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Active Materials</p>
-                <div id="displayMaterials" class="flex flex-wrap"></div>
-            </div>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Live Materials</p>
+            <div id="outMats" class="flex flex-wrap mb-4"></div>
 
             <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100">
                 <div>
                     <p class="text-[9px] font-black text-slate-400 uppercase">Brands</p>
-                    <p id="displayBrands" class="font-black text-sm text-slate-800">---</p>
+                    <p id="outBrands" class="font-black text-sm text-slate-800">---</p>
                 </div>
                 <div>
                     <p class="text-[9px] font-black text-slate-400 uppercase">Status</p>
-                    <div class="flex items-center gap-1">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <p class="font-black text-sm text-slate-800 uppercase">Live</p>
-                    </div>
+                    <p class="font-black text-sm text-green-600 uppercase">Registry Live</p>
                 </div>
             </div>
         </section>
@@ -100,113 +91,102 @@
         <div class="px-6 grid grid-cols-2 gap-4 mb-10">
             <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-50">
                 <div class="icon-circle mx-auto mb-3"><i data-lucide="package-search" class="w-6 h-6"></i></div>
-                <p class="text-[10px] font-black uppercase tracking-tighter">Live Leads</p>
+                <p class="text-[10px] font-black uppercase">Live Leads</p>
             </div>
             <div class="bg-white p-6 rounded-[30px] shadow-sm text-center border border-slate-50">
                 <div class="icon-circle mx-auto mb-3"><i data-lucide="indian-rupee" class="w-6 h-6"></i></div>
-                <p class="text-[10px] font-black uppercase tracking-tighter">Payments</p>
+                <p class="text-[10px] font-black uppercase">Payments</p>
             </div>
         </div>
     </main>
 
     <script>
-        // 1. Setup Data & Icons
         lucide.createIcons();
-        const materialsList = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware"];
-        let selectedItems = [];
+        const matsList = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware", "Paint"];
+        let selectedMats = [];
 
-        // 2. Build Material Selection Chips
-        const materialBox = document.getElementById('materialBox');
-        materialsList.forEach(m => {
-            const span = document.createElement('span');
-            span.className = 'chip';
-            span.innerText = m;
-            span.onclick = () => {
-                span.classList.toggle('active');
-                if(selectedItems.includes(m)) selectedItems = selectedItems.filter(i => i !== m);
-                else selectedItems.push(m);
+        // Build Selection Chips
+        const mBox = document.getElementById('matsBox');
+        matsList.forEach(m => {
+            const s = document.createElement('span');
+            s.className = 'chip';
+            s.innerText = m;
+            s.onclick = () => {
+                s.classList.toggle('active');
+                if(selectedMats.includes(m)) selectedMats = selectedMats.filter(i => i !== m);
+                else selectedMats.push(m);
             };
-            materialBox.appendChild(span);
+            mBox.appendChild(s);
         });
 
-        // 3. Watch for Login & Sync
+        // Watch Firebase
         auth.onAuthStateChanged(user => {
-            if (user) {
-                syncUser(user.uid);
-            } else {
-                window.location.href = "/index.html";
-            }
+            if (user) sync(user.uid);
+            else window.location.href = "../index.html";
         });
 
-        function syncUser(uid) {
-            rtdb.ref(`users/${uid}`).on('value', snapshot => {
-                const data = snapshot.val();
+        function sync(uid) {
+            rtdb.ref(`users/${uid}`).on('value', snap => {
+                const data = snap.val();
                 if(!data) return;
-
-                // Set User Greeting
-                document.getElementById('headerTitle').innerText = data.name || "Partner Portal";
-
-                // Decide which view to show
+                document.getElementById('userTitle').innerText = data.name || "Partner";
+                
+                // DECISION: Show form if incomplete, else show dashboard
                 if (data.onboardingComplete) {
                     showDashboard(data);
                 } else {
-                    toggleView('registry');
+                    toggleView('form');
                 }
             });
         }
 
-        // 4. View Switching Logic
         function toggleView(view) {
-            if(view === 'registry') {
-                document.getElementById('registryView').classList.remove('hidden');
-                document.getElementById('dashboardView').classList.add('hidden');
+            if(view === 'form') {
+                document.getElementById('formView').classList.remove('hidden');
+                document.getElementById('dashView').classList.add('hidden');
             } else {
-                document.getElementById('registryView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
+                document.getElementById('formView').classList.add('hidden');
+                document.getElementById('dashView').classList.remove('hidden');
             }
         }
 
-        function showDashboard(data) {
-            toggleView('dashboard');
-            document.getElementById('displayShopName').innerText = data.shopName;
-            document.getElementById('displayAddress').innerText = data.address;
-            document.getElementById('displayBrands').innerText = data.brands || "General";
+        function showDashboard(d) {
+            toggleView('dash');
+            document.getElementById('outShop').innerText = d.shopName;
+            document.getElementById('outAddr').innerText = d.address;
+            document.getElementById('outBrands').innerText = d.brands || "General Brands";
             
-            const displayBox = document.getElementById('displayMaterials');
-            displayBox.innerHTML = "";
-            if(data.categories) {
-                data.categories.forEach(c => {
+            const oBox = document.getElementById('outMats');
+            oBox.innerHTML = "";
+            if(d.categories) {
+                d.categories.forEach(c => {
                     const tag = document.createElement('span');
                     tag.className = "bg-slate-100 text-slate-500 px-3 py-1 rounded-lg text-[9px] font-bold mr-2 mb-2 uppercase";
                     tag.innerText = c;
-                    displayBox.appendChild(tag);
+                    oBox.appendChild(tag);
                 });
             }
         }
 
-        // 5. Save Function (The "Finish" Button)
-        async function saveRegistry() {
+        async function saveProfile() {
             const user = auth.currentUser;
             const btn = document.getElementById('saveBtn');
-            
-            const shopName = document.getElementById('shopNameInput').value;
-            if(!shopName) return alert("Enter Shop Name");
+            const shopName = document.getElementById('inShop').value;
+
+            if(!shopName) return alert("Please enter Shop Name");
 
             btn.innerText = "SAVING PROFILE...";
             btn.disabled = true;
 
-            const update = {
-                shopName: shopName,
-                brands: document.getElementById('brandsInput').value,
-                address: document.getElementById('addressInput').value,
-                categories: selectedItems,
-                onboardingComplete: true,
-                lastSync: Date.now()
-            };
-
             try {
-                await rtdb.ref(`users/${user.uid}`).update(update);
-                // The syncUser() listener will automatically flip to the dashboard view now!
+                await rtdb.ref(`users/${user.uid}`).update({
+                    shopName: shopName,
+                    brands: document.getElementById('inBrands').value,
+                    address: document.getElementById('inAddr').value,
+                    categories: selectedMats,
+                    onboardingComplete: true
+                });
+                // The sync() listener will automatically show the dashboard now!
             } catch (e) {
                 alert(e.message);
                 btn.innerText = "Finish Registry";
