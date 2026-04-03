@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Registration | NirmanSutra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    
+    <script src="../../js/config.js"></script>
+    <script src="../../js/ui-utils.js"></script>
+
+    <style>
+        :root { --accent: #ff7a00; --navy: #020617; }
+        body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; padding: 20px; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px; padding: 30px; margin-top: 20px; }
+        .u-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; margin-bottom: 15px; outline: none; font-weight: 600; }
+        .chip { display: inline-block; padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; font-size: 11px; font-weight: 800; margin: 5px; cursor: pointer; text-transform: uppercase; }
+        .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <header class="text-center mb-6">
+        <h1 class="text-3xl font-black uppercase">Business <span class="text-orange-500">Registry</span></h1>
+        <p class="text-orange-500 font-black uppercase tracking-[4px] text-[10px] mt-2">Building Bharat</p>
+    </header>
+
+    <main class="glass-card max-w-md mx-auto">
+        <h3 class="font-black text-xs uppercase text-slate-400 mb-4 tracking-widest text-center">Select Material Categories</h3>
+        <div id="catContainer" class="flex flex-wrap justify-center mb-8"></div>
+
+        <input type="text" id="bizName" class="u-input" placeholder="Shop / Enterprise Name">
+        <input type="text" id="bizBrands" class="u-input" placeholder="Brands (JK, UltraTech, Tata Steel)">
+        <textarea id="bizAddr" class="u-input h-24" placeholder="Full Business Address"></textarea>
+        
+        <button onclick="submitRegistration()" id="regBtn" class="w-full bg-orange-500 p-5 rounded-2xl font-black uppercase tracking-widest">Complete Registration</button>
+    </main>
+
+    <script>
+        const materials = ["Cement", "Steel", "Bricks", "Sand", "Plumbing", "Electrical", "Hardware"];
+        let selectedCats = [];
+
+        const container = document.getElementById('catContainer');
+        materials.forEach(m => {
+            const el = document.createElement('span');
+            el.className = 'chip';
+            el.innerText = m;
+            el.onclick = () => {
+                el.classList.toggle('active');
+                if(selectedCats.includes(m)) selectedCats = selectedCats.filter(item => item !== m);
+                else selectedCats.push(m);
+            };
+            container.appendChild(el);
+        });
+
+        async function submitRegistration() {
+            const user = auth.currentUser;
+            if(!user) return alert("Session lost. Please re-login.");
+            
+            const btn = document.getElementById('regBtn');
+            btn.innerText = "SAVING DATA...";
+            btn.disabled = true;
+
+            const registrationData = {
+                shopName: document.getElementById('bizName').value,
+                brands: document.getElementById('bizBrands').value,
+                address: document.getElementById('bizAddr').value,
+                categories: selectedCats,
+                onboardingComplete: true
+            };
+
+            try {
+                await rtdb.ref(`users/${user.uid}`).update(registrationData);
+                // Land on dashboard in the same folder
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Error: " + error.message);
+                btn.innerText = "Complete Registration";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
