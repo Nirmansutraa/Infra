@@ -161,7 +161,6 @@
         const TEST_OTP = "123456";
         const SECURE_PASS = "Ns_Otp_Secure_2026!"; 
 
-        // Load Roles from Master JS on Start
         window.addEventListener('DOMContentLoaded', () => { NS_UI.loadRoles('regRole'); });
 
         function toggleDock() {
@@ -231,9 +230,9 @@
                     name: name, phone: ph, role: role, email: email, loginMethod: 'OTP', timestamp: Date.now()
                 });
                 
-                // Route Suppliers to the Registry folder
+                // RAPIDO FIX: No more redirection to registration.html
                 if(role === "Supplier") {
-                    window.location.href = "field/supplier/registration.html";
+                    window.location.href = "field/supplier/dashboard.html";
                 } else {
                     AuthRouter.redirect(res.user);
                 }
@@ -250,7 +249,7 @@
                 const snap = await rtdb.ref(`users/${res.user.uid}`).once('value');
                 const data = snap.val();
                 
-                // Route returning Suppliers to their Dashboard folder
+                // RAPIDO FIX: Direct entry to the Dashboard station
                 if(data && data.role === "Supplier") {
                     window.location.href = "field/supplier/dashboard.html";
                 } else {
