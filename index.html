@@ -18,7 +18,7 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
-        /* Clean Rapido-Style Background */
+        /* Rapid-Motion Background */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; align-items: center; justify-content: center; 
@@ -27,30 +27,34 @@
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
-            border-radius: 40px 40px 0 0; padding: 25px 30px 45px;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
-            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            border-radius: 45px 45px 0 0; padding: 25px 30px 45px;
+            box-shadow: 0 -25px 80px rgba(0,0,0,0.6); z-index: 5000;
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            max-height: 90vh; overflow-y: auto;
         }
 
-        .handle { width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 20px; }
+        .handle { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; }
 
         .btn-rapido {
-            width: 100%; padding: 18px; border-radius: 20px; 
-            font-weight: 800; text-transform: uppercase; font-size: 13px;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.3s;
+            width: 100%; padding: 20px; border-radius: 22px; 
+            font-weight: 800; text-transform: uppercase; font-size: 11px;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.4s;
+            letter-spacing: 2px;
         }
         
-        .btn-mobile { background: #f8fafc; color: #0f172a; }
+        .btn-mobile { background: #f8fafc; color: #0f172a; border: 1px solid #e2e8f0; }
         .btn-wa { background: #e7f5ee; color: #075e54; border-color: #dcfce7; }
         .btn-google { background: white; color: #0f172a; border-color: #e2e8f0; }
-        .btn-main { background: var(--accent); color: white; border: none; font-size: 15px; margin-top: 10px; }
+        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
 
         .u-input { 
-            width: 100%; background: #f1f5f9; border: 2px solid transparent; 
-            padding: 20px; border-radius: 20px; color: #0f172a; 
+            width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; 
+            padding: 22px; border-radius: 22px; color: #0f172a; 
             font-weight: 700; outline: none; margin-bottom: 12px;
         }
+
+        .label-text { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; display: block; padding-left: 10px; }
         
         .hidden { display: none !important; }
     </style>
@@ -59,8 +63,8 @@
 
     <main class="hero-bg">
         <div class="text-center">
-            <h1 class="text-6xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px]">Building Bharat</p>
+            <h1 class="text-7xl font-black italic tracking-tighter mb-2">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[11px]">Building Bharat</p>
         </div>
     </main>
 
@@ -68,94 +72,164 @@
         <div class="handle"></div>
         
         <div id="startView">
-            <h3 class="text-xl font-black mb-8 text-center">Ready to start?</h3>
+            <h3 class="text-2xl font-black mb-10 text-center text-slate-900">Get Started</h3>
             
-            <div onclick="showFlow('mobile')" class="btn-rapido btn-mobile">
-                <span>📱</span> Login with Mobile OTP
+            <div onclick="initFlow('mobile')" class="btn-rapido btn-mobile">
+                <span class="text-xl">📱</span> Sign up or Login with Mobile
             </div>
             
-            <div onclick="showFlow('whatsapp')" class="btn-rapido btn-wa">
-                <span>💬</span> Login with WhatsApp
+            <div onclick="initFlow('whatsapp')" class="btn-rapido btn-wa">
+                <span class="text-xl">💬</span> Sign up or Login with WhatsApp
             </div>
             
             <div onclick="handleGoogle()" class="btn-rapido btn-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continue with Google
             </div>
         </div>
 
-        <div id="otpFlow" class="hidden">
-            <h3 id="flowTitle" class="text-xl font-black mb-6">Enter Number</h3>
-            <div id="inputGroup">
-                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile number">
+        <div id="flowView" class="hidden">
+            <h3 id="flowTitle" class="text-2xl font-black mb-8 text-slate-900 italic">User Verification</h3>
+            
+            <div id="entryGroup">
+                <div id="signupFields" class="hidden">
+                    <span class="label-text">Your Full Name</span>
+                    <input type="text" id="userName" class="u-input" placeholder="Enter name">
+                    
+                    <span class="label-text">Professional Role</span>
+                    <select id="userRole" class="u-input">
+                        <option value="Supplier">Supplier</option>
+                        <option value="Builder">Builder</option>
+                        <option value="Contractor">Contractor</option>
+                        <option value="field_survey_staff">Field Agent</option>
+                        <option value="HomeOwner">Home Owner</option>
+                        <option value="Fleet_Owner">Fleet Operator</option>
+                        <option value="Labour_Contractor">Labour Contractor</option>
+                        <option value="Admin_Staff">Admin Support</option>
+                    </select>
+                </div>
+
+                <span class="label-text">Mobile Number</span>
+                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit number">
             </div>
+
             <div id="otpGroup" class="hidden">
-                <p class="text-center text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest">Enter 6-digit code</p>
-                <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl" placeholder="••••••" maxlength="6">
+                <p class="text-center text-xs font-black text-slate-400 mb-6 uppercase tracking-widest italic">Verifying connection... Enter code</p>
+                <input type="text" id="otpValue" class="u-input text-center tracking-[20px] text-3xl font-black border-orange-500" placeholder="••••••" maxlength="6">
             </div>
-            <button id="actionBtn" onclick="nextStep()" class="btn-rapido btn-main">Send Code</button>
-            <p onclick="location.reload()" class="text-center mt-6 text-slate-400 font-bold text-xs uppercase cursor-pointer">Back</p>
+
+            <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main">Send OTP Code</button>
+            <p onclick="location.reload()" class="text-center mt-8 text-slate-400 font-bold text-[10px] uppercase cursor-pointer underline tracking-widest">Back to options</p>
         </div>
     </div>
 
     <script>
         // MASTER ROUTES
         const ROUTES = {
-            'super_admin': '/admin/super_admin.html',
-            'admin': '/admin/dashboard.html',
+            'Super_Admin': '/admin/super_admin.html',
+            'Admin_Staff': '/admin/dashboard.html',
             'field_survey_staff': '/field/dashboard.html',
-            'Supplier': '/field/supplier/dashboard.html'
+            'Supplier': '/field/supplier/dashboard.html',
+            'Builder': '/field/builder/dashboard.html',
+            'Contractor': '/field/contractor/dashboard.html',
+            'HomeOwner': '/field/homeowner/dashboard.html',
+            'Labour_Contractor': '/field/labour/dashboard.html',
+            'Fleet_Owner': '/field/fleet/dashboard.html'
         };
 
-        let currentMode = '';
-        let step = 1;
+        let flowType = '';
+        let flowStep = 1;
 
-        function showFlow(mode) {
-            currentMode = mode;
+        function initFlow(mode) {
+            flowType = mode;
             document.getElementById('startView').classList.add('hidden');
-            document.getElementById('otpFlow').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Login' : 'WhatsApp Login';
+            document.getElementById('flowView').classList.remove('hidden');
+            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Link' : 'WhatsApp Link';
         }
 
-        async function nextStep() {
-            if(step === 1) {
-                const ph = document.getElementById('userPhone').value;
-                if(ph.length < 10) return alert("Please enter 10 digits");
+        async function executeStep() {
+            if(flowStep === 1) {
+                const phone = document.getElementById('userPhone').value;
+                if(phone.length < 10) return alert("Enter valid 10-digit mobile");
                 
-                // Rapido-Style Speed Simulation
-                document.getElementById('inputGroup').classList.add('hidden');
+                // Rapido Speed: Immediately show OTP box
+                document.getElementById('entryGroup').classList.add('hidden');
                 document.getElementById('otpGroup').classList.remove('hidden');
-                document.getElementById('actionBtn').innerText = 'Verify & Login';
-                alert("TEST CODE: 123456");
-                step = 2;
+                document.getElementById('actionBtn').innerText = 'Verify & Access Node';
+                alert("AuthKey Simulation: Code is 123456");
+                flowStep = 2;
             } else {
                 if(document.getElementById('otpValue').value === "123456") {
-                    // Logic: Auto-Route
-                    // For fresh starts, we route to the Supplier Dashboard as default
-                    window.location.href = ROUTES['Supplier'];
+                    handleSuccessfulVerification();
                 } else {
-                    alert("Wrong code. Try again.");
+                    alert("Verification Failed. Try again.");
                 }
             }
+        }
+
+        async function handleSuccessfulVerification() {
+            const phone = document.getElementById('userPhone').value;
+            const email = `${phone.slice(-10)}@nirmansutra.in`;
+            
+            try {
+                // Rapido Pattern: Silent check for existing user
+                const existing = await auth.signInWithEmailAndPassword(email, "NirmanSutraSecure2026!").catch(() => null);
+                
+                if (existing) {
+                    routeUser(existing.user);
+                } else {
+                    // Show role selection for first-time signups
+                    document.getElementById('otpGroup').classList.add('hidden');
+                    document.getElementById('signupFields').classList.remove('hidden');
+                    document.getElementById('entryGroup').classList.remove('hidden');
+                    document.getElementById('actionBtn').innerText = 'Finish Registration';
+                    document.getElementById('flowTitle').innerText = 'New Profile';
+                    
+                    // Second Action: Finalize DB creation
+                    document.getElementById('actionBtn').onclick = finalizeRegistration;
+                }
+            } catch(e) { alert(e.message); }
+        }
+
+        async function finalizeRegistration() {
+            const phone = document.getElementById('userPhone').value;
+            const email = `${phone.slice(-10)}@nirmansutra.in`;
+            const name = document.getElementById('userName').value;
+            const role = document.getElementById('userRole').value;
+
+            if(!name) return alert("Please enter your name");
+
+            try {
+                const res = await auth.createUserWithEmailAndPassword(email, "NirmanSutraSecure2026!");
+                await rtdb.ref(`users/${res.user.uid}`).set({
+                    name, phone, role, email, timestamp: Date.now(), status: 'active'
+                });
+                window.location.href = ROUTES[role] || ROUTES['Supplier'];
+            } catch(e) { alert(e.message); }
         }
 
         async function handleGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 const res = await auth.signInWithPopup(provider);
-                const snap = await rtdb.ref(`users/${res.user.uid}/role`).once('value');
-                const role = snap.val();
-                window.location.href = ROUTES[role] || ROUTES['Supplier'];
+                routeUser(res.user);
             } catch(e) { console.error(e.message); }
         }
 
-        // Auto-check session
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                rtdb.ref(`users/${user.uid}/role`).once('value', snap => {
-                    const role = snap.val();
-                    if(role) window.location.href = ROUTES[role] || ROUTES['Supplier'];
-                });
+        async function routeUser(user) {
+            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
+            const role = snap.val();
+            if(role) {
+                window.location.href = ROUTES[role] || ROUTES['Supplier'];
+            } else {
+                // If role missing, force profile registration view
+                initFlow('mobile'); 
+                handleSuccessfulVerification();
             }
+        }
+
+        // Auto-Session Recovery
+        auth.onAuthStateChanged(user => {
+            if (user) routeUser(user);
         });
     </script>
 </body>
