@@ -25,14 +25,13 @@
             min-height: 100vh; display: flex; align-items: center; justify-content: center; 
         }
 
-        /* Sovereign Home Header */
-        .home-header {
-            position: fixed; top: 0; left: 0; right: 0;
-            padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            z-index: 6000; background: linear-gradient(to bottom, rgba(2,6,23,0.8), transparent);
+        /* FIXED BRANDING: Responsive Scaling */
+        .brand-text {
+            font-size: clamp(3rem, 15vw, 6rem); /* Dynamically scales based on screen width */
+            line-height: 0.9;
+            white-space: nowrap;
         }
 
-        /* Rapido Glide Dock */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
@@ -54,28 +53,18 @@
             letter-spacing: 2px;
         }
         
-        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
+        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <header id="homeHeader" class="home-header hidden">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-black italic text-xs">NS</div>
-            <span class="text-[10px] font-black uppercase tracking-[3px]">Sovereign Node</span>
-        </div>
-        <button onclick="NS_Auth.logout()" class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 active:scale-95 transition-all">
-            <i data-lucide="log-out" class="w-5 h-5 text-orange-500"></i>
-        </button>
-    </header>
-
     <main class="hero-bg" onclick="toggleDock(false)">
-        <div class="text-center px-8">
-            <h1 class="text-7xl font-black italic tracking-tighter mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[11px]">Infrastructure Intelligence</p>
+        <div class="text-center px-4 w-full overflow-hidden">
+            <h1 class="brand-text font-black italic tracking-tighter mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[10px]">Infrastructure Intelligence</p>
         </div>
     </main>
 
@@ -98,23 +87,28 @@
 
             <div id="flowView" class="hidden">
                 <h3 id="flowTitle" class="text-xl font-black mb-6 italic uppercase">Identity Link</h3>
+                
                 <div id="inputBox">
                     <div id="signupFields" class="hidden">
                         <span class="label-text">Full Legal Name *</span>
-                        <input type="text" id="regName" class="u-input" placeholder="Enter Name">
+                        <input type="text" id="regName" class="u-input" placeholder="Legal Name">
+                        
                         <span class="label-text">Professional Role *</span>
                         <select id="regRole" class="u-input">
-                            <option value="Supplier">Supplier / Partner</option>
+                            <option value="Supplier">Supplier / Material Provider</option>
                             <option value="Builder">Builder / Real Estate</option>
                             <option value="Contractor">Civil Contractor</option>
-                            <option value="FleetOwner">Fleet / Logistics</option>
+                            <option value="FleetOwner">Fleet Owner / Logistics</option>
+                            <option value="HomeOwner">Individual Home Owner</option>
                         </select>
                     </div>
+
                     <span class="label-text">Mobile Number *</span>
                     <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
                 </div>
 
                 <div id="otpBox" class="hidden mb-6">
+                    <span class="label-text text-center">Verify 6-Digit OTP</span>
                     <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" placeholder="••••••" maxlength="6">
                 </div>
 
@@ -147,7 +141,15 @@
 
         async function executeStep() {
             if(step === 1) {
-                if(document.getElementById('userPhone').value.length < 10) return alert("Valid Mobile Required.");
+                const ph = document.getElementById('userPhone').value;
+                if(ph.length < 10) return alert("Valid Mobile Required.");
+                
+                // Hidden Admin Entry
+                if(ph === "0000000000") {
+                    window.location.href = "/admin/login.html";
+                    return;
+                }
+
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
                 document.getElementById('actionBtn').innerText = 'Verify & Secure';
@@ -169,7 +171,7 @@
                     document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
                     document.getElementById('inputBox').classList.remove('hidden');
-                    document.getElementById('actionBtn').innerText = 'Complete Profile';
+                    document.getElementById('actionBtn').innerText = 'Complete Registration';
                     document.getElementById('actionBtn').onclick = finalizeSignup;
                 }
             } catch(e) { alert(e.message); }
@@ -179,7 +181,8 @@
             const name = document.getElementById('regName').value;
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
-            if(!name) return alert("Name Required.");
+            if(!name) return alert("All fields are mandatory.");
+
             try {
                 const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
                 const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
@@ -191,14 +194,13 @@
         async function routeUser(u) {
             const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
-            document.getElementById('homeHeader').classList.remove('hidden');
-            document.getElementById('dockStatus').innerText = "Logged in as " + (role || "User");
             
             const paths = {
                 'Supplier': '/field/supplier/dashboard.html',
                 'Builder': '/field/builder/dashboard.html',
                 'Contractor': '/field/contractor/dashboard.html',
-                'FleetOwner': '/field/fleet/dashboard.html'
+                'FleetOwner': '/field/fleet/dashboard.html',
+                'HomeOwner': '/field/homeowner/dashboard.html'
             };
 
             if(role && paths[role]) window.location.href = paths[role];
