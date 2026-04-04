@@ -1,1 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Supreme Console | NirmanSutra</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/roles.js"></script>
+
+    <style>
+        :root { --bg: #020617; --accent: #ff7a00; --card: #0f172a; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; }
+        .hidden { display: none !important; }
+        
+        .glass-card { background: var(--card); border: 1px solid #1e293b; border-radius: 24px; padding: 25px; transition: 0.3s; }
+        .u-input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; border-radius: 12px; color: white; font-weight: 600; outline: none; margin-bottom: 10px; font-size: 13px; }
+        
+        .role-badge { padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-danger { background: #ef4444; color: white; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 10px; }
+        
+        #masterMap { height: 450px; border-radius: 30px; border: 2px solid #1e293b; }
+        
+        .sidebar-item { padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; font-weight: 700; color: #94a3b8; }
+        .sidebar-item.active { background: var(--accent); color: white; }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <nav class="w-full md:w-72 p-6 bg-[#010409] border-r border-slate-800 space-y-2">
+        <div class="mb-10 px-2">
+            <h1 class="text-2xl font-black italic tracking-tighter">SUPREME<span class="text-orange-500">HUB</span></h1>
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-[4px]">Sovereign Control Node</p>
+        </div>
+        
+        <div onclick="AdminUI.view('live')" class="sidebar-item active" id="tab-live"><i data-lucide="map"></i> Live Field Feed</div>
+        <div onclick="AdminUI.view('users')" class="sidebar-item" id="tab-users"><i data-lucide="users"></i> Role & RBAC CRUD</div>
+        <div onclick="AdminUI.view('materials')" class="sidebar-item" id="tab-materials"><i data-lucide="package"></i> Material Registry</div>
+        <div onclick="AdminUI.view('mis')" class="sidebar-item" id="tab-mis"><i data-lucide="bar-chart-3"></i> System MIS</div>
+        <div onclick="NS_Auth.logout()" class="sidebar-item text-red-500 mt-20"><i data-lucide="log-out"></i> System Exit</div>
+    </nav>
+
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+        
+        <div id="view-live" class="space-y-6">
+            <div class="flex justify-between items-end">
+                <h2 class="text-3xl font-black italic">Live <span class="text-orange-500">Sovereign Feed</span></h2>
+                <p id="activeStaffCount" class="text-xs font-bold text-slate-400 uppercase">Tracking nodes...</p>
+            </div>
+            <div id="masterMap"></div>
+        </div>
+
+        <div id="view-users" class="hidden space-y-6">
+            <h2 class="text-3xl font-black italic">User <span class="text-orange-500">Registry Control</span></h2>
+            <div class="glass-card overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-slate-800">
+                        <tr><th class="pb-4">User</th><th class="pb-4">Current Role</th><th class="pb-4">RBAC Actions</th><th class="pb-4">System Wipe</th></tr>
+                    </thead>
+                    <tbody id="userTableBody" class="font-bold"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-materials" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-black italic text-orange-500">Material Master</h2>
+                <button onclick="AdminUI.addMaterial()" class="bg-emerald-500 text-white px-6 py-3 rounded-xl font-black text-xs uppercase">+ Add Category</button>
+            </div>
+            <div id="materialGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <div id="view-mis" class="hidden space-y-6">
+            <h2 class="text-3xl font-black italic">System <span class="text-orange-500">Intelligence</span></h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="statsGrid"></div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        let map, markers = {};
+
+        // SUPREME AUTHORITY CHECK
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                const masterEmail = "nirmansutraa@gmail.com";
+                const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
+                const role = snap.val();
+
+                if (user.email === masterEmail || role === 'super_admin') {
+                    AdminUI.init();
+                } else {
+                    alert("ACCESS DENIED: Restricted Terminal.");
+                    window.location.href = "/index.html";
+                }
+            } else { window.location.href = "/index.html"; }
+        });
+
+        window.AdminUI = {
+            init() {
+                this.initMap();
+                this.syncUsers();
+                this.syncMaterials();
+                this.syncMIS();
+                this.syncLiveFeed();
+            },
+            view(v) {
+                document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                document.getElementById('view-' + v).classList.remove('hidden');
+                document.getElementById('tab-' + v).classList.add('active');
+                if(v === 'live') map.invalidateSize();
+            },
+            initMap() {
+                map = L.map('masterMap', {zoomControl: false, attributionControl: false}).setView([24.58, 73.71], 12);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+            },
+            syncUsers() {
+                rtdb.ref('users').on('value', snap => {
+                    const tbody = document.getElementById('userTableBody');
+                    tbody.innerHTML = "";
+                    snap.forEach(user => {
+                        const d = user.val();
+                        const uid = user.key;
+                        tbody.innerHTML += `<tr class="border-b border-slate-800/50"><td class="py-4">${d.name}<br><span class="text-[10px] text-slate-500">${d.phone}</span></td><td class="py-4"><span class="role-badge bg-slate-800 text-slate-300">${d.role}</span></td><td class="py-4"><select onchange="AdminUI.updateRBAC('${uid}', this.value)" class="bg-slate-900 border border-slate-700 rounded p-1 text-[10px]"><option value="">Change Role</option><option value="Supplier">Supplier</option><option value="Builder">Builder</option><option value="field_survey_staff">Field Staff</option></select></td><td class="py-4"><button onclick="AdminUI.wipeUser('${uid}')" class="btn-danger">WIPE</button></td></tr>`;
+                    });
+                });
+            },
+            syncMaterials() {
+                rtdb.ref('registry/materials').on('value', snap => {
+                    const grid = document.getElementById('materialGrid');
+                    grid.innerHTML = "";
+                    snap.forEach(cat => {
+                        const varieties = cat.val();
+                        grid.innerHTML += `<div class="glass-card"><div class="flex justify-between mb-4"><h4 class="font-black uppercase italic text-orange-500">${cat.key}</h4><button onclick="AdminUI.deleteMat('${cat.key}')" class="text-red-500"><i data-lucide="trash-2"></i></button></div><div class="text-[11px] text-slate-400">${Object.keys(varieties).join(', ')}</div></div>`;
+                    });
+                    lucide.createIcons();
+                });
+            },
+            syncMIS() {
+                rtdb.ref().on('value', snap => {
+                    const d = snap.val();
+                    const stats = { "Users": Object.keys(d.users || {}).length, "Surveys": Object.keys(d.surveys || {}).length, "Materials": Object.keys(d.registry?.materials || {}).length };
+                    document.getElementById('statsGrid').innerHTML = Object.entries(stats).map(([k,v]) => `<div class="glass-card text-center"><p class="text-[10px] font-black uppercase text-slate-500">${k}</p><h3 class="text-3xl font-black italic mt-1 text-orange-500">${v}</h3></div>`).join('');
+                });
+            },
+            syncLiveFeed() {
+                rtdb.ref('surveys').on('value', snap => {
+                    let count = 0;
+                    snap.forEach(node => {
+                        const d = node.val();
+                        if(d.location) {
+                            count++;
+                            if(markers[node.key]) map.removeLayer(markers[node.key]);
+                            markers[node.key] = L.circleMarker([d.location.lat, d.location.lng], { radius: 8, color: '#ff7a00', fillOpacity: 0.8 }).addTo(map).bindPopup(`<b>${d.firm}</b><br>${d.agent}`);
+                        }
+                    });
+                    document.getElementById('activeStaffCount').innerText = `Tracking ${count} field nodes`;
+                });
+            },
+            updateRBAC(uid, newRole) { if(confirm("Change role?")) rtdb.ref(`users/${uid}/role`).set(newRole); },
+            wipeUser(uid) { if(confirm("ABSOLUTE WIPE?")) rtdb.ref(`users/${uid}`).remove(); },
+            deleteMat(key) { if(confirm(`Delete ${key}?`)) rtdb.ref(`registry/materials/${key}`).remove(); },
+            addMaterial() { const n = prompt("Category name:"); if(n) rtdb.ref(`registry/materials/${n}`).set({ "Default": { brands: ["Generic"] } }); }
+        };
+    </script>
+</body>
+</html>
 
