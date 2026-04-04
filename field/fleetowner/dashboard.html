@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fleet Hub | NirmanSutra Logistics</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/roles.js"></script>
+    <script src="/js/map.js"></script>
+
+    <style>
+        :root { --bg: #f8fafc; --accent: #10b981; --primary: #0f172a; --orange: #ff7a00; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 50px; }
+        .hidden { display: none !important; }
+        
+        .card { background: white; border-radius: 40px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 10px; font-size: 14px; }
+        .u-input:focus { border-color: var(--accent); }
+
+        /* Vehicle Card Styling */
+        .vehicle-card { border-left: 8px solid var(--orange); padding: 25px; background: white; border-radius: 30px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .status-badge { padding: 6px 12px; border-radius: 10px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .status-available { background: #dcfce7; color: #166534; }
+        .status-busy { background: #fee2e2; color: #991b1b; }
+
+        .btn-main { width: 100%; padding: 22px; border-radius: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 7px; padding: 5px; font-weight: 800; text-align: center; }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
+        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Logistics Hub...</p>
+    </div>
+
+    <main id="app" class="max-w-2xl mx-auto hidden">
+        <div id="dashView">
+            <header class="flex justify-between items-start mb-8">
+                <div>
+                    <h1 class="text-3xl font-black italic tracking-tighter uppercase">Fleet<span class="text-orange-500">Hub</span></h1>
+                    <p id="firmDisplay" class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">---</p>
+                </div>
+                <button onclick="auth.signOut()" class="bg-slate-200 p-3 rounded-2xl"><i data-lucide="log-out"></i></button>
+            </header>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="card text-center p-6 bg-orange-500 text-white">
+                    <h3 id="activeTrips" class="text-4xl font-black italic">0</h3>
+                    <p class="text-[9px] font-black uppercase tracking-widest mt-2">Active Trips</p>
+                </div>
+                <div onclick="UI.showAddVehicle()" class="card text-center p-6 bg-slate-900 text-white cursor-pointer hover:scale-105 transition-all">
+                    <i data-lucide="truck" class="mx-auto mb-2"></i>
+                    <p class="text-[9px] font-black uppercase tracking-widest">Add Vehicle</p>
+                </div>
+            </div>
+
+            <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[5px] mb-4">Your Registered Fleet</h4>
+            <div id="vehicleList">
+                <p class="text-center text-slate-400 italic text-sm py-10">No vehicles registered in network.</p>
+            </div>
+        </div>
+
+        <div id="addVehicleView" class="hidden">
+            <header class="flex items-center gap-4 mb-8">
+                <button onclick="UI.showDash()" class="bg-slate-200 p-3 rounded-2xl"><i data-lucide="chevron-left"></i></button>
+                <h1 class="text-2xl font-black italic uppercase">Vehicle <span class="text-orange-500">Registry</span></h1>
+            </header>
+
+            <div class="card">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Fleet Identity</span>
+                <input id="vNumber" placeholder="Vehicle Number (e.g., RJ14 GA 1234) *" class="u-input">
+                <select id="vType" class="u-input">
+                    <option value="Tractor">Category: Tractor</option>
+                    <option value="Mini Truck">Category: Mini Truck (Tata Ace)</option>
+                    <option value="Dumper">Category: Dumper / Tipper</option>
+                    <option value="Trailer">Category: Trailer (Multi-Axle)</option>
+                </select>
+                <input id="ownerName" placeholder="Owner / Driver Legal Name *" class="u-input">
+            </div>
+
+            <div class="card">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Base Spatial Lock</span>
+                <div id="map" class="h-56 rounded-3xl border mb-4"></div>
+                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black uppercase flex items-center justify-center gap-3">
+                    <i data-lucide="map-pin"></i> Verify Base Parking
+                </button>
+                <textarea id="address" class="u-input h-20 bg-transparent text-[10px] text-slate-400 italic" readonly placeholder="Base address auto-fill..."></textarea>
+            </div>
+
+            <div class="card">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Document Evidence</span>
+                <div class="grid grid-cols-3 gap-3" id="photoGrid">
+                    <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>
+                </div>
+                <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
+                <p class="text-[8px] font-bold text-slate-300 mt-4 text-center uppercase">Capture vehicle, RC, and Insurance.</p>
+            </div>
+
+            <button onclick="RegistryAction.saveVehicle()" id="sBtn" class="btn-main bg-orange-500 text-white mt-6 shadow-xl">🚀 Connect Vehicle to Network</button>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        let state = { photos: [], location: null, firm: "" };
+
+        auth.onAuthStateChanged(user => {
+            if (user) syncLogistics(user);
+            else window.location.href = "/";
+        });
+
+        // Porter Logic: Dynamic Vehicle Management
+        function syncLogistics(user) {
+            rtdb.ref('users/' + user.uid).on('value', uSnap => {
+                state.firm = uSnap.val()?.name || "Logistics Hub";
+                document.getElementById('firmDisplay').innerText = state.firm;
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+
+                // Load Active Fleet
+                rtdb.ref('fleet').orderByChild('ownerUid').equalTo(user.uid).on('value', fSnap => {
+                    const list = document.getElementById('vehicleList');
+                    list.innerHTML = "";
+                    
+                    if (fSnap.exists()) {
+                        fSnap.forEach(vehicle => {
+                            const vData = vehicle.val();
+                            list.innerHTML += `
+                                <div class="vehicle-card">
+                                    <div>
+                                        <p class="font-black text-lg uppercase tracking-tight">${vData.vNumber}</p>
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${vData.vType}</p>
+                                    </div>
+                                    <div class="status-badge ${vData.status === 'Active' ? 'status-available' : 'status-busy'}">
+                                        ${vData.status || 'Active'}
+                                    </div>
+                                </div>`;
+                        });
+                        lucide.createIcons();
+                    } else {
+                        list.innerHTML = '<p class="text-center text-slate-400 italic text-sm py-10">No vehicles registered. Click "Add Vehicle" to begin.</p>';
+                    }
+                });
+            });
+        }
+
+        window.UI = {
+            showAddVehicle() {
+                document.getElementById('dashView').classList.add('hidden');
+                document.getElementById('addVehicleView').classList.remove('hidden');
+                NS_Geo.init('map');
+            },
+            showDash() {
+                document.getElementById('addVehicleView').classList.add('hidden');
+                document.getElementById('dashView').classList.remove('hidden');
+            }
+        };
+
+        window.GeoEngine = {
+            async lock() {
+                const res = await NS_Geo.captureLock('address');
+                state.location = res.location;
+            }
+        };
+
+        window.EvidenceEngine = {
+            handle(input) {
+                if(!state.location) return alert("❌ Spatial Lock Required.");
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 800; canvas.height = 600;
+                        ctx.drawImage(img, 0, 0, 800, 600);
+                        
+                        // Fleet Logistics Stamping
+                        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 540, 800, 60);
+                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 12px monospace";
+                        const stamp = `FLEET LOG: ${new Date().toLocaleString()} | BASE_LOC: ${state.location.lat.toFixed(5)}`;
+                        ctx.fillText(stamp, 20, 575);
+
+                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6) });
+                        this.render();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            },
+            render() {
+                const grid = document.getElementById('photoGrid');
+                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>`;
+                state.photos.forEach((p, i) => {
+                    grid.innerHTML += `<div class="photo-slot" onclick="state.photos.splice(${i},1); EvidenceEngine.render();"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">DISCARD</div></div>`;
+                });
+            }
+        };
+
+        window.RegistryAction = {
+            async saveVehicle() {
+                const vNum = document.getElementById('vNumber').value;
+                const owner = document.getElementById('ownerName').value;
+                if(!vNum || !owner || !state.location) return alert("Vehicle Number, Owner Name, and GPS mandatory.");
+                
+                const btn = document.getElementById('sBtn'); btn.innerText = "LINKING VEHICLE...";
+                await rtdb.ref('fleet').push({
+                    ownerUid: auth.currentUser.uid,
+                    firm: state.firm,
+                    vNumber: vNum,
+                    vType: document.getElementById('vType').value,
+                    ownerName: owner,
+                    address: document.getElementById('address').value,
+                    location: state.location,
+                    photos: state.photos,
+                    status: 'Active',
+                    timestamp: Date.now()
+                });
+                alert("🚀 Vehicle Successfully Registered!");
+                UI.showDash();
+            }
+        };
+    </script>
+</body>
+</html>
