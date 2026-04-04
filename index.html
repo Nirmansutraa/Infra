@@ -6,6 +6,7 @@
     <title>NirmanSutra | Sovereign Gateway</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
@@ -22,6 +23,13 @@
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; align-items: center; justify-content: center; 
+        }
+
+        /* Sovereign Home Header */
+        .home-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            z-index: 6000; background: linear-gradient(to bottom, rgba(2,6,23,0.8), transparent);
         }
 
         /* Rapido Glide Dock */
@@ -47,20 +55,22 @@
         }
         
         .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; box-shadow: 0 15px 30px rgba(255,122,0,0.25); }
-
-        .u-input { 
-            width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; 
-            padding: 20px; border-radius: 22px; color: #0f172a; 
-            font-weight: 700; outline: none; margin-bottom: 12px;
-        }
-
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
-        
         .hidden { display: none !important; }
-        .legal-box { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 15px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <header id="homeHeader" class="home-header hidden">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-black italic text-xs">NS</div>
+            <span class="text-[10px] font-black uppercase tracking-[3px]">Sovereign Node</span>
+        </div>
+        <button onclick="NS_Auth.logout()" class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 active:scale-95 transition-all">
+            <i data-lucide="log-out" class="w-5 h-5 text-orange-500"></i>
+        </button>
+    </header>
 
     <main class="hero-bg" onclick="toggleDock(false)">
         <div class="text-center px-8">
@@ -73,12 +83,12 @@
         <div class="handle-bar" onclick="toggleDock()"></div>
         
         <div id="miniTitle" class="text-center cursor-pointer pb-6" onclick="toggleDock()">
-            <span class="text-[10px] font-black uppercase tracking-[5px] text-slate-400">Tap to Start</span>
+            <span id="dockStatus" class="text-[10px] font-black uppercase tracking-[5px] text-slate-400">Tap to Start</span>
         </div>
 
         <div id="dockContent" class="opacity-0 transition-opacity duration-500">
             <div id="startView">
-                <h3 class="text-xl font-black mb-8 text-center">Ready to Start?</h3>
+                <h3 class="text-xl font-black mb-8 text-center italic">Connect your node</h3>
                 <div onclick="initFlow('mobile')" class="btn-rapido bg-slate-50">📱 Mobile OTP Link</div>
                 <div onclick="initFlow('whatsapp')" class="btn-rapido bg-[#e7f5ee] text-[#075e54]">💬 WhatsApp Link</div>
                 <div onclick="handleGoogle()" class="btn-rapido bg-white border-slate-200">
@@ -87,38 +97,25 @@
             </div>
 
             <div id="flowView" class="hidden">
-                <h3 id="flowTitle" class="text-xl font-black mb-6 italic">Identity Check</h3>
-                
+                <h3 id="flowTitle" class="text-xl font-black mb-6 italic uppercase">Identity Link</h3>
                 <div id="inputBox">
                     <div id="signupFields" class="hidden">
                         <span class="label-text">Full Legal Name *</span>
-                        <input type="text" id="regName" class="u-input" placeholder="Name">
-                        
-                        <span class="label-text">Professional Email *</span>
-                        <input type="email" id="regEmail" class="u-input" placeholder="Email">
-
+                        <input type="text" id="regName" class="u-input" placeholder="Enter Name">
                         <span class="label-text">Professional Role *</span>
                         <select id="regRole" class="u-input">
-                            <option value="Supplier">Supplier / Material Provider</option>
+                            <option value="Supplier">Supplier / Partner</option>
                             <option value="Builder">Builder / Real Estate</option>
                             <option value="Contractor">Civil Contractor</option>
-                            <option value="FleetOwner">Fleet Owner / Logistics</option>
-                            <option value="HomeOwner">Individual Home Owner</option>
+                            <option value="FleetOwner">Fleet / Logistics</option>
                         </select>
                     </div>
-
                     <span class="label-text">Mobile Number *</span>
                     <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
                 </div>
 
                 <div id="otpBox" class="hidden mb-6">
-                    <p class="text-center text-[10px] font-black text-slate-400 mb-4 uppercase tracking-widest">Enter 6-digit code</p>
                     <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" placeholder="••••••" maxlength="6">
-                </div>
-
-                <div class="legal-box" onclick="document.getElementById('legalCheck').click()">
-                    <input type="checkbox" id="legalCheck" class="w-5 h-5 accent-orange-500 rounded mt-1">
-                    <span>I accept the <span class="text-orange-500 underline">Terms</span> and <span class="text-orange-500 underline">Privacy Policy</span>. *</span>
                 </div>
 
                 <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main shadow-xl">Proceed Securely</button>
@@ -127,6 +124,7 @@
     </div>
 
     <script>
+        lucide.createIcons();
         let step = 1;
 
         function toggleDock(open = true) {
@@ -144,22 +142,20 @@
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode === 'mobile' ? 'Mobile Link' : 'WhatsApp Link';
+            document.getElementById('flowTitle').innerText = mode.toUpperCase() + ' LINK';
         }
 
         async function executeStep() {
-            if(!document.getElementById('legalCheck').checked) return alert("Please accept Terms to proceed.");
-            
             if(step === 1) {
-                if(document.getElementById('userPhone').value.length < 10) return alert("Enter valid 10-digit number.");
+                if(document.getElementById('userPhone').value.length < 10) return alert("Valid Mobile Required.");
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
-                document.getElementById('actionBtn').innerText = 'Verify & Link Node';
+                document.getElementById('actionBtn').innerText = 'Verify & Secure';
                 alert("TEST OTP: 123456"); 
                 step = 2;
             } else {
                 if(document.getElementById('otpValue').value === "123456") handleAuthSuccess();
-                else alert("Invalid Code");
+                else alert("Code Error.");
             }
         }
 
@@ -168,9 +164,8 @@
             const email = `${ph.slice(-10)}@nirmansutra.in`;
             try {
                 const user = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
-                if(user) {
-                    routeUser(user.user);
-                } else {
+                if(user) routeUser(user.user);
+                else {
                     document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
                     document.getElementById('inputBox').classList.remove('hidden');
@@ -182,18 +177,13 @@
 
         async function finalizeSignup() {
             const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value;
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
-
-            if(!name || !email || !role) return alert("All fields are mandatory.");
-
+            if(!name) return alert("Name Required.");
             try {
                 const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
                 const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
-                await rtdb.ref(`users/${res.user.uid}`).set({
-                    name, email, role, phone, status: 'active', timestamp: Date.now()
-                });
+                await rtdb.ref(`users/${res.user.uid}`).set({ name, role, phone, status: 'active', timestamp: Date.now() });
                 routeUser(res.user);
             } catch(e) { alert(e.message); }
         }
@@ -201,17 +191,17 @@
         async function routeUser(u) {
             const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
+            document.getElementById('homeHeader').classList.remove('hidden');
+            document.getElementById('dockStatus').innerText = "Logged in as " + (role || "User");
             
             const paths = {
                 'Supplier': '/field/supplier/dashboard.html',
                 'Builder': '/field/builder/dashboard.html',
                 'Contractor': '/field/contractor/dashboard.html',
-                'FleetOwner': '/field/fleet/dashboard.html',
-                'HomeOwner': '/field/homeowner/dashboard.html'
+                'FleetOwner': '/field/fleet/dashboard.html'
             };
 
             if(role && paths[role]) window.location.href = paths[role];
-            else toggleDock(true); 
         }
 
         function handleGoogle() {
