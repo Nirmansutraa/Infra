@@ -20,3 +20,42 @@ const rtdb = firebase.database();
 const auth = firebase.auth();
 
 console.log("[SYSTEM] Cloud Intelligence Link Established.");
+
+/**
+ * GLOBAL UI NAVIGATION HELPERS
+ * These functions power the Back and Logout buttons on every page.
+ */
+window.NS_Auth = {
+    // Standard App-Style Back Logic
+    goBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            // Fallback to home if no history exists
+            window.location.href = "/index.html";
+        }
+    },
+
+    // Standard Sovereign Logout
+    logout() {
+        if (confirm("Are you sure you want to log out?")) {
+            auth.signOut().then(() => {
+                window.location.href = "/index.html";
+            }).catch((error) => {
+                alert("Logout failed: " + error.message);
+            });
+        }
+    }
+};
+
+/**
+ * CONNECTIVITY MONITOR
+ * Verifies real-time link with the Asia-Southeast1 Database node.
+ */
+rtdb.ref(".info/connected").on("value", (snap) => {
+    if (snap.val() === true) {
+        console.log("[SYSTEM] Database Node: ONLINE 🚀");
+    } else {
+        console.warn("[SYSTEM] Database Node: OFFLINE ⚠️");
+    }
+});
