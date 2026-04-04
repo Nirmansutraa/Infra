@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contractor Hub | NirmanSutra</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/roles.js"></script>
+    <script src="/js/map.js"></script>
+
+    <style>
+        :root { --bg: #f8fafc; --accent: #10b981; --primary: #0f172a; --orange: #ff7a00; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 50px; }
+        .hidden { display: none !important; }
+        
+        .card { background: white; border-radius: 40px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 10px; font-size: 14px; }
+        .u-input:focus { border-color: var(--accent); }
+
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
+
+        .fleet-unit { background: #f8fafc; padding: 15px 20px; border-radius: 20px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .circle-btn { width: 40px; height: 40px; border-radius: 12px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 18px; }
+
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 7px; padding: 5px; font-weight: 800; text-align: center; }
+
+        .btn-main { width: 100%; padding: 22px; border-radius: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
+        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Contractor Node...</p>
+    </div>
+
+    <main id="app" class="max-w-2xl mx-auto hidden">
+        <div id="regView" class="hidden">
+            <header class="mb-8">
+                <h1 class="text-4xl font-black italic tracking-tighter uppercase">Contractor<span class="text-emerald-500">Node</span></h1>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-2 italic">Civil Execution Registry</p>
+            </header>
+
+            <div class="card">
+                <span class="label-text">01. Enterprise Signature</span>
+                <input id="firmName" placeholder="Full Registered Firm Name *" class="u-input">
+                <input id="gstNum" placeholder="Firm GST Number *" class="u-input">
+                
+                <span class="label-text">02. Lead Contact</span>
+                <input id="mgrName" placeholder="Managing Partner Name *" class="u-input">
+                <input id="mgrMob" type="tel" placeholder="Mobile Number *" class="u-input" oninput="Validation.syncWA(this.value)">
+                <input id="mgrWa" type="tel" placeholder="WhatsApp Number *" class="u-input">
+            </div>
+
+            <div class="card">
+                <span class="label-text">03. Head Office Spatial Lock</span>
+                <div id="map" class="h-60 rounded-3xl border mb-4"></div>
+                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase mb-4 flex items-center justify-center gap-3">
+                    <i data-lucide="crosshair"></i> Capture Office Location
+                </button>
+                <textarea id="address" class="u-input h-24 bg-transparent text-xs text-slate-400 italic" readonly placeholder="Waiting for GPS lock..."></textarea>
+            </div>
+
+            <div class="card">
+                <span class="label-text">04. Resource Capacity</span>
+                <p class="text-[10px] font-bold text-slate-400 mb-4 uppercase">Direct Manpower & Machinery</p>
+                <div id="resourceGrid">
+                    </div>
+            </div>
+
+            <div class="card">
+                <span class="label-text">05. Execution Proof (Max 10)</span>
+                <div class="grid grid-cols-3 gap-3" id="photoGrid">
+                    <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-50 transition-all">+</button>
+                </div>
+                <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
+            </div>
+
+            <button onclick="RegistryAction.transmit()" id="sBtn" class="btn-main bg-emerald-500 text-white mt-6 shadow-xl">🚀 Finalize Contractor Sync</button>
+        </div>
+
+        <div id="dashView" class="hidden">
+            <header class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 id="bizName" class="text-3xl font-black italic tracking-tighter uppercase">---</h2>
+                    <p id="bizAddr" class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-1 italic">---</p>
+                </div>
+                <button onclick="auth.signOut()" class="bg-slate-200 p-3 rounded-2xl"><i data-lucide="log-out"></i></button>
+            </header>
+
+            <div class="card bg-[#020617] text-white p-8">
+                <p class="text-[10px] font-black uppercase tracking-[5px] text-emerald-500 mb-2">Live Node Status</p>
+                <h3 class="text-2xl font-black italic uppercase">Execution Hub Active</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="card text-center flex flex-col items-center">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <p class="font-black uppercase text-[10px] tracking-widest">Labor Matrix</p>
+                </div>
+                <div class="card text-center flex flex-col items-center">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="wrench"></i>
+                    </div>
+                    <p class="font-black uppercase text-[10px] tracking-widest">Job Sheets</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        let state = { photos: [], location: null, capacity: {} };
+
+        auth.onAuthStateChanged(user => {
+            if (user) checkOnboarding(user.uid);
+            else window.location.href = "/";
+        });
+
+        function checkOnboarding(uid) {
+            rtdb.ref('contractor_onboarding/' + uid).on('value', snap => {
+                const data = snap.val();
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                if (data) {
+                    document.getElementById('dashView').classList.remove('hidden');
+                    document.getElementById('bizName').innerText = data.firm;
+                    document.getElementById('bizAddr').innerText = data.address;
+                } else {
+                    document.getElementById('regView').classList.remove('hidden');
+                    NS_Geo.init('map'); //
+                    initResources();
+                }
+            });
+        }
+
+        window.Validation = {
+            syncWA(val) { document.getElementById('mgrWa').value = val; }
+        };
+
+        window.GeoEngine = {
+            async lock() {
+                const res = await NS_Geo.captureLock('address'); //
+                state.location = res.location;
+            }
+        };
+
+        window.EvidenceEngine = {
+            handle(input) {
+                if(!state.location) return alert("❌ Spatial Lock Required.");
+                if(state.photos.length >= 10) return alert("Max 10 Proof Frames.");
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 800; canvas.height = 600;
+                        ctx.drawImage(img, 0, 0, 800, 600);
+                        
+                        // Contractor-Site Stamping
+                        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 540, 800, 60);
+                        ctx.fillStyle = "#10b981"; ctx.font = "bold 14px monospace";
+                        const stamp = `EXECUTION: ${new Date().toLocaleString()} | GPS: ${state.location.lat.toFixed(5)}`;
+                        ctx.fillText(stamp, 20, 575);
+
+                        // Compression logic
+                        let quality = 0.7;
+                        let base64 = canvas.toDataURL('image/jpeg', quality);
+                        while (base64.length > 512000 && quality > 0.1) {
+                            quality -= 0.1;
+                            base64 = canvas.toDataURL('image/jpeg', quality);
+                        }
+
+                        state.photos.push({ src: base64, time: new Date().toLocaleString() });
+                        this.render();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            },
+            render() {
+                const grid = document.getElementById('photoGrid');
+                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl">+</button>`;
+                state.photos.forEach((p, i) => {
+                    grid.innerHTML += `<div class="photo-slot" onclick="state.photos.splice(${i},1); EvidenceEngine.render();"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">DISCARD</div></div>`;
+                });
+            }
+        };
+
+        function initResources() {
+            const types = ['Skilled Labor', 'Unskilled Labor', 'Concrete Mixer', 'JCB / Excavator', 'Platform Lift'];
+            document.getElementById('resourceGrid').innerHTML = types.map(t => `
+                <div class="fleet-unit">
+                    <span class="text-[11px] font-black uppercase text-slate-500">${t}</span>
+                    <div class="flex items-center gap-6">
+                        <div class="circle-btn" onclick="resStep('${t}', -1)">-</div>
+                        <span id="res-${t}" class="font-black text-sm w-[20px] text-center">0</span>
+                        <div class="circle-btn" onclick="resStep('${t}', 1)">+</div>
+                    </div>
+                </div>`).join('');
+        }
+
+        window.resStep = (t, v) => {
+            state.capacity[t] = Math.max(0, (state.capacity[t] || 0) + v);
+            document.getElementById(`res-${t}`).innerText = state.capacity[t];
+        };
+
+        window.RegistryAction = {
+            async transmit() {
+                const firm = document.getElementById('firmName').value;
+                const gst = document.getElementById('gstNum').value;
+                const addr = document.getElementById('address').value;
+                const mgr = document.getElementById('mgrName').value;
+
+                if(!firm || !gst || !addr || !mgr) return alert("❌ Firm & Spatial details mandatory.");
+                
+                const btn = document.getElementById('sBtn'); btn.innerText = "TRANSMITTING DATA...";
+                await rtdb.ref('contractor_onboarding/' + auth.currentUser.uid).set({
+                    firm, gst, address: addr, mgrName: mgr, 
+                    mgrPhone: document.getElementById('mgrMob').value,
+                    mgrWa: document.getElementById('mgrWa').value,
+                    location: state.location, photos: state.photos,
+                    capacity: state.capacity,
+                    timestamp: Date.now(), status: 'pending'
+                });
+                alert("🚀 Contractor Node Synchronized!");
+            }
+        };
+    </script>
+</body>
+</html>
