@@ -28,172 +28,190 @@
         .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 10px; font-size: 14px; }
         .u-input:focus { border-color: var(--accent); }
 
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
         .chip { background: #f1f5f9; padding: 12px 18px; border-radius: 18px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; transition: 0.3s; text-align: center; border: 2px solid transparent; text-transform: uppercase; }
         .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 7px; padding: 5px; font-weight: 800; line-height: 1.2; text-align: center; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 7px; padding: 5px; font-weight: 800; text-align: center; }
 
-        .project-tab { border-left: 8px solid var(--accent); padding: 20px; background: white; border-radius: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .project-tab:hover { background: #f1f7ff; transform: translateX(5px); }
+        .project-tab { border-left: 8px solid var(--accent); padding: 20px; background: white; border-radius: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     </style>
 </head>
 <body class="p-4">
 
     <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
-        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Project Hub...</p>
+        <p class="font-black text-slate-400 animate-pulse uppercase tracking-[5px]">Syncing Builder Hub...</p>
     </div>
 
     <main id="app" class="max-w-2xl mx-auto hidden">
+        
         <div id="dashView">
             <header class="flex justify-between items-start mb-8">
                 <div>
-                    <h1 class="text-3xl font-black italic tracking-tighter uppercase">Project<span class="text-blue-500">Vault</span></h1>
-                    <p id="firmDisplay" class="text-[10px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">---</p>
+                    <h1 id="builderFirm" class="text-3xl font-black italic tracking-tighter uppercase">---</h1>
+                    <p id="builderGST" class="text-[9px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">GST: ---</p>
                 </div>
                 <button onclick="auth.signOut()" class="bg-slate-200 p-3 rounded-2xl"><i data-lucide="log-out"></i></button>
             </header>
 
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="card text-center p-6 bg-blue-600 text-white">
-                    <h3 id="activeProjectCount" class="text-4xl font-black italic">0</h3>
+                    <h3 id="siteCount" class="text-4xl font-black italic">0</h3>
                     <p class="text-[9px] font-black uppercase tracking-widest mt-2">Active Sites</p>
                 </div>
                 <div onclick="UI.showAddProject()" class="card text-center p-6 bg-orange-500 text-white cursor-pointer hover:scale-105 transition-all">
                     <i data-lucide="plus-circle" class="mx-auto mb-2"></i>
-                    <p class="text-[9px] font-black uppercase tracking-widest">New Project</p>
+                    <p class="text-[9px] font-black uppercase tracking-widest">Add Site</p>
                 </div>
             </div>
 
-            <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[5px] mb-4">Project Inventory</h4>
-            <div id="projectList">
-                <p class="text-center text-slate-400 italic text-sm py-10">No active projects synchronized.</p>
+            <div id="projectList" class="space-y-4"></div>
+        </div>
+
+        <div id="bizRegView" class="hidden">
+            <h2 class="text-2xl font-black mb-6 italic uppercase">Builder <span class="text-blue-500">Registry</span></h2>
+            <div class="card">
+                <span class="label-text">Firm Identity</span>
+                <input id="regFirmName" placeholder="Real Estate Firm Name *" class="u-input">
+                <input id="regGST" placeholder="Firm GST Number *" class="u-input">
+                <span class="label-text">Office Location</span>
+                <div id="officeMap" class="h-48 rounded-3xl mb-4"></div>
+                <button onclick="GeoEngine.lock('regAddr', 'office')" class="u-input bg-slate-900 text-white font-black uppercase text-xs">Lock Office GPS</button>
+                <textarea id="regAddr" class="u-input text-xs italic" readonly placeholder="Office Address..."></textarea>
             </div>
+            <button onclick="RegistryAction.saveBiz()" class="w-full bg-blue-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Initialize Hub</button>
         </div>
 
         <div id="addProjectView" class="hidden">
             <header class="flex items-center gap-4 mb-8">
                 <button onclick="UI.showDash()" class="bg-slate-200 p-3 rounded-2xl"><i data-lucide="chevron-left"></i></button>
-                <h1 class="text-2xl font-black italic uppercase">Initialize <span class="text-blue-500">Site</span></h1>
+                <h1 class="text-2xl font-black italic uppercase">New <span class="text-blue-500">Site</span></h1>
             </header>
 
             <div class="card">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Site Identity</span>
-                <input id="projectName" placeholder="Project Name (e.g., Sky Villa) *" class="u-input">
-                <select id="projectStage" class="u-input">
-                    <option value="Foundation">Stage: Foundation</option>
-                    <option value="Structure">Stage: Main Structure</option>
-                    <option value="Finishing">Stage: Finishing</option>
+                <span class="label-text">Site Identity</span>
+                <input id="projName" placeholder="Project Name *" class="u-input">
+                <select id="projStage" class="u-input">
+                    <option value="Land / Leveling">1. Land / Leveling</option>
+                    <option value="Foundation / Footing">2. Foundation / Footing</option>
+                    <option value="Slab / Structure">3. Slab / Structure</option>
+                    <option value="Brickwork / Plaster">4. Brickwork / Plaster</option>
+                    <option value="Finishing / Tiling">5. Finishing / Tiling</option>
+                    <option value="Interior / Handover">6. Interior / Handover</option>
                 </select>
-                <textarea id="projectNotes" placeholder="Site specific requirements or notes..." class="u-input h-24"></textarea>
             </div>
 
             <div class="card">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Spatial Lock</span>
-                <div id="map" class="h-56 rounded-3xl border mb-4"></div>
-                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-4 rounded-xl font-black uppercase flex items-center justify-center gap-3">
-                    <i data-lucide="map-pin"></i> Secure GPS Address
-                </button>
-                <textarea id="address" class="u-input h-20 bg-transparent text-[10px] text-slate-400 italic" readonly placeholder="Address will auto-fill..."></textarea>
+                <span class="label-text">Spatial Lock</span>
+                <div id="siteMap" class="h-48 rounded-3xl mb-4"></div>
+                <button onclick="GeoEngine.lock('projAddr', 'site')" class="u-input bg-slate-900 text-white font-black uppercase text-xs">Capture Site GPS</button>
+                <textarea id="projAddr" class="u-input text-xs italic" readonly placeholder="Site Address..."></textarea>
             </div>
 
             <div class="card">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Material Matrix</span>
-                <div id="matSelector" class="flex flex-wrap gap-2"></div>
+                <span class="label-text">Material Requirements</span>
+                <div id="matSelector" class="grid grid-cols-2 gap-3 mb-6"></div>
+                <div id="varietyGrid" class="flex flex-wrap gap-2 mb-4 hidden"></div>
+                <div id="brandGrid" class="flex flex-wrap gap-2 hidden"></div>
             </div>
 
             <div class="card">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4 block">Visual Evidence</span>
+                <span class="label-text">Evidence Matrix</span>
                 <div class="grid grid-cols-3 gap-3" id="photoGrid">
                     <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>
                 </div>
                 <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
             </div>
 
-            <button onclick="RegistryAction.saveProject()" id="sBtn" class="w-full bg-blue-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Synchronize Site Node</button>
+            <button onclick="RegistryAction.saveProject()" id="sBtn" class="w-full bg-blue-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Sync Site Node</button>
         </div>
     </main>
 
     <script>
         lucide.createIcons();
-        let state = { photos: [], location: null, matIds: [], firm: "" };
+        let state = { photos: [], location: null, mat: null, varieties: [], brands: [], bizData: null };
 
         auth.onAuthStateChanged(user => {
-            if (user) syncHub(user);
+            if (user) syncBuilder(user);
             else window.location.href = "/";
         });
 
-        // Hub Logic: Managing Multiple Sites
-        function syncHub(user) {
-            rtdb.ref('users/' + user.uid).on('value', uSnap => {
-                state.firm = uSnap.val()?.name || "Builder Hub";
-                document.getElementById('firmDisplay').innerText = state.firm;
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
+        async function syncBuilder(user) {
+            const snap = await rtdb.ref('builder_onboarding/' + user.uid).once('value');
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
 
-                // Load Project Vault
-                rtdb.ref('projects').orderByChild('builderUid').equalTo(user.uid).on('value', pSnap => {
-                    const list = document.getElementById('projectList');
-                    const countEl = document.getElementById('activeProjectCount');
-                    list.innerHTML = "";
-                    
-                    if (pSnap.exists()) {
-                        let count = 0;
-                        pSnap.forEach(proj => {
-                            count++;
-                            const pData = proj.val();
-                            list.innerHTML += `
-                                <div class="project-tab">
-                                    <div>
-                                        <p class="font-black text-lg uppercase italic">${pData.name}</p>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${pData.stage} • ${pData.address.substring(0,30)}...</p>
-                                    </div>
-                                    <i data-lucide="chevron-right" class="text-slate-300"></i>
-                                </div>`;
-                        });
-                        countEl.innerText = count;
-                        lucide.createIcons();
-                    } else {
-                        list.innerHTML = '<p class="text-center text-slate-400 italic text-sm py-10">No sites added. Click "New Project" to begin.</p>';
-                    }
+            if (snap.exists()) {
+                state.bizData = snap.val();
+                document.getElementById('builderFirm').innerText = state.bizData.firm;
+                document.getElementById('builderGST').innerText = "GST: " + state.bizData.gst;
+                UI.showDash();
+                loadProjects(user.uid);
+            } else {
+                UI.showBizReg();
+            }
+        }
+
+        function loadProjects(uid) {
+            rtdb.ref('projects').orderByChild('builderUid').equalTo(uid).on('value', snap => {
+                const list = document.getElementById('projectList');
+                list.innerHTML = "";
+                document.getElementById('siteCount').innerText = snap.numChildren();
+                snap.forEach(p => {
+                    const d = p.val();
+                    list.innerHTML += `<div class="project-tab"><div><p class="font-black text-lg uppercase italic">${d.name}</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${d.stage} • ${d.address.substring(0,30)}...</p></div></div>`;
                 });
             });
         }
 
         window.UI = {
-            showAddProject() {
-                document.getElementById('dashView').classList.add('hidden');
-                document.getElementById('addProjectView').classList.remove('hidden');
-                NS_Geo.init('map');
-                this.syncMaterials();
-            },
-            showDash() {
-                document.getElementById('addProjectView').classList.add('hidden');
+            showDash() { 
+                document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
                 document.getElementById('dashView').classList.remove('hidden');
             },
+            showBizReg() {
+                document.getElementById('bizRegView').classList.remove('hidden');
+                NS_Geo.init('officeMap');
+            },
+            showAddProject() {
+                document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+                document.getElementById('addProjectView').classList.remove('hidden');
+                NS_Geo.init('siteMap');
+                this.syncMaterials();
+            },
             syncMaterials() {
-                rtdb.ref('registry/materials').on('value', snap => {
-                    const cont = document.getElementById('matSelector');
-                    cont.innerHTML = Object.keys(snap.val() || {}).map(cat => 
-                        `<div class="chip" onclick="this.classList.toggle('active'); UI.toggleMat('${cat}')">${cat}</div>`).join('');
+                rtdb.ref('registry/materials').once('value', snap => {
+                    const data = snap.val();
+                    window.matRegistry = data;
+                    document.getElementById('matSelector').innerHTML = Object.keys(data).map(m => `<div class="chip" onclick="UI.selectMat('${m}')">${m}</div>`).join('');
                 });
             },
-            toggleMat(cat) {
-                const idx = state.matIds.indexOf(cat);
-                idx > -1 ? state.matIds.splice(idx, 1) : state.matIds.push(cat);
+            selectMat(m) {
+                state.mat = m; state.varieties = [];
+                const vGrid = document.getElementById('varietyGrid'); vGrid.classList.remove('hidden');
+                vGrid.innerHTML = Object.keys(window.matRegistry[m]).map(v => `<div class="chip" onclick="UI.toggleVariety('${m}', '${v}', this)">${v}</div>`).join('');
+            },
+            toggleVariety(m, v, el) {
+                el.classList.toggle('active');
+                state.varieties.push(v);
+                const bGrid = document.getElementById('brandGrid'); bGrid.classList.remove('hidden');
+                const brands = window.matRegistry[m][v].brands || [];
+                bGrid.innerHTML = brands.map(b => `<div class="chip" onclick="this.classList.toggle('active'); state.brands.push('${b}')">${b}</div>`).join('');
             }
         };
 
         window.GeoEngine = {
-            async lock() {
-                const res = await NS_Geo.captureLock('address');
+            async lock(id, mapType) {
+                NS_Geo.map = null; // Reset for new instance
+                NS_Geo.init(mapType === 'office' ? 'officeMap' : 'siteMap');
+                const res = await NS_Geo.captureLock(id);
                 state.location = res.location;
             }
         };
 
         window.EvidenceEngine = {
             handle(input) {
-                if(!state.location) return alert("❌ Spatial Lock Required.");
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -202,13 +220,9 @@
                         const ctx = canvas.getContext('2d');
                         canvas.width = 800; canvas.height = 600;
                         ctx.drawImage(img, 0, 0, 800, 600);
-                        
-                        // Builder-Site Stamping
                         ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 540, 800, 60);
                         ctx.fillStyle = "#3b82f6"; ctx.font = "bold 12px monospace";
-                        const stamp = `SITE LOG: ${new Date().toLocaleString()} | GPS: ${state.location.lat.toFixed(5)}`;
-                        ctx.fillText(stamp, 20, 575);
-
+                        ctx.fillText(`SITE LOG: ${new Date().toLocaleString()} | GPS: ${state.location?.lat.toFixed(5)}`, 20, 575);
                         state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6) });
                         this.render();
                     };
@@ -220,31 +234,30 @@
                 const grid = document.getElementById('photoGrid');
                 grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>`;
                 state.photos.forEach((p, i) => {
-                    grid.innerHTML += `<div class="photo-slot" onclick="state.photos.splice(${i},1); EvidenceEngine.render();"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">REMOVE</div></div>`;
+                    grid.innerHTML += `<div class="photo-slot" onclick="state.photos.splice(${i},1); EvidenceEngine.render();"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">DISCARD</div></div>`;
                 });
             }
         };
 
         window.RegistryAction = {
+            async saveBiz() {
+                const firm = document.getElementById('regFirmName').value;
+                const gst = document.getElementById('regGST').value;
+                if(!firm || !gst || !state.location) return alert("Fill all details & GPS Lock.");
+                await rtdb.ref('builder_onboarding/' + auth.currentUser.uid).set({ firm, gst, address: document.getElementById('regAddr').value, location: state.location });
+                location.reload();
+            },
             async saveProject() {
-                const name = document.getElementById('projectName').value;
-                if(!name || !state.location) return alert("Project Name and GPS Lock mandatory.");
-                
-                const btn = document.getElementById('sBtn'); btn.innerText = "SYNCING SITE...";
-                await rtdb.ref('projects').push({
-                    builderUid: auth.currentUser.uid,
-                    firm: state.firm,
-                    name: name,
-                    stage: document.getElementById('projectStage').value,
-                    notes: document.getElementById('projectNotes').value,
-                    address: document.getElementById('address').value,
-                    location: state.location,
-                    photos: state.photos,
-                    requirements: state.matIds,
-                    timestamp: Date.now()
+                const name = document.getElementById('projName').value;
+                if(!name || !state.location) return alert("Site Name & GPS Lock required.");
+                await rtdb.ref('projects').push({ 
+                    builderUid: auth.currentUser.uid, name, 
+                    stage: document.getElementById('projStage').value, 
+                    address: document.getElementById('projAddr').value, 
+                    location: state.location, photos: state.photos,
+                    materials: { cat: state.mat, varieties: state.varieties, brands: state.brands }
                 });
-                alert("🚀 Site Node Synchronized!");
-                UI.showDash();
+                alert("Site Node Online!"); UI.showDash();
             }
         };
     </script>
