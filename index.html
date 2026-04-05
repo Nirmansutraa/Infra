@@ -19,14 +19,37 @@
     <style>
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
-        .hero-bg { background: radial-gradient(circle at top right, #1e293b, #020617); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+
+        /* FIXED BRAND SCALING */
+        .hero-bg { 
+            background: radial-gradient(circle at top right, #1e293b, #020617); 
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 20px; text-align: center;
+        }
+
         .brand-container { width: 100%; max-width: 90vw; }
         .brand-text { font-size: 11vw; @media (min-width: 768px) { font-size: 85px; } line-height: 1; letter-spacing: -0.05em; }
-        .auth-dock { position: fixed; bottom: 0; left: 0; right: 0; background: white; color: #0f172a; border-radius: 40px 40px 0 0; padding: 30px 25px 45px; box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(calc(100% - 95px)); }
+
+        .auth-dock {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: white; color: #0f172a;
+            border-radius: 40px 40px 0 0; padding: 30px 25px 45px;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(calc(100% - 95px)); 
+        }
         .auth-dock.active { transform: translateY(0); }
+
         .handle { width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
-        .btn-auth { width: 100%; padding: 18px; border-radius: 20px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.2s; }
+
+        .btn-auth {
+            width: 100%; padding: 18px; border-radius: 20px; 
+            font-weight: 700; font-size: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.2s;
+        }
         .btn-primary { background: var(--accent); color: white; border: none; }
+        
         .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 18px; color: #0f172a; font-weight: 700; margin-bottom: 12px; outline: none; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
         .hidden { display: none !important; }
@@ -36,7 +59,7 @@
 
     <main class="hero-bg" onclick="toggleDock(false)">
         <div class="brand-container">
-            <h1 class="brand-text font-black italic">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <h1 class="brand-text font-black italic text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
             <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px] mt-2">Building Bharat</p>
         </div>
     </main>
@@ -68,10 +91,12 @@
                 </div>
 
                 <div id="signupFields" class="hidden">
-                    <span class="label-text">Full Name *</span>
+                    <span class="label-text">Full Legal Name *</span>
                     <input type="text" id="regName" class="u-input" placeholder="Enter Name">
+                    
                     <span class="label-text">Email Address *</span>
                     <input type="email" id="regEmail" class="u-input" placeholder="example@gmail.com">
+
                     <span class="label-text">Professional Role *</span>
                     <select id="regRole" class="u-input">
                         <option value="Supplier">Supplier / Material Provider</option>
@@ -125,32 +150,25 @@
             const sysPass = "NsSecure2026!";
 
             try {
-                // STEP 1: Try to login first (Solves your Console Error)
+                // Try logging in
                 const loginRes = await auth.signInWithEmailAndPassword(sysEmail, sysPass).catch(err => err.code);
                 
                 if (typeof loginRes === 'object') {
-                    // Login worked! Now check if DB profile exists
-                    checkProfile(loginRes.user);
+                    const snap = await rtdb.ref(`users/${loginRes.user.uid}/role`).once('value');
+                    if(snap.exists()) routeUser(loginRes.user);
+                    else showRegistrationUI();
                 } else if (loginRes === 'auth/user-not-found') {
-                    // STEP 2: Only create if they definitely don't exist
-                    const createRes = await auth.createUserWithEmailAndPassword(sysEmail, sysPass);
-                    showRegForm();
-                } else {
-                    alert("Auth System Error: " + loginRes);
+                    // Create if doesn't exist
+                    await auth.createUserWithEmailAndPassword(sysEmail, sysPass);
+                    showRegistrationUI();
                 }
             } catch(e) { console.error(e); }
         }
 
-        async function checkProfile(user) {
-            const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
-            if(snap.exists()) routeUser(user);
-            else showRegForm();
-        }
-
-        function showRegForm() {
+        function showRegistrationUI() {
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('signupFields').classList.remove('hidden');
-            document.getElementById('actionBtn').innerText = "Complete Profile";
+            document.getElementById('actionBtn').innerText = "Create Account";
             step = 3;
         }
 
@@ -160,14 +178,14 @@
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
 
-            if(!name || !email || !role) return alert("Missing fields.");
+            if(!name || !email || !role) return alert("All fields are mandatory.");
 
             try {
                 await rtdb.ref(`users/${auth.currentUser.uid}`).set({
-                    name, personalEmail: email, role, phone, status: 'active', timestamp: Date.now()
+                    name, email, role, phone, status: 'active', timestamp: Date.now()
                 });
                 routeUser(auth.currentUser);
-            } catch(e) { alert("Database Error: " + e.message); }
+            } catch(e) { alert("Error: " + e.message); }
         }
 
         async function handleGoogle() {
