@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Building Bharat</title>
+    <title>NirmanSutra | Login</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,7 +20,6 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
-        /* FIXED: Brand Scaling to prevent cutting on mobile */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
@@ -28,16 +27,8 @@
         }
 
         .brand-container { width: 100%; max-width: 90vw; }
-        
-        /* Uses viewport width (vw) so it never overflows the screen */
-        .brand-text {
-            font-size: 11vw; 
-            @media (min-width: 768px) { font-size: 85px; }
-            line-height: 1;
-            letter-spacing: -0.05em;
-        }
+        .brand-text { font-size: 11vw; @media (min-width: 768px) { font-size: 85px; } line-height: 1; letter-spacing: -0.05em; }
 
-        /* Standard App Glide-Dock */
         .auth-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
@@ -77,8 +68,8 @@
         
         <div id="startView">
             <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Login to continue</p>
-            <div onclick="initFlow('mobile')" class="btn-auth bg-slate-50">📱 Mobile Number</div>
-            <div onclick="initFlow('whatsapp')" class="btn-auth bg-[#e7f5ee] text-[#075e54]">💬 WhatsApp Account</div>
+            <div onclick="initFlow('Mobile')" class="btn-auth bg-slate-50">📱 Mobile Number</div>
+            <div onclick="initFlow('WhatsApp')" class="btn-auth bg-[#e7f5ee] text-[#075e54]">💬 WhatsApp Account</div>
             <div onclick="handleGoogle()" class="btn-auth bg-white border-slate-200">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
             </div>
@@ -88,10 +79,13 @@
             <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Login</h3>
             <div id="inputBox">
                 <div id="signupFields" class="hidden">
-                    <span class="label-text">Legal Name *</span>
+                    <span class="label-text">Full Legal Name *</span>
                     <input type="text" id="regName" class="u-input" placeholder="Enter Name">
                     
-                    <span class="label-text">Select Role *</span>
+                    <span class="label-text">Email Address *</span>
+                    <input type="email" id="regEmailId" class="u-input" placeholder="example@gmail.com">
+
+                    <span class="label-text">Professional Role *</span>
                     <select id="regRole" class="u-input">
                         <option value="Supplier">Supplier / Material Provider</option>
                         <option value="Builder">Builder / Real Estate</option>
@@ -100,13 +94,18 @@
                         <option value="HomeOwner">Individual Home Owner</option>
                     </select>
                 </div>
-                <span class="label-text">Mobile Number *</span>
-                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
+                
+                <div id="phoneInputArea">
+                    <span class="label-text">Mobile Number *</span>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
+                </div>
             </div>
+
             <div id="otpBox" class="hidden">
                 <span class="label-text text-center">Verify 6-Digit OTP</span>
                 <input type="text" id="otpValue" class="u-input text-center tracking-[10px] text-xl font-black border-orange-500" placeholder="••••••" maxlength="6">
             </div>
+            
             <button id="actionBtn" onclick="executeStep()" class="btn-auth btn-primary">Continue</button>
         </div>
     </div>
@@ -131,8 +130,7 @@
             if(step === 1) {
                 const ph = document.getElementById('userPhone').value;
                 if(ph.length < 10) return alert("Enter valid mobile number");
-                
-                document.getElementById('inputBox').classList.add('hidden');
+                document.getElementById('phoneInputArea').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
                 alert("TEST OTP: 123456");
                 step = 2;
@@ -144,15 +142,16 @@
 
         async function handleAuthSuccess() {
             const ph = document.getElementById('userPhone').value;
-            const email = `${ph.slice(-10)}@nirmansutra.in`;
+            // Internal system email for Firebase auth
+            const sysEmail = `${ph.slice(-10)}@nirmansutra.in`;
             try {
-                const res = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
+                const res = await auth.signInWithEmailAndPassword(sysEmail, "NsSecure2026!").catch(() => null);
                 if(res) routeUser(res.user);
                 else {
+                    // NEW USER: Show registration fields including Email
                     document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
-                    document.getElementById('inputBox').classList.remove('hidden');
-                    document.getElementById('actionBtn').innerText = 'Complete Profile';
+                    document.getElementById('actionBtn').innerText = 'Complete Registration';
                     document.getElementById('actionBtn').onclick = finalizeSignup;
                 }
             } catch(e) { console.error(e); }
@@ -160,13 +159,20 @@
 
         async function finalizeSignup() {
             const name = document.getElementById('regName').value;
+            const emailId = document.getElementById('regEmailId').value;
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
-            if(!name) return alert("Name is mandatory.");
+
+            if(!name || !emailId || !role) return alert("All fields are mandatory.");
+            if(!emailId.includes("@")) return alert("Enter a valid email address.");
+
             try {
-                const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
-                const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
-                await rtdb.ref(`users/${res.user.uid}`).set({ name, role, phone, status: 'active', timestamp: Date.now() });
+                const sysEmail = `${phone.slice(-10)}@nirmansutra.in`;
+                const res = await auth.createUserWithEmailAndPassword(sysEmail, "NsSecure2026!");
+                // Save both system email and user's personal email to DB
+                await rtdb.ref(`users/${res.user.uid}`).set({
+                    name, personalEmail: emailId, role, phone, status: 'active', timestamp: Date.now()
+                });
                 routeUser(res.user);
             } catch(e) { alert(e.message); }
         }
@@ -177,15 +183,12 @@
         }
 
         async function routeUser(u) {
-            // MASTER REDIRECT: nirmansutraa@gmail.com
             if(u.email === "nirmansutraa@gmail.com") {
                 window.location.href = "/admin/super_admin.html";
                 return;
             }
-
             const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
-            
             const paths = {
                 'Supplier': '/field/supplier/dashboard.html',
                 'Builder': '/field/builder/dashboard.html',
@@ -193,7 +196,6 @@
                 'FleetOwner': '/field/fleet/dashboard.html',
                 'HomeOwner': '/field/homeowner/dashboard.html'
             };
-
             if(role && paths[role]) window.location.href = paths[role];
             else toggleDock(true); 
         }
