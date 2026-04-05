@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Sovereign Gateway</title>
+    <title>NirmanSutra | Login</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,41 +20,46 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
+        /* FIXED BRANDING: Responsive Container */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; 
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 20px; text-align: center;
         }
 
-        /* FIXED BRANDING: Responsive Scaling */
+        .brand-container { width: 100%; max-width: 90vw; }
+        
+        /* Font scaling based on viewport width to prevent cutting */
         .brand-text {
-            font-size: clamp(3rem, 15vw, 6rem); /* Dynamically scales based on screen width */
-            line-height: 0.9;
-            white-space: nowrap;
+            font-size: 11vw; 
+            @media (min-width: 768px) { font-size: 80px; }
+            line-height: 1;
+            letter-spacing: -0.05em;
         }
 
+        /* Simplified App-Style Dock */
         .identity-dock {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: white; color: #0f172a;
-            border-radius: 45px 45px 0 0; padding: 20px 25px 40px;
-            box-shadow: 0 -30px 100px rgba(0,0,0,0.7); z-index: 5000;
-            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-            max-height: 92vh; overflow-y: auto;
-            transform: translateY(calc(100% - 90px)); 
+            border-radius: 40px 40px 0 0; padding: 30px 25px 45px;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(calc(100% - 95px)); 
         }
         .identity-dock.glide-up { transform: translateY(0); }
 
-        .handle-bar { width: 45px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
+        .handle-bar { width: 40px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 25px; cursor: pointer; }
 
-        .btn-rapido {
-            width: 100%; padding: 20px; border-radius: 22px; 
-            font-weight: 800; text-transform: uppercase; font-size: 11px;
+        .btn-auth {
+            width: 100%; padding: 18px; border-radius: 20px; 
+            font-weight: 700; font-size: 14px;
             display: flex; align-items: center; justify-content: center; gap: 12px;
-            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.3s;
-            letter-spacing: 2px;
+            margin-bottom: 12px; cursor: pointer; border: 1px solid #f1f5f9; transition: 0.2s;
         }
+        .btn-auth:active { transform: scale(0.98); }
+        .btn-primary { background: var(--accent); color: white; border: none; }
         
-        .btn-main { background: var(--accent); color: white; border: none; font-size: 14px; margin-top: 15px; }
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 18px; color: #0f172a; font-weight: 700; margin-bottom: 12px; outline: none; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
         .hidden { display: none !important; }
     </style>
@@ -62,58 +67,48 @@
 <body>
 
     <main class="hero-bg" onclick="toggleDock(false)">
-        <div class="text-center px-4 w-full overflow-hidden">
-            <h1 class="brand-text font-black italic tracking-tighter mb-4">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
-            <p class="text-slate-500 font-bold uppercase tracking-[10px] text-[10px]">Infrastructure Intelligence</p>
+        <div class="brand-container">
+            <h1 class="brand-text font-black italic">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px] mt-2">Infrastructure Intelligence</p>
         </div>
     </main>
 
     <div id="mainDock" class="identity-dock">
         <div class="handle-bar" onclick="toggleDock()"></div>
         
-        <div id="miniTitle" class="text-center cursor-pointer pb-6" onclick="toggleDock()">
-            <span id="dockStatus" class="text-[10px] font-black uppercase tracking-[5px] text-slate-400">Tap to Start</span>
+        <div id="startView">
+            <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Login to continue</p>
+            <div onclick="initFlow('mobile')" class="btn-auth bg-slate-50">📱 Mobile Number</div>
+            <div onclick="initFlow('whatsapp')" class="btn-auth bg-[#e7f5ee] text-[#075e54]">💬 WhatsApp</div>
+            <div onclick="handleGoogle()" class="btn-auth bg-white border-slate-200">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
+            </div>
         </div>
 
-        <div id="dockContent" class="opacity-0 transition-opacity duration-500">
-            <div id="startView">
-                <h3 class="text-xl font-black mb-8 text-center italic">Connect your node</h3>
-                <div onclick="initFlow('mobile')" class="btn-rapido bg-slate-50">📱 Mobile OTP Link</div>
-                <div onclick="initFlow('whatsapp')" class="btn-rapido bg-[#e7f5ee] text-[#075e54]">💬 WhatsApp Link</div>
-                <div onclick="handleGoogle()" class="btn-rapido bg-white border-slate-200">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google Account
+        <div id="flowView" class="hidden">
+            <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Login</h3>
+            <div id="inputBox">
+                <div id="signupFields" class="hidden">
+                    <span class="label-text">Full Legal Name *</span>
+                    <input type="text" id="regName" class="u-input" placeholder="Legal Name">
+                    
+                    <span class="label-text">Professional Role *</span>
+                    <select id="regRole" class="u-input">
+                        <option value="Supplier">Supplier / Material Provider</option>
+                        <option value="Builder">Builder / Real Estate</option>
+                        <option value="Contractor">Civil Contractor</option>
+                        <option value="FleetOwner">Fleet Owner / Logistics</option>
+                        <option value="HomeOwner">Individual Home Owner</option>
+                    </select>
                 </div>
+                <span class="label-text">Mobile Number *</span>
+                <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
             </div>
-
-            <div id="flowView" class="hidden">
-                <h3 id="flowTitle" class="text-xl font-black mb-6 italic uppercase">Identity Link</h3>
-                
-                <div id="inputBox">
-                    <div id="signupFields" class="hidden">
-                        <span class="label-text">Full Legal Name *</span>
-                        <input type="text" id="regName" class="u-input" placeholder="Legal Name">
-                        
-                        <span class="label-text">Professional Role *</span>
-                        <select id="regRole" class="u-input">
-                            <option value="Supplier">Supplier / Material Provider</option>
-                            <option value="Builder">Builder / Real Estate</option>
-                            <option value="Contractor">Civil Contractor</option>
-                            <option value="FleetOwner">Fleet Owner / Logistics</option>
-                            <option value="HomeOwner">Individual Home Owner</option>
-                        </select>
-                    </div>
-
-                    <span class="label-text">Mobile Number *</span>
-                    <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
-                </div>
-
-                <div id="otpBox" class="hidden mb-6">
-                    <span class="label-text text-center">Verify 6-Digit OTP</span>
-                    <input type="text" id="otpValue" class="u-input text-center tracking-[15px] text-2xl font-black border-orange-500" placeholder="••••••" maxlength="6">
-                </div>
-
-                <button id="actionBtn" onclick="executeStep()" class="btn-rapido btn-main shadow-xl">Proceed Securely</button>
+            <div id="otpBox" class="hidden">
+                <span class="label-text text-center">Verify OTP</span>
+                <input type="text" id="otpValue" class="u-input text-center tracking-[10px] text-xl font-black border-orange-500" placeholder="••••••" maxlength="6">
             </div>
+            <button id="actionBtn" onclick="executeStep()" class="btn-auth btn-primary">Continue</button>
         </div>
     </div>
 
@@ -123,41 +118,28 @@
 
         function toggleDock(open = true) {
             const dock = document.getElementById('mainDock');
-            const content = document.getElementById('dockContent');
-            if(open) { 
-                dock.classList.add('glide-up'); 
-                setTimeout(() => content.classList.remove('opacity-0'), 200); 
-            } else { 
-                dock.classList.remove('glide-up'); 
-                content.classList.add('opacity-0'); 
-            }
+            if(open) dock.classList.add('glide-up');
+            else dock.classList.remove('glide-up');
         }
 
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode.toUpperCase() + ' LINK';
+            document.getElementById('flowTitle').innerText = mode + " LOGIN";
         }
 
         async function executeStep() {
             if(step === 1) {
                 const ph = document.getElementById('userPhone').value;
-                if(ph.length < 10) return alert("Valid Mobile Required.");
+                if(ph.length < 10) return alert("Enter valid mobile number");
                 
-                // Hidden Admin Entry
-                if(ph === "0000000000") {
-                    window.location.href = "/admin/login.html";
-                    return;
-                }
-
                 document.getElementById('inputBox').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
-                document.getElementById('actionBtn').innerText = 'Verify & Secure';
-                alert("TEST OTP: 123456"); 
+                alert("TEST OTP: 123456");
                 step = 2;
             } else {
                 if(document.getElementById('otpValue').value === "123456") handleAuthSuccess();
-                else alert("Code Error.");
+                else alert("Invalid OTP");
             }
         }
 
@@ -165,33 +147,30 @@
             const ph = document.getElementById('userPhone').value;
             const email = `${ph.slice(-10)}@nirmansutra.in`;
             try {
-                const user = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
-                if(user) routeUser(user.user);
+                const res = await auth.signInWithEmailAndPassword(email, "NsSecure2026!").catch(() => null);
+                if(res) routeUser(res.user);
                 else {
                     document.getElementById('otpBox').classList.add('hidden');
                     document.getElementById('signupFields').classList.remove('hidden');
                     document.getElementById('inputBox').classList.remove('hidden');
-                    document.getElementById('actionBtn').innerText = 'Complete Registration';
+                    document.getElementById('actionBtn').innerText = 'Complete Profile';
                     document.getElementById('actionBtn').onclick = finalizeSignup;
                 }
-            } catch(e) { alert(e.message); }
+            } catch(e) { console.error(e); }
         }
 
-        async function finalizeSignup() {
-            const name = document.getElementById('regName').value;
-            const role = document.getElementById('regRole').value;
-            const phone = document.getElementById('userPhone').value;
-            if(!name) return alert("All fields are mandatory.");
-
-            try {
-                const regEmail = `${phone.slice(-10)}@nirmansutra.in`;
-                const res = await auth.createUserWithEmailAndPassword(regEmail, "NsSecure2026!");
-                await rtdb.ref(`users/${res.user.uid}`).set({ name, role, phone, status: 'active', timestamp: Date.now() });
-                routeUser(res.user);
-            } catch(e) { alert(e.message); }
+        async function handleGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(res => routeUser(res.user));
         }
 
         async function routeUser(u) {
+            // --- SUPER ADMIN MASTER CHECK ---
+            if(u.email === "nirmansutraa@gmail.com") {
+                window.location.href = "/admin/super_admin.html";
+                return;
+            }
+
             const snap = await rtdb.ref(`users/${u.uid}/role`).once('value');
             const role = snap.val();
             
@@ -204,11 +183,7 @@
             };
 
             if(role && paths[role]) window.location.href = paths[role];
-        }
-
-        function handleGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(res => routeUser(res.user));
+            else toggleDock(true); 
         }
 
         auth.onAuthStateChanged(u => { if(u) routeUser(u); });
