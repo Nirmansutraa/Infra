@@ -18,33 +18,21 @@
     <script src="/js/config.js"></script>
     <script src="/js/ui.js"></script>
     <script src="/js/map.js"></script>
+    <script src="/js/supplier_logic.js"></script>
 
     <style>
-        :root { --bg: #f8fafc; --primary: #020617; --orange: #ff7a00; --emerald: #10b981; }
+        :root { --bg: #f8fafc; --primary: #020617; --orange: #ff7a00; }
         body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 60px; }
         .hidden { display: none !important; }
-        
-        .card { background: white; border-radius: 40px; padding: 35px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
+        .card { background: white; border-radius: 40px; padding: 35px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
-        
-        .chip { background: #f1f5f9; padding: 15px 20px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; text-transform: uppercase; border: 2px solid transparent; transition: 0.2s; }
-        .chip.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 8px 20px rgba(255,122,0,0.2); }
-        
-        .circle-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 20px; }
-        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 25px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); color: white; font-size: 8px; padding: 8px; text-align: center; font-weight: 800; }
-        
-        .badge-bronze { background: #cd7f32; color: white; }
-        .badge-silver { background: #c0c0c0; color: #334155; }
-        .badge-gold { background: #ffd700; color: #92400e; }
-        .badge-platinum { background: #e5e4e2; color: #1e293b; border: 1px solid #94a3b8; }
-
-        /* Master Card Styling */
+        .chip { background: #f1f5f9; padding: 15px 20px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; text-transform: uppercase; }
+        .chip.active { background: var(--orange); color: white; }
         .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .detail-label { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; }
-        .detail-value { font-size: 11px; font-weight: 700; color: #1e293b; text-align: right; }
-        .inventory-item { background: #f8fafc; padding: 20px; border-radius: 25px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .detail-value { font-size: 11px; font-weight: 700; color: #1e293b; }
+        .badge-bronze { background: #cd7f32; color: white; }
     </style>
 </head>
 <body>
@@ -54,77 +42,22 @@
     <main id="app" class="max-w-2xl mx-auto hidden">
         <div id="headerAnchor"></div>
 
-        <div id="regView" class="hidden px-2">
-            <h2 id="regTitle" class="text-3xl font-black italic tracking-tighter uppercase mb-6 text-slate-900">Supplier Profile</h2>
-            
-            <div class="card">
-                <span class="label-text">01. Identity</span>
-                <input id="firmName" placeholder="Firm Name *" class="u-input">
-                <input id="gstNum" placeholder="GST Number *" class="u-input">
-                
-                <span class="label-text">02. Ownership</span>
-                <input id="ownerName" placeholder="Owner Name *" class="u-input">
-                <input id="ownerMob" type="tel" placeholder="Owner Mobile *" class="u-input" oninput="Validation.copyWA(this.value, 'ownerWa')">
-                <input id="ownerWa" type="tel" placeholder="Owner WhatsApp *" class="u-input">
-
-                <span class="label-text">03. Manager</span>
-                <input id="mgrName" placeholder="Manager Name" class="u-input">
-                <input id="mgrMob" type="tel" placeholder="Manager Mobile" class="u-input" oninput="Validation.copyWA(this.value, 'mgrWa')">
-                <input id="mgrWa" type="tel" placeholder="Manager WhatsApp" class="u-input">
-            </div>
-
-            <div class="card">
-                <span class="label-text">04. GPS Lock & Evidence</span>
-                <div id="map" class="h-64 rounded-3xl border border-slate-200 mb-4 overflow-hidden z-0"></div>
-                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase mb-4 active:scale-95 transition-all">Capture GPS Lock</button>
-                <textarea id="address" class="u-input h-20 text-[11px] text-slate-400 italic bg-slate-50" readonly placeholder="Address will auto-fill..."></textarea>
-                <div class="grid grid-cols-3 gap-4" id="photoGrid">
-                    <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-100">+</button>
-                </div>
-                <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
-            </div>
-
-            <div class="card">
-                <span class="label-text">05. Material Intelligence</span>
-                <div id="matSelector" class="grid grid-cols-2 gap-4"></div>
-                <div id="varietyGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
-                <div id="brandGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
-            </div>
-
-            <div class="card">
-                <span class="label-text">06. Fleet Capacity</span>
-                <div id="fleetGrid"></div>
-            </div>
-
-            <button onclick="RegistryAction.transmit()" id="sBtn" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase mt-6 shadow-xl mb-4">🚀 Submit Profile for Verification</button>
-            <button onclick="InventoryUI.cancelEdit()" id="cancelBtn" class="hidden w-full text-slate-400 font-bold uppercase text-[10px] mb-10">Cancel Update</button>
-        </div>
-
         <div id="dashView" class="hidden px-2">
-            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-6 text-slate-900">Dashboard</h2>
-            
             <div class="card border-t-8 border-orange-500">
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h2 id="bizName" class="text-2xl font-black italic uppercase leading-none text-slate-900">---</h2>
                         <p id="vBadge" class="inline-block px-3 py-1 mt-2 rounded-lg text-[8px] font-black uppercase tracking-widest bg-slate-100 text-slate-400">Verification Pending</p>
                     </div>
-                    <button onclick="InventoryUI.toggleEdit()" class="bg-slate-900 text-white p-3 rounded-2xl active:scale-95 transition-all">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    </button>
+                    <button onclick="NS_Supplier.toggleEdit()" class="bg-slate-900 text-white p-3 rounded-2xl active:scale-95"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                 </div>
-
-                <div id="levelBadge" class="hidden w-full p-4 rounded-2xl text-center font-black uppercase italic tracking-widest text-xs mb-8">---</div>
-
+                <div id="levelBadge" class="hidden w-full p-4 rounded-2xl text-center font-black uppercase tracking-widest text-xs mb-8">---</div>
                 <div class="space-y-1 mb-8">
                     <div class="detail-row"><span class="detail-label">GST No</span><span id="disp_gst" class="detail-value">---</span></div>
                     <div class="detail-row"><span class="detail-label">Owner</span><span id="disp_owner" class="detail-value">---</span></div>
-                    <div class="detail-row"><span class="detail-label">Owner Contact</span><span id="disp_ownerCont" class="detail-value">---</span></div>
-                    <div class="detail-row"><span class="detail-label">Manager Contact</span><span id="disp_mgrCont" class="detail-value">---</span></div>
-                    <div class="detail-row"><span class="detail-label">Address</span><span id="bizAddr" class="detail-value truncate w-32">---</span></div>
-                    <div class="detail-row border-none"><span class="detail-label">GPS Precision</span><span id="disp_gps" class="detail-value text-orange-500">---</span></div>
+                    <div class="detail-row"><span class="detail-label">Contact</span><span id="disp_ownerCont" class="detail-value">---</span></div>
+                    <div class="detail-row border-none"><span class="detail-label">GPS</span><span id="disp_gps" class="detail-value text-orange-500">---</span></div>
                 </div>
-
                 <div id="statusHero" class="bg-slate-900 text-white p-10 rounded-[40px] text-center border-t-4 border-slate-700">
                     <p class="text-[10px] font-black uppercase tracking-[5px] text-orange-500 mb-3">Building Bharat</p>
                     <h3 id="heroTitle" class="text-xl font-black italic uppercase">Profile Verification Pending</h3>
@@ -134,295 +67,45 @@
             <div class="card">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-black italic uppercase tracking-tighter">Material Stock</h3>
-                    <button onclick="InventoryUI.openModal()" class="bg-orange-500 text-white p-3 rounded-xl shadow-lg active:scale-95">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                    </button>
+                    <button onclick="document.getElementById('inventoryModal').classList.remove('hidden')" class="bg-orange-500 text-white p-3 rounded-xl shadow-lg"><i data-lucide="plus" class="w-5 h-5"></i></button>
                 </div>
-                <div id="inventoryList" class="space-y-3">
-                    <p class="text-center text-[10px] font-bold text-slate-400 uppercase py-10">No stock added yet.</p>
-                </div>
+                <div id="inventoryList"></div>
             </div>
         </div>
 
-        <div id="inventoryModal" class="hidden fixed inset-0 bg-black/60 z-[9999] p-4 flex items-end justify-center">
-            <div class="bg-white w-full max-w-lg rounded-[40px] p-8 shadow-2xl">
-                <h3 class="text-xl font-black italic uppercase mb-6">Add Material</h3>
-                <span class="label-text">Category</span>
-                <div id="catSelect" class="grid grid-cols-2 gap-2 mb-4"></div>
-                <span class="label-text">Variety</span>
-                <div id="varSelect" class="flex flex-wrap gap-2 mb-6"></div>
-                <input id="invPrice" type="number" placeholder="Price per unit (₹) *" class="u-input">
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="InventoryUI.closeModal()" class="bg-slate-100 text-slate-600 p-5 rounded-2xl font-black uppercase text-xs">Cancel</button>
-                    <button onclick="InventoryUI.saveStock()" class="bg-orange-500 text-white p-5 rounded-2xl font-black uppercase text-xs">Save</button>
-                </div>
+        <div id="regView" class="hidden px-2">
+            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-6">Supplier Profile</h2>
+            <div class="card">
+                <span class="label-text">Business</span>
+                <input id="firmName" placeholder="Firm Name *" class="u-input">
+                <input id="gstNum" placeholder="GST Number" class="u-input">
+                <input id="ownerName" placeholder="Owner Name *" class="u-input">
+                <input id="ownerMob" type="tel" placeholder="Mobile *" class="u-input">
+                <span class="label-text">Location</span>
+                <div id="map" class="h-60 rounded-3xl border border-slate-200 mb-4 overflow-hidden"></div>
+                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase mb-4">Capture GPS Lock</button>
+                <textarea id="address" class="u-input h-20 text-[11px] text-slate-400 italic bg-slate-50" readonly></textarea>
             </div>
+            <button onclick="RegistryAction.transmit()" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Sync with NirmanSutra</button>
         </div>
     </main>
 
+    <div id="inventoryModal" class="hidden fixed inset-0 bg-black/60 z-[9999] p-4 flex items-end justify-center">
+        <div class="bg-white w-full max-w-lg rounded-[40px] p-8 shadow-2xl">
+            <h3 class="text-xl font-black italic uppercase mb-6">Add Material</h3>
+            <div id="catSelect" class="grid grid-cols-2 gap-2 mb-4"></div>
+            <div id="varSelect" class="flex flex-wrap gap-2 mb-6"></div>
+            <input id="invPrice" type="number" placeholder="Price *" class="u-input">
+            <button onclick="NS_Supplier.saveStock()" class="w-full bg-orange-500 text-white p-5 rounded-2xl font-black uppercase text-xs">Save</button>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
-        let state = { photos: [], location: null, mat: null, varieties: [], brands: [], fleet: {}, regData: {}, currentData: null };
-
-        // 1. AUTH WATCHER
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                NS_UI.showLoader();
-                checkOnboarding(user.uid);
-            } else { window.location.href = "/"; }
+        auth.onAuthStateChanged(user => { 
+            if(user) NS_Supplier.init(user.uid); 
+            else window.location.href = "/";
         });
-
-        // 2. DATA CHECKER (EXISTING FUNCTIONS PRESERVED)
-        function checkOnboarding(uid) {
-            // Load registry for Inventory select boxes
-            rtdb.ref('registry/materials').once('value', snap => { state.regData = snap.val() || {}; });
-
-            rtdb.ref('supplier_onboarding/' + uid).on('value', snap => {
-                const data = snap.val();
-                state.currentData = data;
-                NS_UI.injectHeader('headerAnchor', 'Supplier');
-                NS_UI.hideLoader();
-                document.getElementById('app').classList.remove('hidden');
-                
-                if (data) {
-                    document.getElementById('dashView').classList.remove('hidden');
-                    document.getElementById('regView').classList.add('hidden');
-                    
-                    // Fill Master Card [NEW]
-                    document.getElementById('bizName').innerText = data.firm;
-                    document.getElementById('bizAddr').innerText = data.address;
-                    document.getElementById('disp_gst').innerText = data.gst || 'N/A';
-                    document.getElementById('disp_owner').innerText = data.ownerName;
-                    document.getElementById('disp_ownerCont').innerText = `${data.ownerPhone} / ${data.ownerWa}`;
-                    document.getElementById('disp_mgrCont').innerText = data.mgrPhone ? `${data.mgrPhone} / ${data.mgrWa}` : 'N/A';
-                    document.getElementById('disp_gps').innerText = data.location ? `${data.location.lat.toFixed(5)}, ${data.location.lng.toFixed(5)}` : 'No Lock';
-                    
-                    const vBadge = document.getElementById('vBadge');
-                    const heroTitle = document.getElementById('heroTitle');
-                    const hero = document.getElementById('statusHero');
-
-                    if(data.status === 'approved') {
-                        vBadge.innerText = "Verified Profile";
-                        vBadge.className = "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600";
-                        heroTitle.innerText = "Verified NirmanSutra Supplier";
-                        hero.classList.add('border-orange-500');
-
-                        if(data.level) {
-                            const lBadge = document.getElementById('levelBadge');
-                            lBadge.classList.remove('hidden');
-                            lBadge.innerText = `${data.level} Partner`;
-                            lBadge.className = `w-full p-4 rounded-2xl text-center font-black uppercase italic tracking-widest text-xs mb-8 badge-${data.level.toLowerCase()}`;
-                        }
-                    }
-                    loadInventory(uid);
-                } else {
-                    document.getElementById('regView').classList.remove('hidden');
-                    if(window.NS_Geo) setTimeout(() => NS_Geo.init('map'), 500);
-                    syncRegistry(); 
-                    initFleet();
-                }
-            });
-        }
-
-        // 3. INVENTORY LOGIC [ADDITIONAL]
-        function loadInventory(uid) {
-            rtdb.ref('supplier_inventory/' + uid).on('value', snap => {
-                const list = document.getElementById('inventoryList');
-                list.innerHTML = "";
-                if(!snap.exists()){
-                    list.innerHTML = `<p class="text-center text-[10px] font-bold text-slate-400 uppercase py-10">No stock added yet.</p>`;
-                    return;
-                }
-                snap.forEach(child => {
-                    const item = child.val();
-                    list.innerHTML += `
-                        <div class="inventory-item">
-                            <div>
-                                <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest">${item.category}</p>
-                                <p class="text-sm font-black italic uppercase">${item.variety}</p>
-                                <p class="text-xs font-bold text-slate-400">₹ ${item.price}</p>
-                            </div>
-                            <button onclick="InventoryUI.deleteStock('${child.key}')" class="text-slate-300 hover:text-red-500 transition-all">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>`;
-                });
-                lucide.createIcons();
-            });
-        }
-
-        window.InventoryUI = {
-            openModal() {
-                document.getElementById('inventoryModal').classList.remove('hidden');
-                document.getElementById('catSelect').innerHTML = Object.keys(state.regData).map(c => `<div class="chip" onclick="InventoryUI.pickCat('${c}')">${c}</div>`).join('');
-            },
-            pickCat(c) {
-                state.selCat = c;
-                document.querySelectorAll('#catSelect .chip').forEach(el => el.classList.remove('active'));
-                event.target.classList.add('active');
-                document.getElementById('varSelect').innerHTML = Object.keys(state.regData[c]).map(v => `<div class="chip" onclick="InventoryUI.pickVar('${v}')">${v}</div>`).join('');
-            },
-            pickVar(v) {
-                state.selVar = v;
-                document.querySelectorAll('#varSelect .chip').forEach(el => el.classList.remove('active'));
-                event.target.classList.add('active');
-            },
-            closeModal() { document.getElementById('inventoryModal').classList.add('hidden'); },
-            async saveStock() {
-                const price = document.getElementById('invPrice').value;
-                if(!state.selCat || !state.selVar || !price) return alert("Fill all details");
-                await rtdb.ref('supplier_inventory/' + auth.currentUser.uid).push({
-                    category: state.selCat, variety: state.selVar, price: price, timestamp: Date.now()
-                });
-                this.closeModal();
-            },
-            async deleteStock(key) {
-                if(confirm("Delete this stock item?")) await rtdb.ref('supplier_inventory/' + auth.currentUser.uid + '/' + key).remove();
-            },
-            toggleEdit() {
-                document.getElementById('dashView').classList.add('hidden');
-                document.getElementById('regView').classList.remove('hidden');
-                document.getElementById('cancelBtn').classList.remove('hidden');
-                document.getElementById('regTitle').innerText = "Update Profile";
-                
-                // Pre-fill existing data
-                const d = state.currentData;
-                document.getElementById('firmName').value = d.firm;
-                document.getElementById('gstNum').value = d.gst || '';
-                document.getElementById('ownerName').value = d.ownerName;
-                document.getElementById('ownerMob').value = d.ownerPhone;
-                document.getElementById('mgrName').value = d.mgrName || '';
-                document.getElementById('address').value = d.address;
-                state.location = d.location;
-            },
-            cancelEdit() {
-                document.getElementById('dashView').classList.remove('hidden');
-                document.getElementById('regView').classList.add('hidden');
-            }
-        };
-
-        // --- PRESERVED EXISTING FUNCTIONS (NO CHANGES) ---
-        window.Validation = {
-            copyWA(val, targetId) { document.getElementById(targetId).value = val; }
-        };
-
-        window.GeoEngine = {
-            async lock() {
-                if(!window.NS_Geo) return alert("Mapping library missing.");
-                try {
-                    const result = await NS_Geo.captureLock('address');
-                    state.location = result.location;
-                } catch(e) { alert("Location Error: " + e.message); }
-            }
-        };
-
-        window.EvidenceEngine = {
-            handle(input) {
-                if(!state.location) return alert("❌ GPS Lock Required.");
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = 800; canvas.height = 600;
-                        ctx.drawImage(img, 0, 0, 800, 600);
-                        ctx.fillStyle = "rgba(0,0,0,0.85)"; ctx.fillRect(0, 530, 800, 70);
-                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 14px monospace";
-                        const stamp = `NS_ID: ${auth.currentUser.uid.slice(0,6)} | TS: ${new Date().toLocaleString()} | LAT: ${state.location.lat.toFixed(5)} | LNG: ${state.location.lng.toFixed(5)}`;
-                        ctx.fillText(stamp, 20, 570);
-                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6), time: new Date().toLocaleString() });
-                        this.render();
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            },
-            render() {
-                const grid = document.getElementById('photoGrid');
-                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-100">+</button>`;
-                state.photos.forEach((p, i) => {
-                    grid.innerHTML += `<div class="photo-slot" onclick="EvidenceEngine.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">DISCARD</div></div>`;
-                });
-            },
-            remove(idx) { if(confirm("Discard photo?")) { state.photos.splice(idx,1); this.render(); } }
-        };
-
-        function syncRegistry() {
-            rtdb.ref('registry/materials').on('value', snap => {
-                const cont = document.getElementById('matSelector');
-                window.regData = snap.val() || {};
-                cont.innerHTML = Object.keys(window.regData).map(cat => 
-                    `<div class="chip" onclick="RegistryUI.selectMat('${cat}')">${cat}</div>`).join('');
-            });
-        }
-
-        window.RegistryUI = {
-            selectMat(cat) {
-                state.mat = cat; state.varieties = []; state.brands = [];
-                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                document.getElementById('varietyGrid').classList.remove('hidden');
-                document.getElementById('varietyGrid').innerHTML = Object.keys(window.regData[cat]).map(v => 
-                    `<div class="chip" onclick="RegistryUI.toggleVariety('${cat}', '${v}', this)">${v}</div>`).join('');
-            },
-            toggleVariety(cat, v, el) {
-                el.classList.toggle('active');
-                const idx = state.varieties.indexOf(v);
-                idx > -1 ? state.varieties.splice(idx, 1) : state.varieties.push(v);
-                const bGrid = document.getElementById('brandGrid');
-                bGrid.classList.remove('hidden');
-                const uniqueBrands = new Set();
-                state.varieties.forEach(vk => { (window.regData[cat][vk].brands || []).forEach(b => uniqueBrands.add(b)); });
-                bGrid.innerHTML = Array.from(uniqueBrands).map(b => 
-                    `<div class="chip" onclick="RegistryUI.toggleBrand('${b}', this)">${b}</div>`).join('');
-            },
-            toggleBrand(b, el) {
-                el.classList.toggle('active');
-                const idx = state.brands.indexOf(b);
-                idx > -1 ? state.brands.splice(idx, 1) : state.brands.push(b);
-            }
-        };
-
-        function initFleet() {
-            const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer'];
-            document.getElementById('fleetGrid').innerHTML = types.map(t => `
-                <div class="fleet-unit flex justify-between items-center p-5 bg-slate-50 rounded-2xl mb-2 border border-slate-100">
-                    <span class="text-[11px] font-black uppercase text-slate-500 tracking-wider">${t}</span>
-                    <div class="flex items-center gap-6">
-                        <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
-                        <span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span>
-                        <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
-                    </div>
-                </div>`).join('');
-        }
-
-        window.fleetStep = (t, v) => {
-            state.fleet[t] = Math.max(0, (state.fleet[t] || 0) + v);
-            document.getElementById(`fval-${t}`).innerText = state.fleet[t];
-        };
-
-        window.RegistryAction = {
-            async transmit() {
-                const firm = document.getElementById('firmName').value.trim();
-                const owner = document.getElementById('ownerName').value.trim();
-                if(!firm || !owner || !state.location) return alert("❌ Firm, Owner, and GPS Lock are mandatory.");
-                
-                document.getElementById('sBtn').innerText = "TRANSMITTING DATA...";
-                await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).update({
-                    firm, ownerName: owner, ownerPhone: document.getElementById('ownerMob').value,
-                    ownerWa: document.getElementById('ownerWa').value,
-                    mgrName: document.getElementById('mgrName').value,
-                    mgrPhone: document.getElementById('mgrMob').value,
-                    mgrWa: document.getElementById('mgrWa').value,
-                    address: document.getElementById('address').value,
-                    location: state.location, photos: state.photos, mat: state.mat,
-                    varieties: state.varieties, brands: state.brands, fleet: state.fleet,
-                    timestamp: Date.now(), status: 'pending', level: 'Bronze'
-                });
-                alert("🚀 Profile Sync Successful!");
-                location.reload();
-            }
-        };
     </script>
 </body>
 </html>
