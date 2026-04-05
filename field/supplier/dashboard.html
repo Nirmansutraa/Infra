@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard | NirmanSutra</title>
+    <title>NirmanSutra | Building Bharat</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,63 +16,269 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script src="/js/config.js"></script>
-    <script src="/js/ui.js"></script> <style>
-        :root { --bg: #f8fafc; --orange: #ff7a00; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 50px; }
+    <script src="/js/ui.js"></script>
+
+    <style>
+        :root { --bg: #f8fafc; --accent: #10b981; --primary: #0f172a; --orange: #ff7a00; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 50px; }
         .hidden { display: none !important; }
         .card { background: white; border-radius: 40px; padding: 35px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; font-weight: 700; outline: none; margin-bottom: 12px; }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 22px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
+        .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
+        .chip { background: #f1f5f9; padding: 15px 20px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; text-transform: uppercase; }
+        .chip.active { background: var(--orange); color: white; }
+        .circle-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 20px; }
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 25px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); color: white; font-size: 8px; padding: 8px; text-align: center; }
+        
+        /* Level Badges */
+        .badge-bronze { background: #cd7f32; color: white; }
+        .badge-silver { background: #c0c0c0; color: #334155; }
+        .badge-gold { background: #ffd700; color: #92400e; }
+        .badge-platinum { background: #e5e4e2; color: #1e293b; border: 1px solid #94a3b8; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mb-4"></div>
-        <p class="font-black text-slate-400 uppercase tracking-[5px] text-[10px]">Syncing NirmanSutra...</p>
-    </div>
+    <div id="loader"></div>
 
     <main id="app" class="max-w-2xl mx-auto hidden">
         <div id="headerAnchor"></div>
 
-        <div id="dashView" class="hidden px-2">
-            <div class="card bg-[#020617] text-white p-10 text-center">
-                <p class="text-[10px] font-black uppercase tracking-[5px] text-orange-500 mb-2">Building Bharat</p>
-                <h3 id="bizName" class="text-2xl font-black italic uppercase">---</h3>
-                <p id="bizAddr" class="text-[10px] text-slate-400 mt-4 uppercase">---</p>
+        <div id="regView" class="hidden px-2">
+            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-6">Supplier Profile</h2>
+            
+            <div class="card">
+                <span class="label-text">Business Identity</span>
+                <input id="firmName" placeholder="Firm Name *" class="u-input">
+                <input id="gstNum" placeholder="GST Number *" class="u-input">
+                
+                <span class="label-text">Owner Information</span>
+                <input id="ownerName" placeholder="Owner Name *" class="u-input">
+                <input id="ownerMob" type="tel" placeholder="Owner Mobile *" class="u-input" oninput="Validation.copyWA(this.value, 'ownerWa')">
+                <input id="ownerWa" type="tel" placeholder="Owner WhatsApp *" class="u-input">
+
+                <span class="label-text">Management (Manager)</span>
+                <input id="mgrName" placeholder="Manager Name" class="u-input">
+                <input id="mgrMob" type="tel" placeholder="Manager Mobile" class="u-input" oninput="Validation.copyWA(this.value, 'mgrWa')">
+                <input id="mgrWa" type="tel" placeholder="Manager WhatsApp" class="u-input">
             </div>
+
+            <div class="card">
+                <span class="label-text">Location & Site Evidence</span>
+                <div id="map" class="h-64 rounded-3xl border mb-4"></div>
+                <button onclick="GeoEngine.lock()" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase mb-4">Capture GPS Lock</button>
+                <textarea id="address" class="u-input h-20 text-[11px] text-slate-400 italic" readonly placeholder="GPS Address..."></textarea>
+                
+                <div class="grid grid-cols-3 gap-4" id="photoGrid">
+                    <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl">+</button>
+                </div>
+                <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
+            </div>
+
+            <div class="card">
+                <span class="label-text">Material Intelligence</span>
+                <div id="matSelector" class="grid grid-cols-2 gap-4"></div>
+                <div id="varietyGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
+                <div id="brandGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
+            </div>
+
+            <div class="card">
+                <span class="label-text">Fleet Capacity</span>
+                <div id="fleetGrid"></div>
+            </div>
+
+            <button onclick="RegistryAction.transmit()" id="sBtn" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase mt-6 shadow-xl mb-10">Submit Profile for Verification</button>
         </div>
 
-        <div id="regView" class="hidden px-2">
+        <div id="dashView" class="hidden px-2">
+            <h2 class="text-3xl font-black italic tracking-tighter uppercase mb-6">Dashboard</h2>
+            
+            <div class="card">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="bizName" class="text-2xl font-black italic uppercase leading-none">---</h2>
+                        <p id="bizAddr" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">---</p>
+                    </div>
+                    <div id="vBadge" class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-400">
+                        Profile Verification Pending
+                    </div>
+                </div>
+
+                <div id="levelBadge" class="hidden w-full p-4 rounded-2xl text-center font-black uppercase italic tracking-widest text-xs mb-6">
+                    --- Partner
+                </div>
+
+                <div class="bg-slate-900 text-white p-8 rounded-3xl text-center">
+                    <p class="text-[10px] font-black uppercase tracking-[5px] text-orange-500 mb-2">Building Bharat</p>
+                    <h3 class="text-xl font-black italic uppercase">Partner Node Online</h3>
+                </div>
             </div>
+        </div>
     </main>
 
     <script>
         lucide.createIcons();
+        let state = { photos: [], location: null, mat: null, varieties: [], brands: [], fleet: {} };
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Check if user has a profile
-                rtdb.ref('supplier_onboarding/' + user.uid).on('value', snap => {
-                    const data = snap.val();
-                    
-                    // FIX: We now call the function from our ui.js file
-                    NS_UI.injectHeader('headerAnchor', 'Supplier');
-                    NS_UI.hideLoader();
-                    
-                    document.getElementById('app').classList.remove('hidden');
-                    
-                    if (data) {
-                        document.getElementById('dashView').classList.remove('hidden');
-                        document.getElementById('bizName').innerText = data.firm;
-                        document.getElementById('bizAddr').innerText = data.address;
-                    } else {
-                        document.getElementById('regView').classList.remove('hidden');
-                    }
-                });
-            } else {
-                window.location.href = "/";
-            }
+                NS_UI.showLoader();
+                NS_UI.injectHeader('headerAnchor', 'Supplier');
+                checkOnboarding(user.uid);
+            } else window.location.href = "/";
         });
+
+        function checkOnboarding(uid) {
+            rtdb.ref('supplier_onboarding/' + uid).on('value', snap => {
+                const data = snap.val();
+                NS_UI.hideLoader();
+                document.getElementById('app').classList.remove('hidden');
+                
+                if (data) {
+                    document.getElementById('dashView').classList.remove('hidden');
+                    document.getElementById('regView').classList.add('hidden');
+                    document.getElementById('bizName').innerText = data.firm;
+                    document.getElementById('bizAddr').innerText = data.address;
+                    
+                    const badge = document.getElementById('vBadge');
+                    if(data.status === 'approved') {
+                        badge.innerText = "Profile Approved";
+                        badge.className = "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600";
+                        
+                        if(data.level) {
+                            const lb = document.getElementById('levelBadge');
+                            lb.classList.remove('hidden');
+                            lb.innerText = `${data.level} Partner`;
+                            lb.className = `w-full p-4 rounded-2xl text-center font-black uppercase italic tracking-widest text-xs mb-6 badge-${data.level.toLowerCase()}`;
+                        }
+                    }
+                } else {
+                    document.getElementById('regView').classList.remove('hidden');
+                    NS_Geo.init('map');
+                    syncRegistry(); 
+                    initFleet();
+                }
+            });
+        }
+
+        window.Validation = {
+            copyWA(val, targetId) { document.getElementById(targetId).value = val; }
+        };
+
+        window.GeoEngine = {
+            async lock() {
+                const result = await NS_Geo.captureLock('address');
+                state.location = result.location;
+            }
+        };
+
+        window.EvidenceEngine = {
+            handle(input) {
+                if(!state.location) return alert("❌ GPS Lock Required.");
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 800; canvas.height = 600;
+                        ctx.drawImage(img, 0, 0, 800, 600);
+                        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 530, 800, 70);
+                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 14px monospace";
+                        const stamp = `NS: ${new Date().toLocaleString()} | LAT: ${state.location.lat.toFixed(5)} | LNG: ${state.location.lng.toFixed(5)}`;
+                        ctx.fillText(stamp, 20, 570);
+                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6), time: new Date().toLocaleString() });
+                        this.render();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            },
+            render() {
+                const grid = document.getElementById('photoGrid');
+                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl">+</button>`;
+                state.photos.forEach((p, i) => {
+                    grid.innerHTML += `<div class="photo-slot" onclick="EvidenceEngine.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">REMOVE</div></div>`;
+                });
+            },
+            remove(idx) { if(confirm("Discard photo?")) { state.photos.splice(idx,1); this.render(); } }
+        };
+
+        function syncRegistry() {
+            rtdb.ref('registry/materials').on('value', snap => {
+                const cont = document.getElementById('matSelector');
+                window.regData = snap.val() || {};
+                cont.innerHTML = Object.keys(window.regData).map(cat => 
+                    `<div class="chip" onclick="RegistryUI.selectMat('${cat}')">${cat}</div>`).join('');
+            });
+        }
+
+        window.RegistryUI = {
+            selectMat(cat) {
+                state.mat = cat; state.varieties = []; state.brands = [];
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                document.getElementById('varietyGrid').classList.remove('hidden');
+                document.getElementById('varietyGrid').innerHTML = Object.keys(window.regData[cat]).map(v => 
+                    `<div class="chip" onclick="RegistryUI.toggleVariety('${cat}', '${v}', this)">${v}</div>`).join('');
+            },
+            toggleVariety(cat, v, el) {
+                el.classList.toggle('active');
+                const idx = state.varieties.indexOf(v);
+                idx > -1 ? state.varieties.splice(idx, 1) : state.varieties.push(v);
+                const bGrid = document.getElementById('brandGrid');
+                bGrid.classList.remove('hidden');
+                const uniqueBrands = new Set();
+                state.varieties.forEach(vk => { (window.regData[cat][vk].brands || []).forEach(b => uniqueBrands.add(b)); });
+                bGrid.innerHTML = Array.from(uniqueBrands).map(b => 
+                    `<div class="chip" onclick="RegistryUI.toggleBrand('${b}', this)">${b}</div>`).join('');
+            },
+            toggleBrand(b, el) {
+                el.classList.toggle('active');
+                const idx = state.brands.indexOf(b);
+                idx > -1 ? state.brands.splice(idx, 1) : state.brands.push(b);
+            }
+        };
+
+        function initFleet() {
+            const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer'];
+            document.getElementById('fleetGrid').innerHTML = types.map(t => `
+                <div class="fleet-unit flex justify-between items-center p-5 bg-slate-50 rounded-2xl mb-2">
+                    <span class="text-[11px] font-black uppercase text-slate-500">${t}</span>
+                    <div class="flex items-center gap-6">
+                        <div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div>
+                        <span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span>
+                        <div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div>
+                    </div>
+                </div>`).join('');
+        }
+
+        window.fleetStep = (t, v) => {
+            state.fleet[t] = Math.max(0, (state.fleet[t] || 0) + v);
+            document.getElementById(`fval-${t}`).innerText = state.fleet[t];
+        };
+
+        window.RegistryAction = {
+            async transmit() {
+                const firm = document.getElementById('firmName').value;
+                const owner = document.getElementById('ownerName').value;
+                if(!firm || !owner || !state.location) return alert("❌ Firm, Owner, and GPS Lock are required.");
+                
+                document.getElementById('sBtn').innerText = "SUBMITTING...";
+                await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).set({
+                    firm, ownerName: owner, ownerPhone: document.getElementById('ownerMob').value,
+                    ownerWa: document.getElementById('ownerWa').value,
+                    mgrName: document.getElementById('mgrName').value,
+                    mgrPhone: document.getElementById('mgrMob').value,
+                    mgrWa: document.getElementById('mgrWa').value,
+                    address: document.getElementById('address').value,
+                    location: state.location, photos: state.photos, mat: state.mat,
+                    varieties: state.varieties, brands: state.brands, fleet: state.fleet,
+                    timestamp: Date.now(), status: 'pending', level: 'Bronze'
+                });
+                alert("🚀 Profile Submitted for Verification!");
+            }
+        };
     </script>
 </body>
 </html>
