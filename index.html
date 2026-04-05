@@ -39,7 +39,7 @@
 
     <main class="hero-bg" onclick="toggleDock(false)">
         <div class="brand-container">
-            <h1 class="brand-text font-black italic text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+            <h1 class="brand-text font-black italic">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
             <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px] mt-2">Building Bharat</p>
         </div>
     </main>
@@ -60,15 +60,22 @@
             <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Authentication</h3>
             
             <div id="inputBox">
-                <span class="label-text">Email Address *</span>
-                <input type="email" id="userEmail" class="u-input" placeholder="example@gmail.com">
-                
+                <div id="phoneArea">
+                    <span class="label-text">Mobile Number *</span>
+                    <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
+                </div>
+
+                <div id="otpBox" class="hidden">
+                    <span class="label-text text-center">Verify 6-Digit OTP</span>
+                    <input type="text" id="otpValue" class="u-input text-center tracking-[10px] text-xl font-black border-orange-500" placeholder="••••••" maxlength="6">
+                </div>
+
                 <div id="signupFields" class="hidden">
-                    <span class="label-text">Full Name *</span>
+                    <span class="label-text">Full Legal Name *</span>
                     <input type="text" id="regName" class="u-input" placeholder="Enter Name">
                     
-                    <span class="label-text">Mobile Number *</span>
-                    <input type="tel" id="regPhone" class="u-input" placeholder="10-digit mobile">
+                    <span class="label-text">Email Address *</span>
+                    <input type="email" id="regEmail" class="u-input" placeholder="example@gmail.com">
 
                     <span class="label-text">Professional Role *</span>
                     <select id="regRole" class="u-input">
@@ -82,13 +89,12 @@
             </div>
 
             <button id="actionBtn" onclick="executeStep()" class="btn-auth btn-primary">Continue</button>
-            <p id="toggleText" class="text-center text-[10px] font-bold text-slate-400 mt-4 cursor-pointer" onclick="toggleAuthMode()">New to NirmanSutra? Create Account</p>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
-        let isSignUp = false;
+        let step = 1;
 
         function toggleDock(open = true) {
             const dock = document.getElementById('mainDock');
@@ -99,58 +105,78 @@
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode + " AUTH";
-        }
-
-        function toggleAuthMode() {
-            isSignUp = !isSignUp;
-            document.getElementById('signupFields').classList.toggle('hidden');
-            document.getElementById('toggleText').innerText = isSignUp ? "Already have an account? Login" : "New to NirmanSutra? Create Account";
-            document.getElementById('actionBtn').innerText = isSignUp ? "Create Account" : "Continue";
+            document.getElementById('flowTitle').innerText = mode + " LOGIN";
+            step = 1;
         }
 
         async function executeStep() {
-            const email = document.getElementById('userEmail').value;
-            if(!email || !email.includes("@")) return alert("Enter a valid email.");
-
-            if(isSignUp) {
-                handleSignUp(email);
-            } else {
-                handleLogin(email);
-            }
-        }
-
-        async function handleLogin(email) {
-            // Since we removed system passwords, we'll prompt for a standard password or use OTP logic
-            // For now, let's assume a default secure password for existing nodes
-            try {
-                const res = await auth.signInWithEmailAndPassword(email, "NsSecure2026!");
-                routeUser(res.user);
-            } catch(e) {
-                if(e.code === 'auth/user-not-found') {
-                    alert("Account not found. Please switch to Create Account mode.");
+            if(step === 1) {
+                // LOCK PHONE
+                const ph = document.getElementById('userPhone').value;
+                if(ph.length < 10) return alert("Enter valid mobile number");
+                
+                document.getElementById('phoneArea').classList.add('hidden');
+                document.getElementById('otpBox').classList.remove('hidden');
+                alert("TEST OTP: 123456");
+                step = 2;
+            } else if(step === 2) {
+                // VERIFY OTP
+                if(document.getElementById('otpValue').value === "123456") {
+                    handleAuthSuccess();
                 } else {
-                    alert("Error: " + e.message);
+                    alert("Invalid OTP");
                 }
+            } else if(step === 3) {
+                // FINALIZE REGISTRATION
+                finalizeSignup();
             }
         }
 
-        async function handleSignUp(email) {
-            const name = document.getElementById('regName').value;
-            const phone = document.getElementById('regPhone').value;
-            const role = document.getElementById('regRole').value;
+        async function handleAuthSuccess() {
+            const ph = document.getElementById('userPhone').value;
+            // Internal system link
+            const sysEmail = `${ph.slice(-10)}@nirmansutra.in`;
+            
+            try {
+                const res = await auth.signInWithEmailAndPassword(sysEmail, "NsSecure2026!").catch(() => null);
+                
+                if(res) {
+                    const snap = await rtdb.ref(`users/${res.user.uid}/role`).once('value');
+                    if(snap.exists()) {
+                        routeUser(res.user);
+                    } else {
+                        showRegForm();
+                    }
+                } else {
+                    // Create Account and then ask for details
+                    await auth.createUserWithEmailAndPassword(sysEmail, "NsSecure2026!");
+                    showRegForm();
+                }
+            } catch(e) { console.error(e); }
+        }
 
-            if(!name || !phone || !role) return alert("All fields are mandatory.");
+        function showRegForm() {
+            document.getElementById('otpBox').classList.add('hidden');
+            document.getElementById('signupFields').classList.remove('hidden');
+            document.getElementById('actionBtn').innerText = "Complete Profile";
+            step = 3;
+        }
+
+        async function finalizeSignup() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const role = document.getElementById('regRole').value;
+            const phone = document.getElementById('userPhone').value;
+
+            if(!name || !email || !role) return alert("Name, Email, and Role are mandatory.");
+            if(!email.includes("@")) return alert("Valid Email ID required.");
 
             try {
-                const res = await auth.createUserWithEmailAndPassword(email, "NsSecure2026!");
-                await rtdb.ref(`users/${res.user.uid}`).set({
-                    name, email, phone, role, status: 'active', timestamp: Date.now()
+                await rtdb.ref(`users/${auth.currentUser.uid}`).set({
+                    name, personalEmail: email, role, phone, status: 'active', timestamp: Date.now()
                 });
-                routeUser(res.user);
-            } catch(e) {
-                alert("Sign-Up Error: " + e.message);
-            }
+                routeUser(auth.currentUser);
+            } catch(e) { alert("Save Error: " + e.message); }
         }
 
         async function handleGoogle() {
