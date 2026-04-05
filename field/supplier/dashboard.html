@@ -18,7 +18,9 @@
     <script src="/js/config.js"></script>
     <script src="/js/ui.js"></script>
     <script src="/js/map.js"></script>
-    <script src="/js/supplier_logic.js"></script> <style>
+    <script src="/js/supplier_logic.js"></script> 
+
+    <style>
         :root { --bg: #f8fafc; --primary: #020617; --orange: #ff7a00; --emerald: #10b981; }
         body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 60px; }
         .hidden { display: none !important; }
@@ -70,9 +72,10 @@
             </div>
 
             <div class="card">
-                <span class="label-text">05. Material Intelligence</span>
+                <span class="label-text">05. Material Intelligence Selection</span>
                 <div id="matSelector" class="grid grid-cols-2 gap-4"></div>
                 <div id="varietyGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
+                <div id="brandGrid" class="flex flex-wrap gap-3 mt-6 hidden"></div>
             </div>
 
             <div class="card">
@@ -80,7 +83,7 @@
                 <div id="fleetGrid"></div>
             </div>
 
-            <button onclick="RegistryAction.transmit()" id="sBtn" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl mb-4">🚀 Submit Profile</button>
+            <button onclick="RegistryAction.transmit()" id="sBtn" class="w-full bg-emerald-500 text-white p-6 rounded-3xl font-black uppercase mt-6 shadow-xl mb-4">🚀 Submit Profile</button>
             <button onclick="InventoryUI.cancelEdit()" id="cancelBtn" class="hidden w-full text-slate-400 font-bold uppercase text-[10px] mb-10">Cancel Update</button>
         </div>
 
@@ -141,7 +144,6 @@
             else { window.location.href = "/"; }
         });
 
-        // --- PRESERVED ORIGINAL LOGIC (DO NOT CHANGE) ---
         function checkOnboarding(uid) {
             rtdb.ref('registry/materials').once('value', snap => { state.regData = snap.val() || {}; });
             rtdb.ref('supplier_onboarding/' + uid).on('value', snap => {
@@ -174,31 +176,87 @@
 
         window.Validation = { copyWA(val, targetId) { document.getElementById(targetId).value = val; } };
         window.GeoEngine = { async lock() { if(!window.NS_Geo) return alert("Mapping library missing."); try { const result = await NS_Geo.captureLock('address'); state.location = result.location; } catch(e) { alert("Location Error: " + e.message); } } };
+        
         window.EvidenceEngine = {
             handle(input) {
-                if(!state.location) return alert("❌ GPS Lock Required.");
+                if(!state.location) return alert("❌ GPS Lock Required for Stamping.");
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                        canvas.width = 800; canvas.height = 600; ctx.drawImage(img, 0, 0, 800, 600);
-                        ctx.fillStyle = "rgba(0,0,0,0.85)"; ctx.fillRect(0, 530, 800, 70);
-                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 14px monospace";
-                        const stamp = `NS_ID: ${auth.currentUser.uid.slice(0,6)} | TS: ${new Date().toLocaleString()} | LAT: ${state.location.lat.toFixed(5)} | LNG: ${state.location.lng.toFixed(5)}`;
-                        ctx.fillText(stamp, 20, 570);
-                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6), time: new Date().toLocaleString() }); this.render();
+                        canvas.width = 1000; canvas.height = 750; ctx.drawImage(img, 0, 0, 1000, 750);
+                        
+                        // PIXEL STAMPING ENGINE
+                        ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(0, 680, 1000, 70);
+                        ctx.fillStyle = "#ff7a00"; ctx.font = "bold 18px monospace";
+                        const stamp1 = `NIRMANSUTRA | BUILDING BHARAT | ID: ${auth.currentUser.uid.slice(0,8)}`;
+                        const stamp2 = `TS: ${new Date().toLocaleString()} | LAT: ${state.location.lat.toFixed(6)} | LNG: ${state.location.lng.toFixed(6)}`;
+                        ctx.fillText(stamp1, 30, 710);
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillText(stamp2, 30, 735);
+
+                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.7), time: Date.now() }); 
+                        this.render();
                     }; img.src = e.target.result;
                 }; reader.readAsDataURL(input.files[0]);
             },
             render() { const grid = document.getElementById('photoGrid'); grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-5xl hover:bg-slate-100">+</button>`; state.photos.forEach((p, i) => { grid.innerHTML += `<div class="photo-slot" onclick="EvidenceEngine.remove(${i})"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">DISCARD</div></div>`; }); },
             remove(idx) { if(confirm("Discard photo?")) { state.photos.splice(idx,1); this.render(); } }
         };
-        function syncRegistry() { rtdb.ref('registry/materials').on('value', snap => { const cont = document.getElementById('matSelector'); window.regData = snap.val() || {}; cont.innerHTML = Object.keys(window.regData).map(cat => `<div class="chip" onclick="RegistryUI.selectMat('${cat}')">${cat}</div>`).join(''); }); }
-        window.RegistryUI = { selectMat(cat) { state.mat = cat; state.varieties = []; document.querySelectorAll('#matSelector .chip').forEach(c => c.classList.remove('active')); document.getElementById('varietyGrid').classList.remove('hidden'); document.getElementById('varietyGrid').innerHTML = Object.keys(window.regData[cat]).map(v => `<div class="chip" onclick="RegistryUI.toggleVariety('${cat}', '${v}', this)">${v}</div>`).join(''); }, toggleVariety(cat, v, el) { el.classList.toggle('active'); const idx = state.varieties.indexOf(v); idx > -1 ? state.varieties.splice(idx, 1) : state.varieties.push(v); } };
+
+        function syncRegistry() {
+            rtdb.ref('registry/materials').on('value', snap => {
+                const cont = document.getElementById('matSelector');
+                const mats = snap.val() || {};
+                cont.innerHTML = Object.keys(mats).map(cat => `<div class="chip" onclick="RegistryUI.selectMat('${cat}')">${cat}</div>`).join('');
+            });
+        }
+
+        window.RegistryUI = {
+            selectMat(cat) {
+                state.mat = cat; state.varieties = []; state.brands = [];
+                document.querySelectorAll('#matSelector .chip').forEach(c => c.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                const vGrid = document.getElementById('varietyGrid');
+                vGrid.classList.remove('hidden');
+                vGrid.innerHTML = Object.keys(state.regData[cat]).map(v => `<div class="chip" onclick="RegistryUI.toggleVariety('${cat}', '${v}', this)">${v}</div>`).join('');
+                document.getElementById('brandGrid').classList.add('hidden');
+            },
+            toggleVariety(cat, v, el) {
+                el.classList.toggle('active');
+                const idx = state.varieties.indexOf(v);
+                idx > -1 ? state.varieties.splice(idx, 1) : state.varieties.push(v);
+                
+                // RENDER BRANDS BASED ON VARIETY
+                const bGrid = document.getElementById('brandGrid');
+                bGrid.classList.remove('hidden');
+                const brands = new Set();
+                state.varieties.forEach(vk => { (state.regData[cat][vk].brands || []).forEach(b => brands.add(b)); });
+                
+                bGrid.innerHTML = brands.size > 0 ? Array.from(brands).map(b => `<div class="chip" onclick="RegistryUI.toggleBrand('${b}', this)">${b}</div>`).join('') : '';
+            },
+            toggleBrand(b, el) {
+                el.classList.toggle('active');
+                const idx = state.brands.indexOf(b);
+                idx > -1 ? state.brands.splice(idx, 1) : state.brands.push(b);
+            }
+        };
+
         function initFleet() { const types = ['Tractor', 'Mini Truck', 'Truck', 'Dumper', 'Trailer']; document.getElementById('fleetGrid').innerHTML = types.map(t => `<div class="fleet-unit flex justify-between items-center p-5 bg-slate-50 rounded-2xl mb-2 border border-slate-100"><span class="text-[11px] font-black uppercase text-slate-500 tracking-wider">${t}</span><div class="flex items-center gap-6"><div class="circle-btn" onclick="fleetStep('${t}', -1)">-</div><span id="fval-${t}" class="font-black text-sm w-[20px] text-center">0</span><div class="circle-btn" onclick="fleetStep('${t}', 1)">+</div></div></div>`).join(''); }
         window.fleetStep = (t, v) => { state.fleet[t] = Math.max(0, (state.fleet[t] || 0) + v); document.getElementById(`fval-${t}`).innerText = state.fleet[t]; };
-        window.RegistryAction = { async transmit() { const firm = document.getElementById('firmName').value.trim(); const owner = document.getElementById('ownerName').value.trim(); if(!firm || !owner || !state.location) return alert("❌ Firm, Owner, and GPS Lock are mandatory."); document.getElementById('sBtn').innerText = "TRANSMITTING DATA..."; await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).update({ firm, ownerName: owner, ownerPhone: document.getElementById('ownerMob').value, ownerWa: document.getElementById('ownerWa').value, mgrName: document.getElementById('mgrName').value, mgrPhone: document.getElementById('mgrMob').value, mgrWa: document.getElementById('mgrWa').value, address: document.getElementById('address').value, location: state.location, photos: state.photos, mat: state.mat, varieties: state.varieties, fleet: state.fleet, timestamp: Date.now(), status: 'pending', level: 'Bronze' }); alert("🚀 Profile Sync Successful!"); location.reload(); } };
+        
+        window.RegistryAction = { 
+            async transmit() { 
+                const firm = document.getElementById('firmName').value.trim(); 
+                const owner = document.getElementById('ownerName').value.trim(); 
+                if(!firm || !owner || !state.location) return alert("❌ Firm, Owner, and GPS Lock are mandatory."); 
+                document.getElementById('sBtn').innerText = "SYNCING..."; 
+                await rtdb.ref('supplier_onboarding/' + auth.currentUser.uid).update({ firm, ownerName: owner, ownerPhone: document.getElementById('ownerMob').value, ownerWa: document.getElementById('ownerWa').value, mgrName: document.getElementById('mgrName').value, mgrPhone: document.getElementById('mgrMob').value, mgrWa: document.getElementById('mgrWa').value, address: document.getElementById('address').value, location: state.location, photos: state.photos, mat: state.mat, varieties: state.varieties, brands: state.brands, fleet: state.fleet, timestamp: Date.now(), status: 'pending' }); 
+                alert("🚀 Profile Sync Successful!"); location.reload(); 
+            } 
+        };
     </script>
 </body>
 </html>
