@@ -16,245 +16,162 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script src="/js/config.js"></script>
-    <script src="/js/roles.js"></script>
+    <script src="/js/ui.js"></script>
     <script src="/js/map.js"></script>
+    <script src="/js/builder_logic.js"></script>
 
     <style>
-        :root { --bg: #f8fafc; --accent: #3b82f6; --primary: #0f172a; --orange: #ff7a00; }
-        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding: 0 20px 50px; }
+        :root { --bg: #f8fafc; --accent: #3b82f6; --primary: #020617; --orange: #ff7a00; }
+        body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; color: var(--primary); padding-bottom: 60px; }
         .hidden { display: none !important; }
-        
-        .card { background: white; border-radius: 40px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 10px; font-size: 14px; }
-        
+        .card { background: white; border-radius: 40px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .u-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 20px; color: #0f172a; font-weight: 700; outline: none; margin-bottom: 12px; font-size: 14px; }
         .label-text { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; display: block; padding-left: 10px; }
-        .chip { background: #f1f5f9; padding: 12px 18px; border-radius: 18px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; transition: 0.3s; text-align: center; border: 2px solid transparent; text-transform: uppercase; }
+        .chip { background: #f1f5f9; padding: 12px 18px; border-radius: 18px; font-size: 10px; font-weight: 800; color: #475569; cursor: pointer; text-transform: uppercase; border: 2px solid transparent; }
         .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
-
-        .project-tab { border-left: 8px solid var(--accent); padding: 20px; background: white; border-radius: 25px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 20px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 7px; padding: 5px; font-weight: 800; text-align: center; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .detail-label { font-size: 9px; font-weight: 900; color: #94a3b8; text-transform: uppercase; }
+        .detail-value { font-size: 11px; font-weight: 700; color: #1e293b; text-align: right; }
+        .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 25px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); color: white; font-size: 8px; padding: 8px; text-align: center; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="flex flex-col items-center justify-center min-h-screen">
-        <p class="font-black text-slate-400 uppercase tracking-[5px] text-xs animate-pulse">Syncing Builder Node...</p>
-    </div>
+    <div id="loader"></div>
 
-    <main id="app" class="max-w-2xl mx-auto hidden">
-        
-        <header class="flex justify-between items-center mb-8 sticky top-0 bg-[#f8fafc] py-4 z-50">
-            <button onclick="NS_Auth.goBack()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <i data-lucide="chevron-left" class="w-6 h-6 text-slate-600"></i>
-            </button>
-            <div class="text-center">
-                <h1 class="text-xl font-black italic uppercase leading-none">Nirman<span class="text-orange-500">Sutra</span></h1>
-                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-[3px] mt-1">Builder Node</p>
-            </div>
-            <button onclick="NS_Auth.logout()" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <i data-lucide="log-out" class="w-6 h-6 text-red-500"></i>
-            </button>
-        </header>
+    <main id="app" class="max-w-2xl mx-auto hidden px-4">
+        <div id="headerAnchor"></div>
 
         <div id="dashView" class="hidden">
-            <div class="mb-8">
-                <h2 id="builderFirm" class="text-3xl font-black italic tracking-tighter uppercase text-slate-900">---</h2>
-                <p id="builderGST" class="text-[9px] font-bold text-slate-400 uppercase tracking-[4px] mt-1">GST: ---</p>
+            <div class="card border-t-8 border-blue-500">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="builderFirm" class="text-2xl font-black italic uppercase leading-none">---</h2>
+                        <p id="vBadge" class="inline-block px-3 py-1 mt-2 rounded-lg text-[8px] font-black uppercase tracking-widest bg-slate-100 text-slate-400">Review Pending</p>
+                    </div>
+                    <button onclick="UI.showAddProject()" class="bg-orange-500 text-white p-4 rounded-[22px] shadow-lg active:scale-95"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                </div>
+
+                <div class="space-y-1 mb-8">
+                    <div class="detail-row"><span class="detail-label">Firm GST</span><span id="disp_gst" class="detail-value">---</span></div>
+                    <div class="detail-row"><span class="detail-label">Auth Person</span><span id="disp_owner" class="detail-value">---</span></div>
+                    <div class="detail-row border-none"><span class="detail-label">Primary Contact</span><span id="disp_contact" class="detail-value">---</span></div>
+                </div>
+
+                <div class="bg-slate-900 text-white p-8 rounded-[35px] text-center">
+                    <p class="text-[9px] font-black uppercase tracking-[4px] text-blue-400 mb-2">Build Capacity</p>
+                    <h3 id="heroTitle" class="text-lg font-black italic uppercase"><span id="siteCount">0</span> Active Sites</h3>
+                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="card text-center p-6 bg-blue-600 text-white">
-                    <h3 id="siteCount" class="text-4xl font-black italic">0</h3>
-                    <p class="text-[9px] font-black uppercase tracking-widest mt-2">Active Sites</p>
-                </div>
-                <div onclick="UI.showAddProject()" class="card text-center p-6 bg-orange-500 text-white cursor-pointer">
-                    <i data-lucide="plus-circle" class="mx-auto mb-2"></i>
-                    <p class="text-[9px] font-black uppercase tracking-widest">Add Site</p>
-                </div>
-            </div>
-
-            <div id="projectList" class="space-y-4"></div>
+            <div id="projectList"></div>
         </div>
 
         <div id="bizRegView" class="hidden">
-            <h2 class="text-2xl font-black mb-6 italic uppercase">Builder <span class="text-blue-500">Registry</span></h2>
+            <h2 class="text-3xl font-black italic uppercase mb-6">Hub Registry</h2>
             <div class="card">
-                <span class="label-text">Firm Identity</span>
+                <span class="label-text">Identity</span>
                 <input id="regFirmName" placeholder="Real Estate Firm Name *" class="u-input">
                 <input id="regGST" placeholder="Firm GST Number *" class="u-input">
-                <span class="label-text">Office Location</span>
-                <div id="officeMap" class="h-48 rounded-3xl mb-4 bg-slate-100"></div>
+                <input id="regOwner" placeholder="Authorized Person Name *" class="u-input">
+                <input id="regMob" type="tel" placeholder="Mobile Number *" class="u-input" oninput="Validation.copyWA(this.value, 'regWa')">
+                <input id="regWa" type="tel" placeholder="WhatsApp Number *" class="u-input">
+                <span class="label-text">Office GPS Lock</span>
+                <div id="officeMap" class="h-48 rounded-3xl mb-4 overflow-hidden border"></div>
                 <button onclick="GeoEngine.lock('regAddr', 'office')" class="u-input bg-slate-900 text-white font-black uppercase text-xs">Lock Office GPS</button>
-                <textarea id="regAddr" class="u-input text-xs italic h-20" readonly placeholder="Address will auto-fill..."></textarea>
+                <textarea id="regAddr" class="u-input text-xs italic h-20" readonly placeholder="Address..."></textarea>
             </div>
             <button onclick="RegistryAction.saveBiz()" class="w-full bg-blue-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Initialize Hub</button>
         </div>
 
         <div id="addProjectView" class="hidden">
-            <h2 class="text-2xl font-black mb-6 italic uppercase">New <span class="text-blue-500">Site</span></h2>
+            <h2 class="text-2xl font-black mb-6 italic uppercase">New <span class="text-blue-500">Site Node</span></h2>
             <div class="card">
+                <span class="label-text">Project Details</span>
                 <input id="projName" placeholder="Project Name *" class="u-input">
                 <select id="projStage" class="u-input">
                     <option value="Land / Leveling">1. Land / Leveling</option>
-                    <option value="Foundation / Footing">2. Foundation / Footing</option>
-                    <option value="Slab / Structure">3. Slab / Structure</option>
-                    <option value="Brickwork / Plaster">4. Brickwork / Plaster</option>
-                    <option value="Finishing / Tiling">5. Finishing / Tiling</option>
-                    <option value="Interior / Handover">6. Interior / Handover</option>
+                    <option value="Foundation">2. Foundation</option>
+                    <option value="Structure">3. Slab / Structure</option>
+                    <option value="Brickwork">4. Brickwork</option>
                 </select>
-            </div>
-
-            <div class="card">
-                <span class="label-text">Site Location</span>
-                <div id="siteMap" class="h-48 rounded-3xl mb-4 bg-slate-100"></div>
+                <span class="label-text">Site GPS Lock (1m Target)</span>
+                <div id="siteMap" class="h-48 rounded-3xl mb-4 border overflow-hidden"></div>
                 <button onclick="GeoEngine.lock('projAddr', 'site')" class="u-input bg-slate-900 text-white font-black uppercase text-xs">Capture Site GPS</button>
-                <textarea id="projAddr" class="u-input text-xs italic h-20" readonly placeholder="Site Address..."></textarea>
+                <textarea id="projAddr" class="u-input text-xs italic h-20" readonly></textarea>
             </div>
 
             <div class="card">
-                <span class="label-text">Material Intelligence</span>
+                <span class="label-text">Immediate Material Requirement</span>
                 <div id="matSelector" class="grid grid-cols-2 gap-3 mb-6"></div>
                 <div id="varietyGrid" class="flex flex-wrap gap-2 mb-4 hidden"></div>
                 <div id="brandGrid" class="flex flex-wrap gap-2 hidden"></div>
             </div>
 
             <div class="card">
-                <span class="label-text">Evidence Matrix</span>
+                <span class="label-text">Site Progress Evidence</span>
                 <div class="grid grid-cols-3 gap-3" id="photoGrid">
                     <button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>
                 </div>
                 <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="EvidenceEngine.handle(this)">
             </div>
 
-            <button onclick="RegistryAction.saveProject()" id="sBtn" class="w-full bg-blue-500 text-white p-6 rounded-3xl font-black uppercase shadow-xl">🚀 Sync Site Node</button>
+            <button onclick="RegistryAction.saveProject()" class="w-full bg-blue-600 text-white p-6 rounded-3xl font-black uppercase shadow-xl mb-10">🚀 Activate Site Node</button>
         </div>
     </main>
 
     <script>
         lucide.createIcons();
-        let state = { photos: [], location: null, mat: null, varieties: [], brands: [] };
 
-        auth.onAuthStateChanged(async user => {
-            if (user) {
-                const snap = await rtdb.ref('builder_onboarding/' + user.uid).once('value');
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-
-                if (snap.exists()) {
-                    const d = snap.val();
-                    document.getElementById('builderFirm').innerText = d.firm;
-                    document.getElementById('builderGST').innerText = "GST: " + d.gst;
-                    UI.showDash();
-                    loadProjects(user.uid);
-                } else {
-                    UI.showBizReg();
-                }
-            } else { window.location.href = "/index.html"; }
+        auth.onAuthStateChanged(user => {
+            if (user) { NS_UI.showLoader(); NS_Builder.init(user.uid); }
+            else { window.location.href = "/"; }
         });
 
-        function loadProjects(uid) {
-            rtdb.ref('projects').orderByChild('builderUid').equalTo(uid).on('value', snap => {
-                const list = document.getElementById('projectList');
-                list.innerHTML = "";
-                document.getElementById('siteCount').innerText = snap.numChildren();
-                snap.forEach(p => {
-                    const d = p.val();
-                    list.innerHTML += `<div class="project-tab"><div><p class="font-black text-lg uppercase italic">${d.name}</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">${d.stage} • ${d.address.substring(0,30)}...</p></div><i data-lucide="chevron-right"></i></div>`;
-                });
-                lucide.createIcons();
-            });
-        }
-
         window.UI = {
-            hideAll() { document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden')); },
-            showDash() { this.hideAll(); document.getElementById('dashView').classList.remove('hidden'); },
-            showBizReg() { this.hideAll(); document.getElementById('bizRegView').classList.remove('hidden'); NS_Geo.init('officeMap'); },
             showAddProject() { 
-                this.hideAll(); 
-                document.getElementById('addProjectView').classList.remove('hidden'); 
+                document.getElementById('dashView').classList.add('hidden');
+                document.getElementById('addProjectView').classList.remove('hidden');
                 NS_Geo.init('siteMap');
-                this.syncMaterials();
-            },
-            syncMaterials() {
-                rtdb.ref('registry/materials').once('value', snap => {
-                    const data = snap.val();
-                    window.matRegistry = data;
-                    document.getElementById('matSelector').innerHTML = Object.keys(data).map(m => `<div class="chip" onclick="UI.selectMat('${m}')">${m}</div>`).join('');
-                });
-            },
-            selectMat(m) {
-                state.mat = m; state.varieties = [];
-                const vGrid = document.getElementById('varietyGrid'); vGrid.classList.remove('hidden');
-                vGrid.innerHTML = Object.keys(window.matRegistry[m]).map(v => `<div class="chip" onclick="UI.toggleVariety('${m}', '${v}', this)">${v}</div>`).join('');
-            },
-            toggleVariety(m, v, el) {
-                el.classList.toggle('active');
-                state.varieties.push(v);
-                const bGrid = document.getElementById('brandGrid'); bGrid.classList.remove('hidden');
-                const brands = window.matRegistry[m][v].brands || [];
-                bGrid.innerHTML = brands.map(b => `<div class="chip" onclick="this.classList.toggle('active'); state.brands.push('${b}')">${b}</div>`).join('');
+                // Sync materials via logic brain
+                NS_Builder.state.regData && document.getElementById('matSelector').innerHTML === "" ? 
+                    document.getElementById('matSelector').innerHTML = Object.keys(NS_Builder.state.regData).map(m => `<div class="chip" onclick="NS_Builder.pickMat('${m}')">${m}</div>`).join('') : null;
             }
         };
 
+        window.Validation = { copyWA(v, t) { document.getElementById(t).value = v; } };
+        
         window.GeoEngine = { 
             async lock(id, type) { 
-                NS_Geo.map = null; // Reset map instance for correct rendering
-                NS_Geo.init(type === 'office' ? 'officeMap' : 'siteMap');
                 const res = await NS_Geo.captureLock(id); 
-                state.location = res.location; 
+                NS_Builder.state.location = res.location; 
             } 
         };
 
-        window.EvidenceEngine = {
-            handle(input) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = 800; canvas.height = 600;
-                        ctx.drawImage(img, 0, 0, 800, 600);
-                        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 540, 800, 60);
-                        ctx.fillStyle = "#3b82f6"; ctx.font = "bold 12px monospace";
-                        ctx.fillText(`SITE LOG: ${new Date().toLocaleString()} | GPS: ${state.location?.lat.toFixed(5)}`, 20, 575);
-                        state.photos.push({ src: canvas.toDataURL('image/jpeg', 0.6) });
-                        this.render();
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            },
-            render() {
-                const grid = document.getElementById('photoGrid');
-                grid.innerHTML = `<button onclick="document.getElementById('camInput').click()" class="photo-slot text-slate-300 text-3xl">+</button>`;
-                state.photos.forEach((p, i) => {
-                    grid.innerHTML += `<div class="photo-slot" onclick="state.photos.splice(${i},1); EvidenceEngine.render();"><img src="${p.src}" class="w-full h-full object-cover"><div class="stamp-overlay">REMOVE</div></div>`;
-                });
-            }
-        };
+        window.EvidenceEngine = { handle(i) { NS_Builder.processPhoto(i); } };
 
         window.RegistryAction = {
             async saveBiz() {
                 const firm = document.getElementById('regFirmName').value;
-                const gst = document.getElementById('regGST').value;
-                if(!firm || !gst || !state.location) return alert("All details required.");
-                await rtdb.ref('builder_onboarding/' + auth.currentUser.uid).set({ firm, gst, address: document.getElementById('regAddr').value, location: state.location });
+                const owner = document.getElementById('regOwner').value;
+                if(!firm || !owner || !NS_Builder.state.location) return alert("Fill all details");
+                await rtdb.ref('builder_onboarding/' + auth.currentUser.uid).set({ 
+                    firm, ownerName: owner, ownerPhone: document.getElementById('regMob').value, 
+                    ownerWa: document.getElementById('regWa').value, gst: document.getElementById('regGST').value, 
+                    location: NS_Builder.state.location, address: document.getElementById('regAddr').value, status: 'pending' 
+                });
                 location.reload();
             },
             async saveProject() {
                 const name = document.getElementById('projName').value;
-                if(!name || !state.location) return alert("Site Name & GPS required.");
-                await rtdb.ref('projects').push({ 
-                    builderUid: auth.currentUser.uid, name, 
-                    stage: document.getElementById('projStage').value, 
-                    address: document.getElementById('projAddr').value, 
-                    location: state.location, photos: state.photos,
-                    materials: { cat: state.mat, varieties: state.varieties, brands: state.brands },
-                    timestamp: Date.now()
+                if(!name || !NS_Builder.state.location) return alert("Name & GPS Required");
+                await rtdb.ref('projects').push({
+                    builderUid: auth.currentUser.uid, name, stage: document.getElementById('projStage').value,
+                    address: document.getElementById('projAddr').value, location: NS_Builder.state.location,
+                    photos: NS_Builder.state.photos, timestamp: Date.now()
                 });
-                alert("Site Node Online!"); UI.showDash();
+                location.reload();
             }
         };
     </script>
