@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NirmanSutra | Login</title>
+    <title>NirmanSutra | Building Bharat</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -20,14 +20,12 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
 
-        /* FIXED BRAND SCALING */
         .hero-bg { 
             background: radial-gradient(circle at top right, #1e293b, #020617); 
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
             padding: 20px; text-align: center;
         }
 
-        .brand-container { width: 100%; max-width: 90vw; }
         .brand-text { font-size: 11vw; @media (min-width: 768px) { font-size: 85px; } line-height: 1; letter-spacing: -0.05em; }
 
         .auth-dock {
@@ -58,7 +56,7 @@
 <body>
 
     <main class="hero-bg" onclick="toggleDock(false)">
-        <div class="brand-container">
+        <div class="w-full max-w-[90vw]">
             <h1 class="brand-text font-black italic text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
             <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px] mt-2">Building Bharat</p>
         </div>
@@ -77,7 +75,7 @@
         </div>
 
         <div id="flowView" class="hidden">
-            <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Authentication</h3>
+            <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Login</h3>
             
             <div id="inputBox">
                 <div id="phoneArea">
@@ -91,12 +89,10 @@
                 </div>
 
                 <div id="signupFields" class="hidden">
-                    <span class="label-text">Full Legal Name *</span>
+                    <span class="label-text">Full Name *</span>
                     <input type="text" id="regName" class="u-input" placeholder="Enter Name">
-                    
                     <span class="label-text">Email Address *</span>
                     <input type="email" id="regEmail" class="u-input" placeholder="example@gmail.com">
-
                     <span class="label-text">Professional Role *</span>
                     <select id="regRole" class="u-input">
                         <option value="Supplier">Supplier / Material Provider</option>
@@ -114,7 +110,7 @@
 
     <script>
         lucide.createIcons();
-        let step = 1;
+        let currentStep = 1;
 
         function toggleDock(open = true) {
             const dock = document.getElementById('mainDock');
@@ -125,21 +121,21 @@
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode + " LOGIN";
-            step = 1;
+            document.getElementById('flowTitle').innerText = mode.toUpperCase() + " LOGIN";
+            currentStep = 1;
         }
 
         async function executeStep() {
-            if(step === 1) {
+            if(currentStep === 1) {
                 const ph = document.getElementById('userPhone').value;
                 if(ph.length < 10) return alert("Enter valid mobile number");
                 document.getElementById('phoneArea').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
-                step = 2;
-            } else if(step === 2) {
+                currentStep = 2;
+            } else if(currentStep === 2) {
                 if(document.getElementById('otpValue').value === "123456") handleAuthSuccess();
                 else alert("Invalid OTP");
-            } else if(step === 3) {
+            } else if(currentStep === 3) {
                 finalizeSignup();
             }
         }
@@ -150,26 +146,27 @@
             const sysPass = "NsSecure2026!";
 
             try {
-                // Try logging in
-                const loginRes = await auth.signInWithEmailAndPassword(sysEmail, sysPass).catch(err => err.code);
+                // Try Login First
+                const res = await auth.signInWithEmailAndPassword(sysEmail, sysPass).catch(err => err.code);
                 
-                if (typeof loginRes === 'object') {
-                    const snap = await rtdb.ref(`users/${loginRes.user.uid}/role`).once('value');
-                    if(snap.exists()) routeUser(loginRes.user);
-                    else showRegistrationUI();
-                } else if (loginRes === 'auth/user-not-found') {
-                    // Create if doesn't exist
+                if (typeof res === 'object') {
+                    // Check if they have a role in the Database
+                    const snap = await rtdb.ref(`users/${res.user.uid}/role`).once('value');
+                    if(snap.exists()) routeUser(res.user);
+                    else showSignup();
+                } else if (res === 'auth/user-not-found') {
+                    // Create Account for New User
                     await auth.createUserWithEmailAndPassword(sysEmail, sysPass);
-                    showRegistrationUI();
+                    showSignup();
                 }
             } catch(e) { console.error(e); }
         }
 
-        function showRegistrationUI() {
+        function showSignup() {
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('signupFields').classList.remove('hidden');
             document.getElementById('actionBtn').innerText = "Create Account";
-            step = 3;
+            currentStep = 3;
         }
 
         async function finalizeSignup() {
@@ -178,14 +175,14 @@
             const role = document.getElementById('regRole').value;
             const phone = document.getElementById('userPhone').value;
 
-            if(!name || !email || !role) return alert("All fields are mandatory.");
+            if(!name || !email || !role) return alert("Fill all fields.");
 
             try {
                 await rtdb.ref(`users/${auth.currentUser.uid}`).set({
                     name, email, role, phone, status: 'active', timestamp: Date.now()
                 });
                 routeUser(auth.currentUser);
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { alert(e.message); }
         }
 
         async function handleGoogle() {
