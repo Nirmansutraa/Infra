@@ -20,6 +20,7 @@
         :root { --accent: #ff7a00; --navy: #020617; }
         body { background: var(--navy); font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; }
         .hero-bg { background: radial-gradient(circle at top right, #1e293b, #020617); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .brand-container { width: 100%; max-width: 90vw; }
         .brand-text { font-size: 11vw; @media (min-width: 768px) { font-size: 85px; } line-height: 1; letter-spacing: -0.05em; }
         .auth-dock { position: fixed; bottom: 0; left: 0; right: 0; background: white; color: #0f172a; border-radius: 40px 40px 0 0; padding: 30px 25px 45px; box-shadow: 0 -20px 60px rgba(0,0,0,0.5); z-index: 5000; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(calc(100% - 95px)); }
         .auth-dock.active { transform: translateY(0); }
@@ -34,8 +35,8 @@
 <body>
 
     <main class="hero-bg" onclick="toggleDock(false)">
-        <div class="w-full max-w-[90vw]">
-            <h1 class="brand-text font-black italic text-white">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
+        <div class="brand-container">
+            <h1 class="brand-text font-black italic">NIRMAN<span class="text-orange-500">SUTRA</span></h1>
             <p class="text-slate-500 font-bold uppercase tracking-[8px] text-[10px] mt-2">Building Bharat</p>
         </div>
     </main>
@@ -52,10 +53,10 @@
             </div>
         </div>
 
-        <div id="flowView" class="hidden text-center">
-            <h3 id="flowTitle" class="text-lg font-black mb-6 uppercase italic">Authentication</h3>
+        <div id="flowView" class="hidden">
+            <h3 id="flowTitle" class="text-lg font-black mb-6 text-center uppercase italic">Authentication</h3>
             
-            <div id="inputBox" class="text-left">
+            <div id="inputBox">
                 <div id="phoneArea">
                     <span class="label-text">Mobile Number *</span>
                     <input type="tel" id="userPhone" class="u-input" placeholder="10-digit mobile">
@@ -69,9 +70,9 @@
                 <div id="signupFields" class="hidden">
                     <span class="label-text">Full Name *</span>
                     <input type="text" id="regName" class="u-input" placeholder="Enter Name">
-                    <span class="label-text">Personal Email *</span>
+                    <span class="label-text">Email Address *</span>
                     <input type="email" id="regEmail" class="u-input" placeholder="example@gmail.com">
-                    <span class="label-text">Role *</span>
+                    <span class="label-text">Professional Role *</span>
                     <select id="regRole" class="u-input">
                         <option value="Supplier">Supplier / Material Provider</option>
                         <option value="Builder">Builder / Real Estate</option>
@@ -88,8 +89,7 @@
 
     <script>
         lucide.createIcons();
-        let currentStep = 1;
-        let globalPhone = "";
+        let step = 1;
 
         function toggleDock(open = true) {
             const dock = document.getElementById('mainDock');
@@ -100,81 +100,74 @@
         function initFlow(mode) {
             document.getElementById('startView').classList.add('hidden');
             document.getElementById('flowView').classList.remove('hidden');
-            document.getElementById('flowTitle').innerText = mode.toUpperCase() + " LOGIN";
-            currentStep = 1;
+            document.getElementById('flowTitle').innerText = mode + " LOGIN";
+            step = 1;
         }
 
         async function executeStep() {
-            if(currentStep === 1) {
-                const phInput = document.getElementById('userPhone').value.trim();
-                if(phInput.length < 10) return alert("Enter valid 10-digit mobile number");
-                
-                globalPhone = phInput; // LOCK THE PHONE NUMBER
+            if(step === 1) {
+                const ph = document.getElementById('userPhone').value;
+                if(ph.length < 10) return alert("Enter valid mobile number");
                 document.getElementById('phoneArea').classList.add('hidden');
                 document.getElementById('otpBox').classList.remove('hidden');
-                currentStep = 2;
-            } else if(currentStep === 2) {
-                if(document.getElementById('otpValue').value === "123456") {
-                    handleAuthSuccess();
-                } else {
-                    alert("Invalid OTP");
-                }
-            } else if(currentStep === 3) {
+                step = 2;
+            } else if(step === 2) {
+                if(document.getElementById('otpValue').value === "123456") handleAuthSuccess();
+                else alert("Invalid OTP");
+            } else if(step === 3) {
                 finalizeSignup();
             }
         }
 
         async function handleAuthSuccess() {
-            if(!globalPhone) return alert("System Error: Phone number lost.");
-            
-            const sysEmail = `${globalPhone.slice(-10)}@nirmansutra.in`;
+            const ph = document.getElementById('userPhone').value;
+            const sysEmail = `${ph.slice(-10)}@nirmansutra.in`;
             const sysPass = "NsSecure2026!";
 
             try {
-                // TRY LOGIN
-                auth.signInWithEmailAndPassword(sysEmail, sysPass)
-                .then(res => {
-                    checkDatabaseProfile(res.user);
-                })
-                .catch(err => {
-                    if(err.code === 'auth/user-not-found') {
-                        // TRY SIGNUP
-                        auth.createUserWithEmailAndPassword(sysEmail, sysPass)
-                        .then(res => showSignupForm())
-                        .catch(err2 => alert("Auth Error: " + err2.message));
-                    } else {
-                        alert("Login Error: " + err.message);
-                    }
-                });
+                // STEP 1: Try to login first (Solves your Console Error)
+                const loginRes = await auth.signInWithEmailAndPassword(sysEmail, sysPass).catch(err => err.code);
+                
+                if (typeof loginRes === 'object') {
+                    // Login worked! Now check if DB profile exists
+                    checkProfile(loginRes.user);
+                } else if (loginRes === 'auth/user-not-found') {
+                    // STEP 2: Only create if they definitely don't exist
+                    const createRes = await auth.createUserWithEmailAndPassword(sysEmail, sysPass);
+                    showRegForm();
+                } else {
+                    alert("Auth System Error: " + loginRes);
+                }
             } catch(e) { console.error(e); }
         }
 
-        async function checkDatabaseProfile(user) {
+        async function checkProfile(user) {
             const snap = await rtdb.ref(`users/${user.uid}/role`).once('value');
             if(snap.exists()) routeUser(user);
-            else showSignupForm();
+            else showRegForm();
         }
 
-        function showSignupForm() {
+        function showRegForm() {
             document.getElementById('otpBox').classList.add('hidden');
             document.getElementById('signupFields').classList.remove('hidden');
-            document.getElementById('actionBtn').innerText = "Create Account";
-            currentStep = 3;
+            document.getElementById('actionBtn').innerText = "Complete Profile";
+            step = 3;
         }
 
         async function finalizeSignup() {
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
             const role = document.getElementById('regRole').value;
+            const phone = document.getElementById('userPhone').value;
 
-            if(!name || !email || !role) return alert("Fill all details.");
+            if(!name || !email || !role) return alert("Missing fields.");
 
             try {
                 await rtdb.ref(`users/${auth.currentUser.uid}`).set({
-                    name, email, role, phone: globalPhone, status: 'active', timestamp: Date.now()
+                    name, personalEmail: email, role, phone, status: 'active', timestamp: Date.now()
                 });
                 routeUser(auth.currentUser);
-            } catch(e) { alert("Save Error: " + e.message); }
+            } catch(e) { alert("Database Error: " + e.message); }
         }
 
         async function handleGoogle() {
@@ -199,6 +192,8 @@
             if(role && paths[role]) window.location.href = paths[role];
             else toggleDock(true); 
         }
+
+        auth.onAuthStateChanged(u => { if(u) routeUser(u); });
     </script>
 </body>
 </html>
