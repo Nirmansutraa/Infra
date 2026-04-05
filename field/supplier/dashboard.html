@@ -30,8 +30,6 @@
         .circle-btn { width: 44px; height: 44px; border-radius: 14px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; font-size: 20px; }
         .photo-slot { aspect-ratio: 1; background: #f1f5f9; border-radius: 25px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .stamp-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); color: white; font-size: 8px; padding: 8px; text-align: center; }
-        
-        /* Level Badges */
         .badge-bronze { background: #cd7f32; color: white; }
         .badge-silver { background: #c0c0c0; color: #334155; }
         .badge-gold { background: #ffd700; color: #92400e; }
@@ -124,7 +122,6 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 NS_UI.showLoader();
-                NS_UI.injectHeader('headerAnchor', 'Supplier');
                 checkOnboarding(user.uid);
             } else window.location.href = "/";
         });
@@ -132,7 +129,11 @@
         function checkOnboarding(uid) {
             rtdb.ref('supplier_onboarding/' + uid).on('value', snap => {
                 const data = snap.val();
+                
+                // Inject Header and Hide Loader
+                NS_UI.injectHeader('headerAnchor', 'Supplier');
                 NS_UI.hideLoader();
+                
                 document.getElementById('app').classList.remove('hidden');
                 
                 if (data) {
@@ -155,7 +156,7 @@
                     }
                 } else {
                     document.getElementById('regView').classList.remove('hidden');
-                    NS_Geo.init('map');
+                    if(typeof NS_Geo !== 'undefined') NS_Geo.init('map');
                     syncRegistry(); 
                     initFleet();
                 }
@@ -168,6 +169,7 @@
 
         window.GeoEngine = {
             async lock() {
+                if(typeof NS_Geo === 'undefined') return alert("Geo library missing.");
                 const result = await NS_Geo.captureLock('address');
                 state.location = result.location;
             }
